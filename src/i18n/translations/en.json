@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "leagueDashboard": "Dashboard",
+    "headTableName": "Name",
+    "headTableShort": "Short",
+    "headTableNumberTeams": "Number Teams",
+    "newInstaceLeague": "New Instance",
+    "titleModalLeague": "Create League",
+    "descriptionModalLeague": "Create round robin League",
+
+
+    "headTableNameTeams": "Teams",
+    "headTableInitialsTeams": "Initials",
+    "headTableVenueTeams": "Venue",
+    "actions": "Actions",
+    "teamDashboard": "Teams"
+
+  }
+}

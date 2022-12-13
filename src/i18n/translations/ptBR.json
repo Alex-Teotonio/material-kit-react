@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "leagueDashboard": "Painel de controle",
+    "headTableName": "Nome",
+    "headTableShort": "Abreviação",
+    "headTableNumberTeams": "Número de Times",
+    "newInstaceLeague": "Nova Instância",
+    "titleModalLeague": "Nova Liga",
+    "descriptionModalLeague": "Crie uma nova liga de turno e returno",
+
+
+
+    "headTableNameTeams": "Times",
+    "headTableInitialsTeams": "Iniciais",
+    "headTableVenueTeams": "Local",
+    "actions": "Ações",
+    "teamDashboard": "Times"
+  }
+}

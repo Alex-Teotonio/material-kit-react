@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 // material
 import { alpha } from '@mui/material/styles';
 import { Box, MenuItem, Stack, IconButton } from '@mui/material';
@@ -6,24 +6,9 @@ import { Box, MenuItem, Stack, IconButton } from '@mui/material';
 import MenuPopover from '../../components/MenuPopover';
 
 // ----------------------------------------------------------------------
+import {LeagueContext} from '../../hooks/useContextLeague';
 
-const LANGS = [
-  {
-    value: 'en',
-    label: 'English',
-    icon: '/static/icons/ic_flag_en.svg',
-  },
-  {
-    value: 'de',
-    label: 'German',
-    icon: '/static/icons/ic_flag_de.svg',
-  },
-  {
-    value: 'fr',
-    label: 'French',
-    icon: '/static/icons/ic_flag_fr.svg',
-  },
-];
+import { LANGS } from '../../utils/dataComponents';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +16,14 @@ export default function LanguagePopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
 
+
+  const { currentLanguage, saveCurrentLanguage } = useContext(LeagueContext);
   const handleOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (languageSelected) => {
+    saveCurrentLanguage(languageSelected);
     setOpen(false);
   };
 
@@ -53,7 +41,7 @@ export default function LanguagePopover() {
           }),
         }}
       >
-        <img src={LANGS[0].icon} alt={LANGS[0].label} />
+        <img src={currentLanguage.icon} alt={currentLanguage.label} />
       </IconButton>
 
       <MenuPopover
@@ -69,7 +57,7 @@ export default function LanguagePopover() {
       >
         <Stack spacing={0.75}>
           {LANGS.map((option) => (
-            <MenuItem key={option.value} selected={option.value === LANGS[0].value} onClick={() => handleClose()}>
+            <MenuItem key={option.value} selected={option.value === currentLanguage.value} onClick={() => handleClose(option.value)}>
               <Box component="img" alt={option.label} src={option.icon} sx={{ width: 28, mr: 2 }} />
 
               {option.label}

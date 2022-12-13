@@ -11,12 +11,24 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
+
+import Loader from '../../../components/Loader'
+import {delay} from '../../../utils/formatTime';
+import {createUser} from '../../../services/requests'
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [values, setValues] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  })
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
@@ -25,16 +37,9 @@ export default function RegisterForm() {
     password: Yup.string().required('Password is required'),
   });
 
-  const defaultValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-  };
-
   const methods = useForm({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    values,
   });
 
   const {
@@ -43,11 +48,18 @@ export default function RegisterForm() {
   } = methods;
 
   const onSubmit = async () => {
-    navigate('/dashboard', { replace: true });
+    (methods.getValues("firstName"))
+
+    setIsLoading(true);
+    await delay(500)
+    const user = await createUser(methods.getValues('firstName'),methods.getValues('lastName'), methods.getValues('password'), methods.getValues('email'))
+    if(user) setIsLoading(false)
+    navigate('/login', { replace: true });
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Loader isLoading={isLoading}/>
       <Stack spacing={3}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
           <RHFTextField name="firstName" label="First name" />

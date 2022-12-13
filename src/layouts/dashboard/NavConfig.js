@@ -1,4 +1,6 @@
 // component
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faFutbol, faBan} from '@fortawesome/free-solid-svg-icons';
 import Iconify from '../../components/Iconify';
 
 // ----------------------------------------------------------------------
@@ -11,6 +13,24 @@ const navConfig = [
     path: '/dashboard/app',
     icon: getIcon('eva:pie-chart-2-fill'),
   },
+  {
+    title: 'Teams',
+    path: '/dashboard/teams',
+    icon: <FontAwesomeIcon icon={faFutbol} size="lg"/>
+  },
+
+  {
+    title: 'slots',
+    path: '/dashboard/slots',
+    icon: <FontAwesomeIcon icon={faFutbol} size="lg"/>
+  },
+
+  {
+    title: 'Restrictions',
+    path: '/dashboard/restrictions',
+    icon: <FontAwesomeIcon icon={faBan} size="lg"/>
+  },
+
   {
     title: 'user',
     path: '/dashboard/user',
