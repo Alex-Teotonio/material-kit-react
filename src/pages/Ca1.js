@@ -1,69 +1,59 @@
-import {useEffect, useState} from 'react'
-import {Box, Card, Container, MenuItem, Select, TextField} from '@mui/material';
-import { loadSlots, loadTeams } from '../services/requests';
+import {useEffect, useState } from 'react'
+import {Button, Card, Container, TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from '@mui/material';
+import Scrollbar from '../components/Scrollbar';
+import UserListHead from '../sections/@dashboard/user/UserListHead';
+
+import Modal from '../components/ModalRestrictions'
 
 export default function Ca1() {
-    const [teams, setTeams] = useState([]);
-    const [slots, setSlots] = useState([]);
+    const TABLE_HEAD = [
+        { id: 'categoty', label: 'Categoria', alignRight: false },
+        { id: 'type', label: 'Tipo', alignRight: false },
+        { id: 'penality', label: 'Penalidade', alignRight: false },
+        { id: 'Aplica', label: 'Aplica a', alignRight: false },
+        { id: 'criado_em', label: 'Criado em', alignRight: false },
+        { id: '' },
+    ]
 
+    const [isOpenModal, setIsOpenModal] = useState(false)
     useEffect(
         () => {
             async function loadData() {
-                const responseTeams = await loadTeams();
-                const responseSlots = await loadSlots();
-
-                setTeams(responseTeams);
-                setSlots(responseSlots);
+                // 
             }
             loadData()
         },
         []
     )
+
+
+    const handleClickButton = () => {
+        setIsOpenModal(true)
+    }
+
+    const handleClose = () => {
+        setIsOpenModal(false)
+    }
     return (
         <Container>
-            <Card  sx = {{padding: '25px 25px', width:"1024px"}}>
-            <Box sx={{display: 'flex', flexDirection: 'column'}} component="form">
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Equipes"
-                    placeholder="Equipes"
-                    sx={{marginRight: '15px', maxWidth: '250px'}}
-                >
-                    {
-                        teams.map((team) => (
-                            <MenuItem key={team.id} value={team.id}>{team.name}</MenuItem>
-                        ))
-                    }
-                </Select>
-                <TextField label="Qtde Jogos" type="number"  sx={{marginTop: '0px 0px', maxWidth: '250px'}} />
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Mode"
-                    placeholder="Mode"
-                    sx={{marginRight: '15px',maxWidth: '250px'}}
-                >
-                    <MenuItem value='H'>Home</MenuItem>
-                    <MenuItem value='A'>Away</MenuItem>
-                </Select>
+            <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
+            <Card>
+                <Scrollbar>
+                    <TableContainer sx={{ minWidth: 800 }}>
+                        <Table>
+                            <UserListHead headLabel={TABLE_HEAD}/>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell padding="checkbox">
+                                    <Checkbox/>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
 
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Equipes"
-                    placeholder="Equipes"
-                    sx={{marginRight: '15px', maxWidth: '250px'}}
-                >
-                    {
-                        slots.map((slot) => (
-                            <MenuItem key={slot.id} value={slot.id}>{slot.name}</MenuItem>
-                        ))
-                    }
-                </Select>
-                <button type='submit'>Ok</button>
-                </Box>
-
+                <Button variant="outlined" sx={{float: 'right', margin: '10px' }} onClick={handleClickButton}>Adicionar</Button>
             </Card>
         </Container>
     );
