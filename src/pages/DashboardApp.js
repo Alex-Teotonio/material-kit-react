@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Grid,
@@ -26,9 +26,9 @@ import Modal from '../components/Modal';
 import Scrollbar from '../components/Scrollbar';
 import { UserListHead } from '../sections/@dashboard/user';
 import USERLIST from '../_mock/user';
-
-import {LeagueContext} from '../hooks/useContextLeague';
 import Form from '../components/FormLeague';
+
+import api from '../services/api'
 
 // sections
 // ----------------------------------------------------------------------
@@ -38,8 +38,8 @@ export default function DashboardApp() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenChangeModal, setIsOpenChangeModal] = useState(false);
   const [dataSelected, setDataSelected] = useState({})
+  const [leagues, setLeagues] = useState([])
   const { emptyRows, filterName, order, orderBy,isNotFound,  selected, handleClick, handleChangePage, handleChangeRowsPerPage, rowsPerPage, page} = useTable();
-  const {leagues, handleLeague, deleteLeague} = useContext(LeagueContext)
   const {t} = useTranslation();
 
   const TABLE_HEAD = [
@@ -52,23 +52,49 @@ export default function DashboardApp() {
 
 
   useEffect(() => {
-  },[]);
+    async function loadInstances() {
+      const token = localStorage.getItem('token')
+      if(token) {
+        api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+      }
+      const response = await api.get('/league');
+      setLeagues(response.data);
+    }
+    loadInstances()
+
+  },[]
+  )
 
   const handleOpen = () =>  {
     setIsOpenModal(true);
   }
 
-  const updateLeague = () => {
-    handleLeague()
+  const updateLeague = async (newLeague) => {
+    if(newLeague) setLeagues([...leagues, newLeague]);
   }
 
   const handleChangeLeague = (row) => {
     setDataSelected(row)
     setIsOpenChangeModal(true)
   }
+  const renderUpdateLeague = (newLeague) => {
+    leagues.map((league) => {
+      if(league.id === newLeague.id) 
+      {
+        league.name = newLeague.name;
+        league.roud_robin = newLeague.roud_robin
+        league.mirred = newLeague.mirred
+        league.number_teams = newLeague.number_teams
+      }
+      return league
+    })
+    setLeagues(leagues)
+  }
 
-  const handleDeleteLeague = (idLeague) => {
-    deleteLeague(idLeague)
+  const handleDeleteLeague = async (idLeague) => {
+    await api.delete(`/league/${idLeague}`);
+    const leaguesFilter = leagues.filter((league) => league.id !== idLeague);
+    setLeagues(leaguesFilter);
   }
   const handleClose = () =>  {setIsOpenModal(false)}
   const handleCloseChangeModal = () =>  {setIsOpenChangeModal(false)}
@@ -76,7 +102,7 @@ export default function DashboardApp() {
     <Page title="Dashboard">
       <Container>
       <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
-        <Form onRequestClose={handleCloseChangeModal} onHandleLeague={() => {}} data={dataSelected}/>
+        <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected}/>
       </Modal>
         <Stack direction="row"  justifyContent="space-between">
           <Typography variant="h4" sx={{ mb: 5 }}>

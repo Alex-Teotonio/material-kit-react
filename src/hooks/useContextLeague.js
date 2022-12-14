@@ -25,9 +25,10 @@ export function LeagueProvider({ children }) {
           api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
           setAuthenticated(true)
         }
-        const league = await loadLeagues()
-        setLeagues(league);
-        setIsloadingContext(false)
+        // const league = await loadLeagues()
+        // console.log(league)
+        // setLeagues(league);
+        // setIsloadingContext(false)
         })();
     }, []);
 
@@ -51,7 +52,6 @@ export function LeagueProvider({ children }) {
       setLeagues(response.data);
     }
   
-
     async function handleLogin(email, password) {
       setIsloadingContext(true)
       const {data} = await auth(email, password)

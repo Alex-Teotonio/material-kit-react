@@ -9,7 +9,7 @@ export default function AuthSocial() {
   return (
     <>
       <Stack direction="row" spacing={2}>
-        <Button fullWidth size="large" color="inherit" variant="outlined">
+        {/* <Button fullWidth size="large" color="inherit" variant="outlined">
           <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
         </Button>
 
@@ -19,14 +19,14 @@ export default function AuthSocial() {
 
         <Button fullWidth size="large" color="inherit" variant="outlined">
           <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={22} height={22} />
-        </Button>
+        </Button> */}
       </Stack>
 
-      <Divider sx={{ my: 3 }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+      {/* <Divider sx={{ my: 3 }}> */}
+        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           OR
         </Typography>
-      </Divider>
+      </Divider> */}
     </>
   );
 }

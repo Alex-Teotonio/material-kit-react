@@ -1,40 +1,52 @@
-import {useState, useContext} from 'react'
+import {useState} from 'react'
 import {Box,Button, Card, Container, MenuItem, Select, TextField} from '@mui/material';
 import propTypes from 'prop-types'
-
-import {LeagueContext} from '../hooks/useContextLeague'
+import api from '../services/api'
 
 
 export default function Form({onRequestClose, onHandleLeague, data = ''}) {
 
-    const currentLeagueString = localStorage.getItem('myLeague');
-    const currentLeague = JSON.parse(currentLeagueString);
-
-    console.log(data.name? data.name: '')
-
-
-    const [name, setName] = useState(data.name? data.name: '');
+        const [name, setName] = useState(data.name? data.name: '');
     const [short, setShort] = useState(data.short? data.short: '');
     const [numberTeams, setNumberTeams] = useState(data.number_teams? data.number_teams: '');
     const [round, setRound] = useState(data.roud_robin? data.roud_robin: 10);
     const [mirred, setMirred] = useState(10);
 
-    const {createLeague, changeLeague} = useContext(LeagueContext);
+    async function createLeague({ name, short, numberTeams, round, mirred }) {
+        const {data} =  await api.post('/league', { name, short, numberTeams, round, mirred });
+        return data;
+    }
+
+    async function changeLeagues(idLeague, { name, short, numberTeams, round, mirred }) {
+        const {data: newUpdateLeague} = await api.put(`/league/${idLeague}`, {
+          name,
+          short,
+          numberTeams,
+          round,
+          mirred
+        })
+
+        return newUpdateLeague;
+    }
+    
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         if(!data) {
-            createLeague({name, short, numberTeams, round, mirred})
+            const league = await createLeague({name, short, numberTeams, round, mirred})
             setName('');
             setShort('');
             setRound(10);
             setNumberTeams(0)
             setMirred(10);
-            onHandleLeague()
+            onHandleLeague(league)
             onRequestClose();
         } else {
-            changeLeague(currentLeague.id, { name, short, numberTeams, round, mirred });
+            const currentLeagueString = localStorage.getItem('myLeague');
+            const currentLeague = JSON.parse(currentLeagueString);
+            const league = await changeLeagues(currentLeague.id, { name, short, numberTeams, round, mirred });
+            onHandleLeague(league)
             onRequestClose();
         }
 
