@@ -6,6 +6,8 @@ import api from '../services/api';
 
 export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
 
+  console.log(data.url)
+
     const [name, setName] = useState(data.name);
     const [initials, setInitials] = useState(data.initials);
     const [venue, setVenue] = useState(data.venue);

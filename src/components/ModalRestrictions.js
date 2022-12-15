@@ -25,7 +25,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
 
 
   const handleAdvance = () => {
-    navigate('/dashboard/teams')
+    navigate(`/dashboard/${valueSelect}`)
   }
 
 
@@ -58,7 +58,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
           sx={{width: '100%'}}
         >
           <MenuItem value={0}>Categoria</MenuItem>
-          <MenuItem value={10}>Ca1</MenuItem>
+          <MenuItem value='ca1'>Ca1</MenuItem>
           <MenuItem value={10}>Ca2</MenuItem>
           <MenuItem value={20}>Ca3</MenuItem>
           <MenuItem value={30}>Ca4</MenuItem>

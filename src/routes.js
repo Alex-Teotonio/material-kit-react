@@ -12,6 +12,7 @@ import Products from './pages/Products';
 import DashboardApp from './pages/DashboardApp';
 import Teams from './pages/Teams';
 import Slots from './pages/Slots';
+import Restrictions from './pages/Restrictions';
 import Ca1 from './pages/Ca1';
 
 // ----------------------------------------------------------------------
@@ -30,7 +31,8 @@ export default function Router() {
         { path: 'app', element: <DashboardApp /> },
         { path: 'teams', element: <Teams/>},
         { path: 'slots', element: <Slots/>},
-        { path: 'restrictions', element: <Ca1/>},
+        { path: 'restrictions', element: <Restrictions/>},
+        { path: 'ca1', element: <Ca1/>},
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
