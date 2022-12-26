@@ -2,6 +2,7 @@ import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import {Button, MenuItem, Select,Stack, Typography} from '@mui/material';
+import {useTranslation} from 'react-i18next'
 import Modal from '@mui/material/Modal';
 
 import propTypes from 'prop-types';
@@ -20,6 +21,7 @@ const style = {
 
 export default function BasicModal({isOpen, onRequestClose}) {
 
+  const {t} = useTranslation()
   const [valueSelect, setValueSelect] = useState(0);
   const navigate = useNavigate();
 
@@ -46,7 +48,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" component="h3">
-          Selecione a categoria de restrição a adicionar:
+          {t('titleModalRestriction')}
           </Typography>
 
         <Select
@@ -57,15 +59,15 @@ export default function BasicModal({isOpen, onRequestClose}) {
           onChange={handleChange}
           sx={{width: '100%'}}
         >
-          <MenuItem value={0}>Categoria</MenuItem>
+          <MenuItem value={0}>{t('headTableCategory')}</MenuItem>
           <MenuItem value='ca1'>Ca1</MenuItem>
-          <MenuItem value={10}>Ca2</MenuItem>
-          <MenuItem value={20}>Ca3</MenuItem>
-          <MenuItem value={30}>Ca4</MenuItem>
+          <MenuItem value='ca2'>Ca2</MenuItem>
+          <MenuItem value='ca3'>Ca3</MenuItem>
+          <MenuItem value='ca4'>Ca4</MenuItem>
         </Select>
         <Stack direction="row" alignItems='center' sx={{float:'right', marginRight: '3px', marginTop: '10px'}}>
-          <Button variant='outlined' onClick={handleCancel} sx={{marginRight:'5px'}}>Cancelar</Button>
-          <Button variant='outlined' onClick={handleAdvance}>Avançar</Button>
+          <Button variant='outlined' onClick={handleCancel} sx={{marginRight:'5px'}}>{t('buttonCancel')}</Button>
+          <Button variant='outlined' onClick={handleAdvance}>{t('buttonAdvance')}</Button>
         </Stack>
         </Box>
       </Modal>

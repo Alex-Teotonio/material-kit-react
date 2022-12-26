@@ -58,7 +58,7 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
                     <TextField id="outlined-basic" label="League" value={name} onChange={(event) => setName(event.target.value)} />
                     <TextField label="Short"  sx={{marginTop: '10px'}} value={short} onChange={(event) => setShort(event.target.value)}/>
                     <TextField label="NºTeams" type="number"  sx={{marginTop: '10px'}} value={numberTeams} onChange={(event) => setNumberTeams(event.target.value)}/>
-                    <Select
+                    {/* <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Round Robin"
@@ -71,6 +71,7 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
                         <MenuItem value={10}>Yes</MenuItem>
                         <MenuItem value={20}>No</MenuItem>
                     </Select>
+                    */}
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
@@ -85,7 +86,7 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
                         <MenuItem value={20}>No</MenuItem>
                     </Select>
 
-                    <Button variant="contained" sx={{padding:'4px', height: '40px'}} type="submit">Cadastrar Liga </Button>
+                    <Button variant="contained" sx={{padding:'4px', height: '40px', marginTop: '20px'}} type="submit">Cadastrar Liga </Button>
                 </Box>
             </Card>
         </Container>

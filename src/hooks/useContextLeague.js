@@ -19,6 +19,9 @@ export function LeagueProvider({ children }) {
     const [isLoadingContext, setIsloadingContext] = useState(false);
     const [dadosUser, setDadosUser] = useState('');
 
+
+    const currentLeagueString = localStorage.getItem('myLeague');
+    const currentLeagueStorage = JSON.parse(currentLeagueString);
     useEffect(() => {
         (async () => {
         const token = localStorage.getItem('token')
@@ -35,18 +38,19 @@ export function LeagueProvider({ children }) {
     }
 
     async function loadRestrictions() {
-      const arrayData = []
-      const response = await api.get(`/ca1/${currentLeague.id}`);
+      const arrayData = [];
+      const response = await api.get(`/ca1/${currentLeagueStorage.id}`);
       response.data.map((data) => arrayData.push(data));
   
-      // const response2 = await api.get(`/ca2/${currentLeague.id}`);
-      // response2.data.map((data) => arrayData.push(data));
+      const response2 = await api.get(`/ca2/${currentLeagueStorage.id}`);
+      response2.data.map((data) => arrayData.push(data));
   
-      // const response3 = await api.get(`/ca3/${currentLeague.id}`);
-      // response3.data.map((data) => arrayData.push(data));
+      const response3 = await api.get(`/ca3/${currentLeagueStorage.id}`);
+      response3.data.map((data) => arrayData.push(data));
   
-      // const response4 = await api.get(`/ca4/${currentLeague.id}`);
-      // response4.data.map((data) => arrayData.push(data));
+      const response4 = await api.get(`/ca4/${currentLeagueStorage.id}`);
+      response4.data.map((data) => arrayData.push(data));
+      
   
       // const response5 = await api.get(`/br1/${currentLeague.id}`);
       // response5.data.map((data) => arrayData.push(data));
@@ -63,10 +67,18 @@ export function LeagueProvider({ children }) {
       setRestrictions(arrayData)
     }
 
-    async function deleteRestriction(restriction) {
-        await api.delete(`/${restriction.type}/${restriction.id}`)
-        const restrictionFilter = restrictions.filter((restrictionFilter) => restrictionFilter.id !== restriction.id && restrictionFilter.type !== restriction.type);
-        setRestrictions(restrictionFilter);
+    async function deleteRestriction(arrayRestrictions) {
+
+
+      const token = localStorage.getItem('token');
+        arrayRestrictions.map(async (restriction) => {
+
+        await api.delete(`/${restriction.split('-')[1]}/${restriction.split('-')[0]}`)
+        })
+        
+        const result = restrictions.filter(object => !arrayRestrictions.some(toDelete => toDelete === object.id));
+
+        setRestrictions(result);
     }
   
     async function handleLogin(email, password) {

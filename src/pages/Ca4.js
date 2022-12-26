@@ -1,7 +1,7 @@
 import { useEffect , useState, useContext } from 'react';
 import {Button, Container, Card, Box, Grid,MenuItem, Select,Slider,Stack, TextField,Typography, Tooltip} from '@mui/material';
-import {SaveAs} from '@mui/icons-material'
-import {useTranslation} from 'react-i18next'
+import {SaveAs, Info} from '@mui/icons-material'
+import {useTranslation} from 'react-i18next';
 import { delay } from '../utils/formatTime';
 import MultipleSelectChip from '../components/MultSelect';
 import AppBar from '../components/AppBar'
@@ -14,23 +14,25 @@ import Loader from '../components/Loader';
 
 
 
-export default function Ca1() {
+export default function Ca4() {
 
   const [teams, setTeams] = useState([]);
+  const [team2Form, setTeamForm2] = useState([]);
   const [slots, setSlots] = useState([]);
   const [max, setMaximum] = useState(0);
+  const [min, setMinimum] = useState(0);
   const [penalty, setPenalty] = useState(70);
   const [type, setType] = useState('');
-  const [mode, setMode] = useState('');
+  const [mode1, setMode1] = useState('');
+  const [mode2, setMode2] = useState('SLOTS');
   const [teamForm, setTeamForm] = useState([]);
   const [slotForm, setSlotForm] = useState();
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const {handleRestrictions} = useContext(LeagueContext);
+  const {handleRestrictions} = useContext(LeagueContext)
 
   const {t} = useTranslation();
-
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
   const [allSelected, setAllSelected] = useState(false)
@@ -56,6 +58,18 @@ export default function Ca1() {
     }
   };
 
+
+  const handleChangeTeam2 = (e, newTeamValue) => {
+    const arrayTeams2 = []
+    if (newTeamValue) {
+      newTeamValue.map((team) => {
+        arrayTeams2.push(team.id);
+        return arrayTeams2;
+      });
+      setTeamForm2(arrayTeams2);
+    }
+  };
+
   const handleChangeSlot = (e, newSlotValue) => {
 
     const arraySlots = [];
@@ -74,7 +88,6 @@ export default function Ca1() {
       setSlotForm(arraySlots)
     }
   };
-
   const handleChangePenalty = (event, newValue) => {
     setPenalty(newValue);
   };
@@ -82,13 +95,12 @@ export default function Ca1() {
   const handleChangeMaximum = (event) => {
     setMaximum(event.target.value);
   };
-
   const handleChangeType = (event) => {
     setType(event.target.value);
   };
 
   const handleChangeMode = (event) => {
-    setMode(event.target.value);
+    setMode1(event.target.value);
   };
 
   const handleAddConstraint = async(e) => {
@@ -96,35 +108,29 @@ export default function Ca1() {
     setIsLoading(true);
     await delay(500);
     const leagueId = currentLeague.id;
-    const {data} = await api.post('/ca1', {
+    const {data} = await api.post('/ca4', {
       max,
-      mode,
+      mode1,
+      mode2,
       type,
       leagueId,
       teamForm,
+      team2Form,
       slotForm,
       penalty
     });
-
-    await handleRestrictions(data);
-
     setMaximum(0);
-    setMode('');
+    setMode1('');
     setType('');
     setTeamForm([]);
+    setTeamForm2([]);
     setSlotForm([]);
     setPenalty(70);
 
+    await handleRestrictions(data);
+
     setIsLoading(false)
   }
-
-  const handleSelectAllClickSlots = () => {
-    const arraySlots = [];
-    slots.map((slot) =>arraySlots.push(slot.id) )
-    setSlotForm(arraySlots);
-    setAllSelected(true)
-  }
-
 
   const handleSelectAllClickTeams = () => {
     const arrayTeams = [];
@@ -134,12 +140,19 @@ export default function Ca1() {
     setAllSelected(true)
   }
 
+  const handleSelectAllClickSlots = () => {
+    const arraySlots = [];
+    slots.map((slot) =>arraySlots.push(slot.id) )
+    setSlotForm(arraySlots);
+    setAllSelected(true)
+  }
+
   return (
     <Container maxWidth='xl' sx={{borderRadius: '5px'}}>
       <Card>
       <AppBar 
-        titleAppBar={`${t('headTableCapacity')}1`}
-        titleModal={`${t('headTableCapacity')}1`}
+        titleAppBar={`${t('headTableCapacity')}4`}
+        titleModal={`${t('headTableCapacity')}4`}
         descriptionModal={t('descriptionModalRestriction')}
       />
         <Loader isLoading={isLoading}/>
@@ -149,7 +162,7 @@ export default function Ca1() {
 
               <Stack direction="column" alignContent="center">
                 <Typography variant="subtitle1" align="inherit" ml={1.5} mb={1} sx={{color:'#919EAB'}}>{t('headTableCategory')}</Typography>
-                <TextField label={`${t('headTableCapacity')}1`} disabled sx={{width:'70%'}}/>
+                <TextField label={`${t('headTableCapacity')}4`} disabled sx={{width:'70%'}}/>
               </Stack>
 
               <Stack direction="column" alignContent="center" sx={{marginTop:'20px'}}>
@@ -173,12 +186,6 @@ export default function Ca1() {
               </Stack>
 
               <Stack direction="row" alignItems="center" spacing={2} sx={{ marginTop: '20px'}}>
-                
-                <Stack direction="column" alignContent="center" >
-                  <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('labelMin')}</Typography>
-                  <TextField  type="number" disabled  />
-                </Stack>
-
                   <Stack direction="column" alignContent="center">
                     <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('labelMax')}</Typography>
                     <TextField type="number" value={max} onChange={handleChangeMaximum}/>
@@ -188,7 +195,7 @@ export default function Ca1() {
             </Grid>
             <Grid item xs={6} sx={{display:"flex", flexDirection:'column'}} >
 
-            <Stack direction="column" alignContent="center">
+              <Stack direction="column" alignContent="center">
               <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('headTableNameSlots')}</Typography>
 
                 <Stack direction="row" alignContent="center" spacing={2} sx={{ width: '85%'}}>              
@@ -203,8 +210,7 @@ export default function Ca1() {
 
                   <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickSlots}>{t('buttonAllSelect')}</Button>
                 </Stack>
-            </Stack>
-            
+            </Stack>           
             <Stack direction="column" alignContent="center" sx={{ width: '85%', marginTop: '20px'}}>
               <Typography 
                 variant="subtitle1"
@@ -226,19 +232,43 @@ export default function Ca1() {
                 <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
               </Stack>
             </Stack>
+
+
+            <Stack direction="column" alignContent="center" sx={{ width: '85%', marginTop: '20px'}}>
+              <Typography 
+                variant="subtitle1"
+                align="inherit"
+                mb ={1}
+                ml={1.5}
+                sx={{color:'#919EAB'}}
+              >
+                {`${t('headTableNameTeams')}2`}
+              </Typography>
+
+              <Stack direction="row" alignContent="center" spacing={2}>              
+                <MultipleSelectChip 
+                  dataMultSelect={teams}
+                  labelMultSelect=""
+                  placeholderMultSelect=""
+                  onHandleChange={handleChangeTeam2}
+                />
+                <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
+              </Stack>
+            </Stack>
             
-            <Stack direction="column" alignContent="center" sx={{ width: '70%', marginTop: '20px'}}>
+            <Stack direction="column" alignContent="center" sx={{ width: '85%', marginTop: '20px', marginBottom: '55px'}}>
               <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('labelGameMode')}</Typography>
                 <Select
-                  value={mode}
+                  value={mode1}
                   onChange={handleChangeMode}
                 >
                 <MenuItem value='H'>{t('valueLabelGameModeHome')}</MenuItem>
                 <MenuItem value='A'>{t('valueLabelGameModeAway')}</MenuItem>
+                <MenuItem value='HA'>{t('valueLabelGameModeHomeAway')}</MenuItem>
               </Select>
             </Stack>
 
-              <Button startIcon={<SaveAs/>} sx={{width: '15%', position:'absolute', bottom:'15px', right:'70px'}}variant="outlined" type="submit" >{t('buttonSave')}</Button>
+              <Button startIcon={<SaveAs/>} sx={{width: '15%', position:'absolute', bottom:'10px', right:'70px'}}variant="outlined" type="submit" >{t('buttonSave')}</Button>
 
             </Grid>
           </Grid>

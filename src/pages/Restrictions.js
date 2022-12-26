@@ -1,10 +1,13 @@
 import {useEffect, useState , useContext } from 'react'
-import {Button, Card, Container, TableContainer, Table, TableBody, TableRow, TableCell,Typography, Checkbox } from '@mui/material';
-import Scrollbar from '../components/Scrollbar';
-import UserListHead from '../sections/@dashboard/user/UserListHead';
+import {Avatar, Button, Card, Container, Stack} from '@mui/material';
+import {useTranslation} from 'react-i18next'
+import DataGrid from '../components/DataGrid'
 
-import {fDateTime} from '../utils/formatTime';
-import ListTeams from '../components/ListTeams'
+import api from '../services/api';
+import {loadTeams} from '../services/requests'
+
+import AppBar from '../components/AppBar'
+
 
 
 import { LeagueContext } from '../hooks/useContextLeague';
@@ -12,23 +15,26 @@ import { LeagueContext } from '../hooks/useContextLeague';
 import Modal from '../components/ModalRestrictions'
 
 export default function Restrictions() {
-    const TABLE_HEAD = [
-        { id: 'categoty', label: 'Categoria', alignRight: false },
-        { id: 'type', label: 'Tipo', alignRight: false },
-        { id: 'penality', label: 'Penalidade', alignRight: false },
-        { id: 'Aplica', label: 'Aplica a', alignRight: false },
-        { id: 'criado_em', label: 'Criado em', alignRight: false },
-        { id: '' },
-    ]
+
+    const {t} = useTranslation();
 
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isItemSelected, setIsItemSelected] = useState(false);
     const [newSelected, setNewSelected] = useState({});
-    const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext)
+    const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext);
+    const [teams, setTeams] =  useState([]);
+    const currentLeagueString = localStorage.getItem('myLeague');
+    const currentLeague = JSON.parse(currentLeagueString);
     useEffect(
         () => {
             async function loadData() {
+                const token = localStorage.getItem('token')
+                if(token) {
+                    api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+                }
                 await loadRestrictions();
+                const data = await loadTeams(currentLeague.id);
+                setTeams(data)
             }
             loadData()
         },
@@ -37,97 +43,72 @@ export default function Restrictions() {
     const handleClickButton = () => {
         setIsOpenModal(true)
     }
-    const handleClick = (event, row) => {
-        const {type_constraint:type} = row
-        const {id} = row
-        setNewSelected(
-            {
-            id,
-            type
-        })
-
-        setIsItemSelected(!isItemSelected)
+    const handleClick = (arrayRestrictions) => {
+        setNewSelected(arrayRestrictions)
     }
 
+    const handleClickTest= (event, cellValues) => {
+        console.log(cellValues.row);
+      };
+
+
+    const columns = [
+        { field: 'type_constraint', headerName: t('headTableCategory'), width: 210 },
+        { field: 'type', headerName: t('headTableType'), width: 210 },
+        { field: 'penalty', headerName: t('headTablePenalty'), width: 210 },
+        { field: t('headTableNameTeams'), renderCell: (cellValues) => {
+            console.log(cellValues.row)
+                if(cellValues.row.teams?.includes(';')) {
+                cellValues.row.teams.split(';').map((value) => {
+                    if(value) {
+                    const teamFind = teams.find((team) => parseInt(value,10) === team.id)
+                
+                    return (
+                        <>
+                            <Avatar sx={{marginRight: '2px'}}key={teamFind?.id} src={teamFind?.url} sizes="30" children={<small>{teamFind?.initials}</small>}/>
+                        </>
+                    )   
+                    } return []
+                })
+            } else {
+                const teamFind = teams.find((team) => parseInt(cellValues.row.teams,10) === team.id)
+                return (
+                    <>
+                        <Avatar sx={{marginRight: '2px'}}key={teamFind?.id} src={teamFind?.url} sizes="30" children={<small>{teamFind?.initials}</small>}/>
+                    </>
+                )   
+            }
+        }, width: 280 },
+        { field: 'criado_em', headerName: t('headTableCreated'), width: 250 }
+    ];
+
+
     const handleClickButtonDelete = async () => {
-        await deleteRestriction(newSelected);
+            await deleteRestriction(newSelected);
+    }
+
+    const handleClickSelected = () => {
+        setIsItemSelected(!isItemSelected)
     }
 
     const handleClose = () => {
         setIsOpenModal(false)
     }
     return (
-        <Container>
+        <Container maxWidth='xl'>
             <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
             <Card>
-                <Scrollbar>
-                    <TableContainer sx={{ minWidth: 800 }}>
-                        <Table>
-                            <UserListHead headLabel={TABLE_HEAD}/>
-                            <TableBody> 
-                                {restrictions.map((row) => (
-                                        <TableRow
-                                            hover
-                                            key={row.id}
-                                        >
-                                            <TableCell padding="checkbox">
-                                                <Checkbox checked={newSelected.id === row.id} onChange={(event) => handleClick(event, row)} />
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                <Typography variant="subtitle2" noWrap>
-                                                    {row.type_constraint}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                <Typography variant="subtitle2" noWrap>
-                                                    {row.type}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                <Typography variant="subtitle2" noWrap>
-                                                    {row.penalty}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell align="left">
-                                                <Typography variant="subtitle2" noWrap>
-                                                    <ListTeams constraintId={row.id} constraintType={row.type_constraint}/>
-                                                </Typography>
-                                            </TableCell>
-
-                                            <TableCell align="left">
-                                                <Typography variant="subtitle2" noWrap>
-                                                    {fDateTime(row.criado_em)}
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                }
-                            </TableBody>
-
-                            {restrictions.length === 0 && (
-                            <TableBody>
-                                <TableRow>
-                                <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                                <Typography gutterBottom align="center" variant="subtitle1">
-                                    No restrictions registered
-                                </Typography>
-                                </TableCell>
-                                </TableRow>
-                            </TableBody>
-                            )}
-                        </Table>
-                    </TableContainer>
-                </Scrollbar>
-
+                <AppBar titleAppBar={t('headTableRestriction')}/>
+                <DataGrid columnData={columns} rowsData={restrictions} onHandleCheckbox={handleClick} onHandleClickSelected={handleClickSelected} />
                 <Button 
                     disabled ={!isItemSelected}
                     variant="outlined"
                     sx={{float: 'right', margin: '10px' }}
                     onClick={handleClickButtonDelete}
                 >
-                    Deletar
+                    {t('buttonDelete')}
                 </Button>                                
-                <Button variant="outlined" sx={{float: 'right', margin: '10px' }} onClick={handleClickButton}>Adicionar</Button>
+                <Button variant="outlined" sx={{float: 'right', margin: '10px' }} onClick={handleClickButton}>{t('buttonAdd')}</Button>
             </Card>
         </Container>
     );

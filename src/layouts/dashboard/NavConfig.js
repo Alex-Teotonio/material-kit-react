@@ -1,6 +1,7 @@
 // component
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faFutbol, faBan} from '@fortawesome/free-solid-svg-icons';
+import {CalendarMonth} from '@mui/icons-material'
 import Iconify from '../../components/Iconify';
 
 // ----------------------------------------------------------------------
@@ -29,6 +30,12 @@ const navConfig = [
     title: 'Restrictions',
     path: '/dashboard/restrictions',
     icon: <FontAwesomeIcon icon={faBan} size="lg"/>
+  },
+
+  {
+    title: 'Results',
+    path: '/dashboard/result',
+    icon: <FontAwesomeIcon icon={<CalendarMonth/>} size="lg"/>
   },
 
   // {

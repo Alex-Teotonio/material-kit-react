@@ -27,6 +27,7 @@ import Scrollbar from '../components/Scrollbar';
 import { UserListHead } from '../sections/@dashboard/user';
 import USERLIST from '../_mock/user';
 import Form from '../components/FormLeague';
+import AppBar from '../components/AppBar'
 
 import api from '../services/api'
 
@@ -104,26 +105,13 @@ export default function DashboardApp() {
       <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
         <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected}/>
       </Modal>
-        <Stack direction="row"  justifyContent="space-between">
-          <Typography variant="h4" sx={{ mb: 5 }}>
-            {t('leagueDashboard')}
-          </Typography>
-
-          <Button 
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            sx={{padding:'4px', height: '40px'}}
-            onClick={handleOpen}
-          >
-            {t('newInstaceLeague')}
-          </Button>
-        </Stack>
         <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
           <Form onRequestClose={handleClose} onHandleLeague={updateLeague}/>
         </Modal>
         <Grid container spacing={3} />
 
         <Card>
+          <AppBar titleAppBar={t('leagueDashboard')}/>
         <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -203,6 +191,14 @@ export default function DashboardApp() {
           />
         </Card>
       </Container>
+      <Button 
+        variant="contained"
+        startIcon={<Iconify icon="eva:plus-fill" />}
+        sx={{marginTop:'20px', height: '30px', float: 'right', right:'230px'}}
+        onClick={handleOpen}
+      >
+        {t('newInstaceLeague')}
+      </Button>
     </Page>
   );
 }

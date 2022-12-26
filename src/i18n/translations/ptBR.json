@@ -14,6 +14,36 @@
     "headTableInitialsTeams": "Iniciais",
     "headTableVenueTeams": "Local",
     "actions": "Ações",
-    "teamDashboard": "Times"
+    "teamDashboard": "Times",
+
+
+
+    "notFoundRestriction": "Nenhum Registro cadastrado",
+    "headTableRestriction": "Restrições",
+    "headTableCategory": "Categoria",
+    "headTableType": "Tipo",
+    "headTablePenalty": "Penalidade",
+    "headTableApply": "Aplica a",
+    "headTableCreated": "Criado em",
+    "titleModalRestriction": "Selecione a categoria de restrição a adicionar:",
+    "headTableCapacity": "Capacidade",
+    "descriptionModalRestriction": "Limita o número de jogos que um time joga em casa ou fora em um conjunto de rodadas.",
+    "valueLabelTypeHard": "Forte",
+    "valueLabelTypeSoft": "Fraca", 
+    "labelMin": "Mínimo",
+    "labelMax": "Máximo",
+    "labelGameMode": "Modo de jogo",
+    "valueLabelGameModeHome": "Casa",
+    "valueLabelGameModeHomeAway": "Casa/Fora",
+    "valueLabelGameModeAway": "Fora",
+    "labelRounds": " Nº Rodadas consecutivas",
+    "buttonAllSelect": "Todos",
+    "buttonSave": "Salvar",
+    "buttonCancel": "Cancelar",
+    "buttonAdvance": "Avançar",
+    "buttonAdd": "Adicionar",
+    "buttonDelete": "Deletar",
+
+    "headTableNameSlots": "Intervalo de tempo"
   }
 }

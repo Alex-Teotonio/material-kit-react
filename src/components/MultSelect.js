@@ -9,15 +9,17 @@ export default function MultSelect({
   labelMultSelect,
   placeholderMultSelect,
   onHandleChange,
-  marginTopString
+  marginTopString,
+  valueMultSelect
 }) {
   const [value,] = useState();
+  
 
   return (
     <Stack spacing={3} sx={{ width: 500, marginTop: marginTopString}}>
       <Autocomplete
         multiple
-        value={value}
+        value={valueMultSelect}
         id="tags-outlined"
         onChange={(e, newTeamValue) => {
           onHandleChange(e, newTeamValue);
@@ -38,5 +40,6 @@ MultSelect.propTypes = {
   labelMultSelect: propTypes.string,
   placeholderMultSelect: propTypes.string,
   onHandleChange: propTypes.func,
-  marginTopString: propTypes.string
+  marginTopString: propTypes.string,
+  valueMultSelect: propTypes.array
 }

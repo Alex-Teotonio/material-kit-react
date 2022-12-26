@@ -13,7 +13,38 @@
     "headTableInitialsTeams": "Initials",
     "headTableVenueTeams": "Venue",
     "actions": "Actions",
-    "teamDashboard": "Teams"
+    "teamDashboard": "Teams",
+
+
+    "notFoundRestriction": "No restrictions registered",
+    "headTableRestriction": "Restriction",
+    "headTableCategory": "Category",
+    "headTableType": "Type",
+    "headTablePenalty": "Penalty",
+    "headTableApply": "Apllies to",
+    "headTableCreated": "Created In",
+    "titleModalRestriction": "Select the restriction category to add:",
+    "headTableCapacity": "Capacity",
+    "descriptionModalRestriction": "Limits the number of games a team plays eitherat home or away in a set of rounds.",
+    "descriptionModalRestriction2":"Generalizes CA 1 by preventing a set of teams from playing against other teams at certain rounds. These constraints are particularly useful to forbid weak teams from playing all initial games against top teams, for example.",
+    "valueLabelTypeHard": "Hard",
+    "valueLabelTypeSoft": "Soft", 
+    "labelMin": "Minimun",
+    "labelMax": "Maximum",
+    "labelGameMode": "Game Mode",
+    "valueLabelGameModeHome": "Home",
+    "valueLabelGameModeHomeAway": "Home/Away",
+    "valueLabelGameModeAway": "Away",
+    "labelRounds": "Nº Consecutives Rounds",
+    "buttonAllSelect": "All",
+    "buttonSave": "Save",
+    "buttonCancel": "Cancel",
+    "buttonAdvance": "Advance",
+    "buttonAdd": "Add",
+    "buttonDelete": "Delete",
+
+
+    "headTableNameSlots": "Slots"
 
   }
 }

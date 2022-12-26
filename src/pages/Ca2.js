@@ -1,7 +1,7 @@
 import { useEffect , useState, useContext } from 'react';
 import {Button, Container, Card, Box, Grid,MenuItem, Select,Slider,Stack, TextField,Typography, Tooltip} from '@mui/material';
-import {SaveAs} from '@mui/icons-material'
-import {useTranslation} from 'react-i18next'
+import {SaveAs, Info} from '@mui/icons-material'
+import {useTranslation} from 'react-i18next';
 import { delay } from '../utils/formatTime';
 import MultipleSelectChip from '../components/MultSelect';
 import AppBar from '../components/AppBar'
@@ -14,23 +14,25 @@ import Loader from '../components/Loader';
 
 
 
-export default function Ca1() {
+export default function Ca2() {
 
   const [teams, setTeams] = useState([]);
+  const [teamForm2, setTeamForm2] = useState([]);
   const [slots, setSlots] = useState([]);
   const [max, setMaximum] = useState(0);
+  const [min, setMinimum] = useState(0);
   const [penalty, setPenalty] = useState(70);
   const [type, setType] = useState('');
   const [mode, setMode] = useState('');
+  const [mode2, setMode2] = useState('GLOBAL');
   const [teamForm, setTeamForm] = useState([]);
   const [slotForm, setSlotForm] = useState();
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const {handleRestrictions} = useContext(LeagueContext);
+  const {handleRestrictions} = useContext(LeagueContext)
 
   const {t} = useTranslation();
-
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
   const [allSelected, setAllSelected] = useState(false)
@@ -55,6 +57,19 @@ export default function Ca1() {
       setTeamForm(arrayTeams);
     }
   };
+
+
+  const handleChangeTeam2 = (e, newTeamValue) => {
+    const arrayTeams2 = []
+    if (newTeamValue) {
+      newTeamValue.map((team) => {
+        arrayTeams2.push(team.id);
+        return arrayTeams2;
+      });
+      setTeamForm2(arrayTeams2);
+    }
+  };
+
 
   const handleChangeSlot = (e, newSlotValue) => {
 
@@ -83,6 +98,10 @@ export default function Ca1() {
     setMaximum(event.target.value);
   };
 
+  const handleChangeMinimum = (event) => {
+    setMinimum(event.target.value);
+  };
+
   const handleChangeType = (event) => {
     setType(event.target.value);
   };
@@ -96,12 +115,15 @@ export default function Ca1() {
     setIsLoading(true);
     await delay(500);
     const leagueId = currentLeague.id;
-    const {data} = await api.post('/ca1', {
+    const {data} = await api.post('/ca2', {
+      min,
       max,
       mode,
+      mode2,
       type,
       leagueId,
       teamForm,
+      teamForm2,
       slotForm,
       penalty
     });
@@ -138,8 +160,8 @@ export default function Ca1() {
     <Container maxWidth='xl' sx={{borderRadius: '5px'}}>
       <Card>
       <AppBar 
-        titleAppBar={`${t('headTableCapacity')}1`}
-        titleModal={`${t('headTableCapacity')}1`}
+        titleAppBar={`${t('headTableCapacity')}2`}
+        titleModal={`${t('headTableCapacity')}2`}
         descriptionModal={t('descriptionModalRestriction')}
       />
         <Loader isLoading={isLoading}/>
@@ -149,7 +171,7 @@ export default function Ca1() {
 
               <Stack direction="column" alignContent="center">
                 <Typography variant="subtitle1" align="inherit" ml={1.5} mb={1} sx={{color:'#919EAB'}}>{t('headTableCategory')}</Typography>
-                <TextField label={`${t('headTableCapacity')}1`} disabled sx={{width:'70%'}}/>
+                <TextField label={`${t('headTableCapacity')}2`} disabled sx={{width:'70%'}}/>
               </Stack>
 
               <Stack direction="column" alignContent="center" sx={{marginTop:'20px'}}>
@@ -176,7 +198,7 @@ export default function Ca1() {
                 
                 <Stack direction="column" alignContent="center" >
                   <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('labelMin')}</Typography>
-                  <TextField  type="number" disabled  />
+                  <TextField  type="number" value={min} onChange={handleChangeMinimum} />
                 </Stack>
 
                   <Stack direction="column" alignContent="center">
@@ -226,8 +248,31 @@ export default function Ca1() {
                 <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
               </Stack>
             </Stack>
+
+
+            <Stack direction="column" alignContent="center" sx={{ width: '85%', marginTop: '20px'}}>
+              <Typography 
+                variant="subtitle1"
+                align="inherit"
+                mb ={1}
+                ml={1.5}
+                sx={{color:'#919EAB'}}
+              >
+                {`${t('headTableNameTeams')}2`}
+              </Typography>
+
+              <Stack direction="row" alignContent="center" spacing={2}>              
+                <MultipleSelectChip 
+                  dataMultSelect={teams}
+                  labelMultSelect=""
+                  placeholderMultSelect=""
+                  onHandleChange={handleChangeTeam2}
+                />
+                <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
+              </Stack>
+            </Stack>
             
-            <Stack direction="column" alignContent="center" sx={{ width: '70%', marginTop: '20px'}}>
+            <Stack direction="column" alignContent="center" sx={{ width: '85%', marginTop: '20px', marginBottom: '55px'}}>
               <Typography variant="subtitle1" align="inherit" mb ={1} ml={1.5} sx={{color:'#919EAB'}}>{t('labelGameMode')}</Typography>
                 <Select
                   value={mode}
@@ -238,7 +283,7 @@ export default function Ca1() {
               </Select>
             </Stack>
 
-              <Button startIcon={<SaveAs/>} sx={{width: '15%', position:'absolute', bottom:'15px', right:'70px'}}variant="outlined" type="submit" >{t('buttonSave')}</Button>
+              <Button startIcon={<SaveAs/>} sx={{width: '15%', position:'absolute', bottom:'10px', right:'70px'}}variant="outlined" type="submit" >{t('buttonSave')}</Button>
 
             </Grid>
           </Grid>

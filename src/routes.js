@@ -14,6 +14,10 @@ import Teams from './pages/Teams';
 import Slots from './pages/Slots';
 import Restrictions from './pages/Restrictions';
 import Ca1 from './pages/Ca1';
+import Ca2 from './pages/Ca2';
+import Ca3 from './pages/Ca3';
+import Ca4 from './pages/Ca4';
+import ResultsLeague from './pages/ResultsLeague';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +37,10 @@ export default function Router() {
         { path: 'slots', element: <Slots/>},
         { path: 'restrictions', element: <Restrictions/>},
         { path: 'ca1', element: <Ca1/>},
-        { path: 'user', element: <User /> },
+        { path: 'ca2', element: <Ca2/>},
+        { path: 'ca3', element: <Ca3/>},
+        { path: 'ca4', element: <Ca4/>},
+        { path: 'result', element: <ResultsLeague/>},
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
       ],
