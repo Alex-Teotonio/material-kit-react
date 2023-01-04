@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 
 import propTypes from 'prop-types';
 
-export default function DataTable({columnData, rowsData, onHandleCheckbox, onHandleClickSelected}) {
+export default function DataTable({columnData, rowsData, onHandleCheckbox, onHandleClickSelected, onHandleRowClick}) {
 
   return (
     <div style={{ height: 400, width: '100%' }}>
@@ -11,9 +11,10 @@ export default function DataTable({columnData, rowsData, onHandleCheckbox, onHan
         rows={rowsData}
         columns={columnData}
         pageSize={10}
-        rowsPerPageOptions={[10]}  
+        rowsPerPageOptions={[10]}
+        autoPageSize
         disableSelectionOnClick
-        // loading={rowsData.rows.length === 0}
+        onRowClick={onHandleRowClick}
         onSelectionModelChange={(ids) => {
           onHandleCheckbox(ids)
           onHandleClickSelected()
@@ -28,5 +29,6 @@ DataTable.propTypes = {
   columnData: propTypes.object,
   rowsData: propTypes.object,
   onHandleCheckbox: propTypes.func,
-  onHandleClickSelected: propTypes.func
+  onHandleClickSelected: propTypes.func,
+  onHandleRowClick: propTypes.func
 }

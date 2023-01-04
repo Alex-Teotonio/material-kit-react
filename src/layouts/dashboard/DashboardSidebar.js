@@ -1,24 +1,92 @@
-import PropTypes from 'prop-types';
-import { useEffect, useContext } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
+import { AppBar as MuiAppBar, Box, IconButton, Drawer as MuiDrawer,Stack, Toolbar } from '@mui/material';
+import {ChevronLeft, Menu} from '@mui/icons-material';
+
 // mock
-import account from '../../_mock/account';
 // hooks
 import useResponsive from '../../hooks/useResponsive';
 // components
-import Logo from '../../components/Logo';
 import Scrollbar from '../../components/Scrollbar';
-import { LeagueContext } from '../../hooks/useContextLeague';
 import NavSection from '../../components/NavSection';
 //
 import navConfig from './NavConfig';
+import AccountPopover from './AccountPopover';
+import LanguagePopover from './LanguagePopover';
 
 // ----------------------------------------------------------------------
 
 const DRAWER_WIDTH = 280;
+
+
+const openedMixin = (theme) => ({
+  width: DRAWER_WIDTH,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: DRAWER_WIDTH,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
+
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  backgroundColor: theme.palette.primary.main,
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: DRAWER_WIDTH,
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('lg')]: {
@@ -26,35 +94,24 @@ const RootStyle = styled('div')(({ theme }) => ({
     width: DRAWER_WIDTH,
   },
 }));
-
-const AccountStyle = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2, 2.5),
-  borderRadius: Number(theme.shape.borderRadius) * 1.5,
-  backgroundColor: theme.palette.grey[500_12],
-}));
-
 // ----------------------------------------------------------------------
 
-DashboardSidebar.propTypes = {
-  isOpenSidebar: PropTypes.bool,
-  onCloseSidebar: PropTypes.func,
-};
-
-export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
+export default function DashboardSidebar() {
   const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
   const isDesktop = useResponsive('up', 'lg');
-  const {dadosUser} = useContext(LeagueContext)
 
   useEffect(() => {
-    if (isOpenSidebar) {
-      onCloseSidebar();
-    }
+  
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
-
   const renderContent = (
     <Scrollbar
       sx={{
@@ -62,61 +119,64 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         '& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        <Logo />
-      </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline="none" component={RouterLink} to="#">
-          <AccountStyle>
-            <Avatar src={account.photoURL} alt="photoURL" />
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {dadosUser.name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
-              </Typography>
-            </Box>
-          </AccountStyle>
-        </Link>
-      </Box>
-
-      <NavSection navConfig={navConfig} />
-
-      <Box sx={{ flexGrow: 1 }} />
+    <Box sx={{ flexGrow: 0.15 }} />
+      <NavSection navConfig={navConfig} open={open} />
     </Scrollbar>
   );
 
   return (
     <RootStyle>
+      <AppBar position="fixed" open={open}>
+
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: 'none' })
+            }}
+          >
+            <Menu />
+          </IconButton>
+        </Toolbar>
+        <Stack direction='row' alignItems="center" spacing={2}>
+          <LanguagePopover/>
+          <AccountPopover/>
+        </Stack>
+      </Stack>
+      </AppBar>
       {!isDesktop && (
         <Drawer
-          open={isOpenSidebar}
-          onClose={onCloseSidebar}
-          PaperProps={{
-            sx: { width: DRAWER_WIDTH },
-          }}
+          variant='permanent'
+          open={open}
         >
+          <DrawerHeader>
+            <IconButton sx={{color: '#FFF'}}onClick={handleDrawerClose}>
+              <ChevronLeft  />
+            </IconButton>
+          </DrawerHeader>
           {renderContent}
         </Drawer>
       )}
 
       {isDesktop && (
         <Drawer
-          open
-          variant="persistent"
-          PaperProps={{
-            sx: {
-              width: DRAWER_WIDTH,
-              bgcolor: 'background.default',
-              borderRightStyle: 'dashed',
-            },
-          }}
+          open={open}
+          variant="permanent"
         >
+          <DrawerHeader>
+            <IconButton sx={{color: '#FFF'}} onClick={handleDrawerClose}>
+              <ChevronLeft />
+            </IconButton>
+          </DrawerHeader>
           {renderContent}
         </Drawer>
       )}
-    </RootStyle>
+      </RootStyle>
   );
 }

@@ -17,6 +17,8 @@ import Loader from '../components/Loader';
 export default function Ca1() {
 
   const [teams, setTeams] = useState([]);
+  const [teamPublicId, setTeamPublicId] = useState([]);
+  const [slotPublicId, setSlotPublicId] = useState([]);
   const [slots, setSlots] = useState([]);
   const [max, setMaximum] = useState(0);
   const [penalty, setPenalty] = useState(70);
@@ -37,6 +39,10 @@ export default function Ca1() {
 
   useEffect(() => {
     (async () => {
+      const token = localStorage.getItem('token')
+      if(token) {
+        api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+      }
       const response = await api.get(`/team/${currentLeague.id}`);
       const responseSlots = await api.get(`/slot/${currentLeague.id}`);
       setTeams(response.data);
@@ -45,8 +51,12 @@ export default function Ca1() {
   }, []);
 
 
+  
+
+
   const handleChangeTeam = (e, newTeamValue) => {
     const arrayTeams = [];
+    const arrayPublicId = [];
     if (newTeamValue) {
       newTeamValue.map((team) => {
         arrayTeams.push(team.id);
@@ -54,24 +64,34 @@ export default function Ca1() {
       });
       setTeamForm(arrayTeams);
     }
+
+    if (newTeamValue) {
+      newTeamValue.map((team) => {
+        arrayPublicId.push(team.publicid);
+        return arrayPublicId;
+      });
+      setTeamPublicId(arrayPublicId);
+    }
   };
 
   const handleChangeSlot = (e, newSlotValue) => {
-
     const arraySlots = [];
+    const arrayPublicId = [];
     if (newSlotValue) {
       newSlotValue.map((slot) => {
         arraySlots.push(slot.id);
         return arraySlots;
       });
-      setSlotForm(arraySlots);
-    } else  {
-      slots.map((row) => {
-        arraySlots.push(row.id)
-        return arraySlots
-      })
-
       setSlotForm(arraySlots)
+    }
+
+
+    if (newSlotValue) {
+      newSlotValue.map((slot) => {
+        arrayPublicId.push(slot.publicid);
+        return arrayPublicId;
+      });
+      setSlotPublicId(arrayPublicId)
     }
   };
 
@@ -103,7 +123,9 @@ export default function Ca1() {
       leagueId,
       teamForm,
       slotForm,
-      penalty
+      penalty,
+      slotPublicId,
+      teamPublicId
     });
 
     await handleRestrictions(data);

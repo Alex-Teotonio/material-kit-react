@@ -8,6 +8,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
+import { delay } from '../../../utils/formatTime';
+import ToastMessage from '../../../components/Toast';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 
@@ -21,7 +23,10 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const {handleLogin, authenticated} = useContext(LeagueContext);
+  const [open, setOpen] = useState(false);
+  const [objectMessage, setObjectMessage] = useState('');
+  const [severity, setSeverity] = useState('');
+  const {handleLogin} = useContext(LeagueContext);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -45,42 +50,59 @@ export default function LoginForm() {
   } = methods;
 
   const onSubmit = async () => {
-    handleLogin(methods.getValues('email'),methods.getValues('password'))
-    if(!authenticated) navigate('/login')
-    navigate('/dashboard/app', { replace: true });
-  };
+
+    try{
+        await handleLogin(methods.getValues('email'),methods.getValues('password'))
+        setObjectMessage('Login Efetuado com sucesso!');
+        setSeverity('success');
+        await delay(500)
+        navigate('/dashboard/app', { replace: true });
+      } catch(error) {
+        setObjectMessage('Ocorreu um erro !')
+        setSeverity('error');
+        delay(500)
+        navigate('/login')
+    }
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
-        <RHFTextField name="email" label="Email address" />
+    <>
+    <ToastMessage open={open} onHandleClose = {handleClose} message={objectMessage} severity={severity}/>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Stack spacing={3}>
+          <RHFTextField name="email" label="Email address" />
 
-        <RHFTextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Stack>
+          <RHFTextField
+            name="password"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <RHFCheckbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
-      </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+          <RHFCheckbox name="remember" label="Remember me" />
+          <Link variant="subtitle2" underline="hover">
+            Forgot password?
+          </Link>
+        </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-        Login
-      </LoadingButton>
-    </FormProvider>
+        <LoadingButton fullWidth size="large" type='submit' variant="contained" onClick={() => setOpen(true)} loading={isSubmitting}>
+          Login
+        </LoadingButton>
+      </FormProvider>
+      </>
   );
 }

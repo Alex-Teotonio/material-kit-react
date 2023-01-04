@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import propTypes from 'prop-types'
 import Loader from '../components/Loader';
 import api from '../services/api';
-import { auth} from '../services/requests'
+import { auth} from '../services/requests';
 
 
 import i18n from '../i18n/index';
@@ -41,7 +41,7 @@ export function LeagueProvider({ children }) {
       const arrayData = [];
       const response = await api.get(`/ca1/${currentLeagueStorage.id}`);
       response.data.map((data) => arrayData.push(data));
-  
+
       const response2 = await api.get(`/ca2/${currentLeagueStorage.id}`);
       response2.data.map((data) => arrayData.push(data));
   
@@ -82,14 +82,18 @@ export function LeagueProvider({ children }) {
     }
   
     async function handleLogin(email, password) {
-      setIsloadingContext(true)
-      const {data} = await auth(email, password)
-      localStorage.setItem('token', JSON.stringify(data.token));
-      setDadosUser({email: data.email, name: data.name})
+      // setIsloadingContext(true);
+      try {
+        const {data} = await auth(email, password)
+        localStorage.setItem('token', JSON.stringify(data.token));
+        setDadosUser({email: data.email, name: data.name})
 
-      api.defaults.headers.authorization = `Bearer ${data.token}`;
-      setAuthenticated(true)
-      setIsloadingContext(false)
+        api.defaults.headers.authorization = `Bearer ${data.token}`;
+        setAuthenticated(true);
+      } catch(error) {
+        throw new Error(error)
+      }
+        // setIsloadingContext(false);
     }
 
     async function saveCurrentLeague(league =29) {

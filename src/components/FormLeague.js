@@ -4,7 +4,7 @@ import propTypes from 'prop-types'
 import api from '../services/api'
 
 
-export default function Form({onRequestClose, onHandleLeague, data = ''}) {
+export default function Form({onRequestClose, onHandleLeague, data = '', onError= null}) {
 
         const [name, setName] = useState(data.name? data.name: '');
     const [short, setShort] = useState(data.short? data.short: '');
@@ -34,20 +34,28 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
         event.preventDefault();
 
         if(!data) {
-            const league = await createLeague({name, short, numberTeams, round, mirred})
-            setName('');
-            setShort('');
-            setRound(10);
-            setNumberTeams(0)
-            setMirred(10);
-            onHandleLeague(league)
-            onRequestClose();
+            try{
+                const league = await createLeague({name, short, numberTeams, round, mirred})
+                setName('');
+                setShort('');
+                setRound(10);
+                setNumberTeams(0)
+                setMirred(10);
+                onHandleLeague(league)
+                onRequestClose();
+            } catch(error) {
+                onError();
+            }
         } else {
-            const currentLeagueString = localStorage.getItem('myLeague');
-            const currentLeague = JSON.parse(currentLeagueString);
-            const league = await changeLeagues(currentLeague.id, { name, short, numberTeams, round, mirred });
-            onHandleLeague(league)
-            onRequestClose();
+            try{
+                const currentLeagueString = localStorage.getItem('myLeague');
+                const currentLeague = JSON.parse(currentLeagueString);
+                const league = await changeLeagues(currentLeague.id, { name, short, numberTeams, round, mirred });
+                onHandleLeague(league)
+                onRequestClose();
+            } catch(error) {
+                onError();
+            }
         }
 
     }
@@ -96,5 +104,6 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
 Form.propTypes = {
     onHandleLeague: propTypes.func,
     onRequestClose: propTypes.func,
-    data: propTypes.object
+    data: propTypes.object,
+    onError: propTypes.func
 }

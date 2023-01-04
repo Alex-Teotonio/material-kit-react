@@ -28,6 +28,11 @@ export async function createUser(firstName, lastName, password, email) {
 
 
 export async function auth(email, password) {
-    const newUser = await api.post('/auth', {email, password})
-    return newUser;
+    try{
+        const response = await api.post('/auth', {email, password});
+        return response;
+    } catch(error) {
+        throw new Error(error)
+    }
+    
 }

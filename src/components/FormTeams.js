@@ -1,13 +1,11 @@
 import {useState} from 'react';
 import propTypes from 'prop-types'
-import { Box, Card, Container, Button, TextField} from '@mui/material';
+import { Box, Card, Container, Button, TextField, Stack } from '@mui/material';
 
 import api from '../services/api';
+import AvatarUpload from './AvatarUpload';
 
 export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
-
-  console.log(data.url)
-
     const [name, setName] = useState(data.name);
     const [initials, setInitials] = useState(data.initials);
     const [venue, setVenue] = useState(data.venue);
@@ -31,11 +29,15 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
       onRequestCloseModal();
     }
 
+
     return (
       <Container sx={{display: 'flex'}} >
         <Card sx = {{padding: '25px 25px', width:"1024px"}}>
           <Box sx={{display: 'flex', flexDirection: 'column'}} component="form" onSubmit={handleChangeTeam} >
-              <TextField label="Name" value={name}  sx={{marginTop: '10px'}} onChange={(e)=> setName(e.target.value)}/>
+              <Stack direction="column">
+                <AvatarUpload/>
+                <TextField label="Name" value={name}  sx={{marginTop: '10px'}} onChange={(e)=> setName(e.target.value)}/>
+              </Stack>
               <TextField label="Initials" value={initials}  sx={{marginTop: '10px'}} onChange={(e)=> setInitials(e.target.value)}/>
               <TextField label="Venue" value={venue}  sx={{marginTop: '10px'}} onChange={(e)=> setVenue(e.target.value)}/>
               <Button variant="contained" component="label" sx={{marginTop: '10px'}}>Upload File

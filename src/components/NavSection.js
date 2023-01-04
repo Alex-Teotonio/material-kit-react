@@ -32,9 +32,10 @@ const ListItemIconStyle = styled(ListItemIcon)({
 NavItem.propTypes = {
   item: PropTypes.object,
   active: PropTypes.func,
+  openText: PropTypes.bool
 };
 
-function NavItem({ item, active }) {
+function NavItem({ item, active, openText }) {
   const theme = useTheme();
 
   const isActiveRoot = active(item.path);
@@ -128,7 +129,7 @@ function NavItem({ item, active }) {
       }}
     >
       <ListItemIconStyle>{icon && icon}</ListItemIconStyle>
-      <ListItemText disableTypography primary={title} />
+      <ListItemText disableTypography primary={title} sx={{ opacity: openText ? 1 : 0 }}  />
       {info && info}
     </ListItemStyle>
   );
@@ -136,9 +137,10 @@ function NavItem({ item, active }) {
 
 NavSection.propTypes = {
   navConfig: PropTypes.array,
+  open: PropTypes.bool
 };
 
-export default function NavSection({ navConfig, ...other }) {
+export default function NavSection({ navConfig,open, ...other }) {
   const { pathname } = useLocation();
 
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
@@ -147,7 +149,7 @@ export default function NavSection({ navConfig, ...other }) {
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
         {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
+          <NavItem key={item.title} item={item} openText={open} active={match} />
         ))}
       </List>
     </Box>

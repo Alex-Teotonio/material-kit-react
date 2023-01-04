@@ -1,57 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect, useContext } from 'react';
 import {
   Button,
   Grid,
   Card,
   IconButton,
-  Table,
   Stack,
-  Checkbox,
-  TableRow,
-  TableBody,
-  TableCell,
   Container,
-  Typography,
-  TableContainer,
-  TablePagination,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+ CssBaseline } from '@mui/material';
+
+import { DeleteOutlineOutlined, EditOutlined, AddOutlined } from '@mui/icons-material';
+import {LeagueContext} from '../hooks/useContextLeague';
+
+import DataGrid from '../components/DataGrid'
 // @mui
 // components
-import { DeleteOutlineOutlined, EditOutlined } from '@mui/icons-material';
 import Page from '../components/Page';
-import SearchNotFound from '../components/SearchNotFound';
-import Iconify from '../components/Iconify';
 import Modal from '../components/Modal';
-import Scrollbar from '../components/Scrollbar';
-import { UserListHead } from '../sections/@dashboard/user';
-import USERLIST from '../_mock/user';
 import Form from '../components/FormLeague';
-import AppBar from '../components/AppBar'
+import AppBar from '../components/AppBar';
+import Dialog from '../components/Dialog';
+import Toast from '../components/Toast';
 
-import api from '../services/api'
-
-// sections
-// ----------------------------------------------------------------------
-import useTable from '../hooks/useTable';
+import api from '../services/api';
 
 export default function DashboardApp() {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenChangeModal, setIsOpenChangeModal] = useState(false);
   const [dataSelected, setDataSelected] = useState({})
-  const [leagues, setLeagues] = useState([])
-  const { emptyRows, filterName, order, orderBy,isNotFound,  selected, handleClick, handleChangePage, handleChangeRowsPerPage, rowsPerPage, page} = useTable();
+  const [leagues, setLeagues] = useState([]);
+  const [leaguesSelected, setLeaguesSelected] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+
+
+  const [openToast, setOpenToast] = useState(false);
+  const [objectMessage, setObjectMessage] = useState({
+    message: '',
+    severity: ''
+  });
   const {t} = useTranslation();
+  const {saveCurrentLeague} = useContext(LeagueContext)
 
-  const TABLE_HEAD = [
-    { id: 'name', label: t('headTableName'), alignRight: false },
-    { id: 'short', label: t('headTableShort'), alignRight: false },
-    { id: 'teams', label: t('headTableNumberTeams'), alignRight: false },
-    { id: 'actions', label: t('actions'), alignRight: false },
-    { id: '' },
-  ];
-
-
+  const columns = [
+    { field: 'name', headerName: t('headTableName'), width: 300, headerAlign: 'center', align: 'center' },
+    { field: 'short', headerName: t('headTableShort'), width: 230, headerAlign: 'center', align: 'center' },
+    { field: 'number_teams', headerName: t('headTableNumberTeams'), width: 230, headerAlign: 'center', align: 'center' },
+    { field: 'Actions', 
+    renderCell: (cellValues) => (
+      <Stack direction="row" alignItems="center" spacing={2}>
+        <IconButton size='small' color="primary" onClick={() => handleChangeLeague(cellValues.row)}>
+          <EditOutlined/>
+        </IconButton>
+      </Stack>
+    ),
+    width: 280,
+    headerAlign: 'center',
+    align: 'center' 
+    },
+  ]
   useEffect(() => {
     async function loadInstances() {
       const token = localStorage.getItem('token')
@@ -71,6 +77,7 @@ export default function DashboardApp() {
   }
 
   const updateLeague = async (newLeague) => {
+    handleSucces('Instância adicionada com sucesso!')
     if(newLeague) setLeagues([...leagues, newLeague]);
   }
 
@@ -86,119 +93,120 @@ export default function DashboardApp() {
         league.roud_robin = newLeague.roud_robin
         league.mirred = newLeague.mirred
         league.number_teams = newLeague.number_teams
+        league.short = newLeague.short
       }
       return league
     })
+    handleSucces('Instância atualizada com sucesso!')
     setLeagues(leagues)
   }
 
-  const handleDeleteLeague = async (idLeague) => {
-    await api.delete(`/league/${idLeague}`);
-    const leaguesFilter = leagues.filter((league) => league.id !== idLeague);
-    setLeagues(leaguesFilter);
+  const handleClickCheckbox = (arrayLeaguesSelected) => {
+    setLeaguesSelected(arrayLeaguesSelected)
+  }
+
+  const handleClickSelected = () => {}
+
+  const handleCloseToast = () => {
+    setOpenToast(false)
+  }
+
+  const handleError = ()  => {
+    setObjectMessage({
+      message: 'Não foi possível realizar a operação!',
+      severity: 'error'
+    })
+    setOpenToast(true);
+  }
+
+  const handleSucces = (text)  => {
+    setObjectMessage({
+      message: text,
+      severity: 'success'
+    })
+    setOpenToast(true);
+  }
+  
+  const handleDeleteLeague = async () => {
+    try {
+      leaguesSelected.map(async (idLeague) => {
+        await api.delete(`/league/${idLeague}`);
+      })
+      const leaguesFilter = leagues.filter(object => !leaguesSelected.some(toDelete => toDelete === object.id));
+      setOpenDialog(false)
+      setLeagues(leaguesFilter);
+      setObjectMessage({
+        message: 'Instância deletada com sucesso!',
+        severity: 'success'
+      })
+      setOpenToast(true);
+    } catch(error) {
+      setObjectMessage({
+        message: 'Não foi possível realizar a operação!',
+        severity: 'error'
+      })
+      setOpenToast(true);
+    }
   }
   const handleClose = () =>  {setIsOpenModal(false)}
   const handleCloseChangeModal = () =>  {setIsOpenChangeModal(false)}
+  const handleRowClick = (params) => {
+    saveCurrentLeague(params.row)
+  }
   return (
     <Page title="Dashboard">
-      <Container>
-      <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
-        <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected}/>
-      </Modal>
+      <CssBaseline />
+      <Container >
+        <Dialog 
+          open={openDialog}
+          title="Alerta"
+          contentMessage=' A instância será excluída permanentemente.Deseja continuar?'
+          onClickAgree={handleDeleteLeague}
+          onClickDisagree={() => setOpenDialog(false)}
+        />
+        <Toast 
+          open={openToast}
+          onHandleClose={handleCloseToast}
+          message={objectMessage.message}
+          severity={objectMessage.severity}
+        />
+        <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
+          <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected} onError={handleError}/>
+        </Modal>
         <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
-          <Form onRequestClose={handleClose} onHandleLeague={updateLeague}/>
+          <Form onRequestClose={handleClose} onHandleLeague={updateLeague} onError={handleError}/>
         </Modal>
         <Grid container spacing={3} />
-
         <Card>
           <AppBar titleAppBar={t('leagueDashboard')}/>
-        <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                />
-                <TableBody>
-                  {leagues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, short, number_teams } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
-
-                    return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, row)} />
-                        </TableCell>
-                        <TableCell align="left">
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                        </TableCell>
-                        <TableCell align="left">{short}</TableCell>
-                        <TableCell align="left">{number_teams}</TableCell>
-
-                        <TableCell align="center"> 
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <IconButton size='small' color="primary" onClick={() => handleDeleteLeague(row.id)}>
-                              <DeleteOutlineOutlined/>
-                            </IconButton>
-
-                            <IconButton size='small' color="primary" onClick={() => handleChangeLeague(row)}>
-                              <EditOutlined/>
-                            </IconButton>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {leagues.length === 0  && isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+          <DataGrid 
+            columnData={columns}
+            rowsData={leagues}
+            onHandleCheckbox={handleClickCheckbox}
+            onHandleClickSelected={handleClickSelected}
+            onHandleRowClick={handleRowClick}
           />
         </Card>
-      </Container>
       <Button 
         variant="contained"
-        startIcon={<Iconify icon="eva:plus-fill" />}
-        sx={{marginTop:'20px', height: '30px', float: 'right', right:'230px'}}
+        startIcon={<AddOutlined/>}
+        sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
         onClick={handleOpen}
       >
-        {t('newInstaceLeague')}
+        {t('buttonAdd')}
       </Button>
+
+      <Button 
+        variant="contained"
+        startIcon={<DeleteOutlineOutlined />}
+        sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
+        color="error"
+        onClick={() => setOpenDialog(true)}
+        disabled={leaguesSelected.length === 0}
+      >
+        {t('buttonDelete')}
+      </Button>
+      </Container>
     </Page>
   );
 }

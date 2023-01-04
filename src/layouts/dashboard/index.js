@@ -35,10 +35,18 @@ const MainStyle = styled('div')(({ theme }) => ({
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
+  const handleCloseSidebar = () => {
+    setOpen(false)
+  }
+
+  const handleOpenSidebar = () => {
+    setOpen(true)
+  }
+
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
-      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+      {/* <DashboardNavbar onOpenSidebar={handleOpenSidebar} /> */}
+      <DashboardSidebar />
       <MainStyle>
         <Outlet />
       </MainStyle>

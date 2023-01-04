@@ -6,7 +6,9 @@ import DataGrid from '../components/DataGrid'
 import api from '../services/api';
 import {loadTeams} from '../services/requests'
 
-import AppBar from '../components/AppBar'
+import AppBar from '../components/AppBar';
+
+import setRandomColor from '../components/color-utils/ColorsAleatory'
 
 
 
@@ -47,37 +49,43 @@ export default function Restrictions() {
         setNewSelected(arrayRestrictions)
     }
 
-    const handleClickTest= (event, cellValues) => {
-        console.log(cellValues.row);
-      };
-
 
     const columns = [
         { field: 'type_constraint', headerName: t('headTableCategory'), width: 210 },
         { field: 'type', headerName: t('headTableType'), width: 210 },
         { field: 'penalty', headerName: t('headTablePenalty'), width: 210 },
         { field: t('headTableNameTeams'), renderCell: (cellValues) => {
-            console.log(cellValues.row)
-                if(cellValues.row.teams?.includes(';')) {
-                cellValues.row.teams.split(';').map((value) => {
-                    if(value) {
-                    const teamFind = teams.find((team) => parseInt(value,10) === team.id)
-                
+                if(teams.length !== 0 && cellValues.row.teams.includes(';')) {
+                    const renderContent = cellValues.row.teams.split(';').map((value) => {
+                            const teamFind = teams.find((team) => parseInt(value,10) === team.id)
+                            return (
+                                <>
+                                    <Avatar 
+                                        sx={{marginRight: '2px' ,backgroundColor: setRandomColor()}}
+                                        key={teamFind?.id}
+                                        src={teamFind?.url}
+                                        sizes="30"
+                                        children={<small>{teamFind?.initials}</small>}
+                                    />
+                                </>
+                            )
+                    })
+
+                    return renderContent
+                } 
+                    const teamFind = teams.find((team) => parseInt(cellValues.row.teams,10) === team.id)
                     return (
                         <>
-                            <Avatar sx={{marginRight: '2px'}}key={teamFind?.id} src={teamFind?.url} sizes="30" children={<small>{teamFind?.initials}</small>}/>
+                            <Avatar 
+                                sx={{marginRight: '2px' ,backgroundColor: setRandomColor()}}
+                                key={teamFind?.id}
+                                src={teamFind?.url}
+                                sizes="30"
+                                children={<small>{teamFind?.initials}</small>}
+                            />
                         </>
                     )   
-                    } return []
-                })
-            } else {
-                const teamFind = teams.find((team) => parseInt(cellValues.row.teams,10) === team.id)
-                return (
-                    <>
-                        <Avatar sx={{marginRight: '2px'}}key={teamFind?.id} src={teamFind?.url} sizes="30" children={<small>{teamFind?.initials}</small>}/>
-                    </>
-                )   
-            }
+                
         }, width: 280 },
         { field: 'criado_em', headerName: t('headTableCreated'), width: 250 }
     ];
