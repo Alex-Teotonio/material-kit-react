@@ -10,7 +10,10 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
     const [initials, setInitials] = useState(data.initials);
     const [venue, setVenue] = useState(data.venue);
     const [file, setFile] = useState(data.url);
-    const [image, setImage] = useState(data.url)
+    const [image, setImage] = useState(data.url);
+
+
+    console.log(data, image)
 
     const handleChangeTeam = async (e) => {
       e.preventDefault();
@@ -18,12 +21,15 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
       const {leagueId} = data;
       const {id} = data;
 
+      console.log(image !== data.url)
+
+
       const formData = new FormData()
       formData.append("name",name);
       formData.append("leagueId",leagueId);
       formData.append("venue",venue);
       formData.append("initials",initials);
-      formData.append("file", image)
+      if(image !== data.url) formData.append("file", image)
       
       await api.put(`/team/${id}`, formData);
       onHandleTeams();
@@ -45,18 +51,11 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
         <Card sx = {{padding: '25px 25px', width:"1024px"}}>
           <Box sx={{display: 'flex', flexDirection: 'column'}} component="form" onSubmit={handleChangeTeam} >
               <Stack direction="column">
-                <AvatarUpload changeImage={(e) => handleOnChange(e)}/>
+                <AvatarUpload changeImage={(e) => handleOnChange(e)} url={data.url}/>
                 <TextField label="Name" value={name}  sx={{marginTop: '10px'}} onChange={(e)=> setName(e.target.value)}/>
               </Stack>
               <TextField label="Initials" value={initials}  sx={{marginTop: '10px'}} onChange={(e)=> setInitials(e.target.value)}/>
               <TextField label="Venue" value={venue}  sx={{marginTop: '10px'}} onChange={(e)=> setVenue(e.target.value)}/>
-              <Button variant="contained" component="label" sx={{marginTop: '10px'}}>Upload File
-                <input
-                  type="file"
-                  accept='image/*'
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-              </Button>
               <Button type="submit" sx={{marginTop: '10px'}}>Update</Button>
           </Box>
         </Card>

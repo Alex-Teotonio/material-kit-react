@@ -27,7 +27,7 @@ const BigAvatar = styled(Avatar)`
      box-shadow: 0 0 1px 0 ${grey[500]} inset, 0 0 1px 0 ${grey[500]};`}
 `;
 
-const AvatarUpload = ({changeImage}) => {
+const AvatarUpload = ({changeImage, url}) => {
   const [image, _setImage] = useState(null);
   const inputFileRef = createRef(null);
 
@@ -68,7 +68,7 @@ const AvatarUpload = ({changeImage}) => {
       <BigAvatar
         $withBorder
         alt="Avatar"
-        src={image || "/static/img/avatars/default-profile.svg"}
+        src={image || url}
         imgProps={{
           style: {
             maxHeight: "50%",
@@ -101,6 +101,7 @@ const AvatarUpload = ({changeImage}) => {
   );
 };
 AvatarUpload.propTypes = {
-  changeImage: propTypes.func
+  changeImage: propTypes.func,
+  url: propTypes.string
 }
 export default AvatarUpload;
