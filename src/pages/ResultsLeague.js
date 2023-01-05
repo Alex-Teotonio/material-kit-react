@@ -75,9 +75,11 @@ export default function Result() {
 
   const handleResult = async () => {
     setIsLoading(true)
-      const solutions = await api.get(`/archive/${currentLeague.id}`);
+      const solutions = await get(`/archive/${currentLeague.id}`);
       const dataTeams = await get(`/team/${currentLeague.id}`);
       setTeams(dataTeams);
+      const dataSlots = await get(`/slot/${currentLeague.id}`);
+      setSlots(dataSlots)
 
       const newSolution = solutions.map((s) => {
         const row = s.$;
