@@ -10,6 +10,7 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
     const [initials, setInitials] = useState(data.initials);
     const [venue, setVenue] = useState(data.venue);
     const [file, setFile] = useState(data.url);
+    const [image, setImage] = useState(data.url)
 
     const handleChangeTeam = async (e) => {
       e.preventDefault();
@@ -22,12 +23,21 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
       formData.append("leagueId",leagueId);
       formData.append("venue",venue);
       formData.append("initials",initials);
-      formData.append("file", file)
+      formData.append("file", image)
       
       await api.put(`/team/${id}`, formData);
       onHandleTeams();
       onRequestCloseModal();
     }
+
+    const handleOnChange = (event) => {
+
+      const newImage = event.target?.files?.[0];
+  
+      if (newImage) {
+        setImage(newImage);
+      }
+    };
 
 
     return (
@@ -35,7 +45,7 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
         <Card sx = {{padding: '25px 25px', width:"1024px"}}>
           <Box sx={{display: 'flex', flexDirection: 'column'}} component="form" onSubmit={handleChangeTeam} >
               <Stack direction="column">
-                <AvatarUpload/>
+                <AvatarUpload changeImage={(e) => handleOnChange(e)}/>
                 <TextField label="Name" value={name}  sx={{marginTop: '10px'}} onChange={(e)=> setName(e.target.value)}/>
               </Stack>
               <TextField label="Initials" value={initials}  sx={{marginTop: '10px'}} onChange={(e)=> setInitials(e.target.value)}/>

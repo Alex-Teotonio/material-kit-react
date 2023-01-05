@@ -1,4 +1,5 @@
 import { Avatar, Button as MuiButton, Typography } from "@mui/material";
+import propTypes from 'prop-types'
 import { grey } from "@mui/material/colors";
 import {
   CloudUpload as MuiCloudUpload,
@@ -26,7 +27,7 @@ const BigAvatar = styled(Avatar)`
      box-shadow: 0 0 1px 0 ${grey[500]} inset, 0 0 1px 0 ${grey[500]};`}
 `;
 
-const AvatarUpload = () => {
+const AvatarUpload = ({changeImage}) => {
   const [image, _setImage] = useState(null);
   const inputFileRef = createRef(null);
 
@@ -48,6 +49,7 @@ const AvatarUpload = () => {
     if (newImage) {
       setImage(URL.createObjectURL(newImage));
     }
+    changeImage(event);
   };
 
   /**
@@ -98,5 +100,7 @@ const AvatarUpload = () => {
     </CenteredContent>
   );
 };
-
+AvatarUpload.propTypes = {
+  changeImage: propTypes.func
+}
 export default AvatarUpload;
