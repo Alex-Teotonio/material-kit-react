@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import {useTranslation} from 'react-i18next'
-import {Avatar,Button, Stack, Typography } from '@mui/material';
+import {Avatar,Button,Card,Divider, Stack, Typography } from '@mui/material';
 import LinearProgress  from '../components/LinearProgress';
 import Iconify from '../components/Iconify';
+import AppBar from '../components/AppBar';
 
-import {createEventId} from '../utils/event-utils'
 
 import api from '../services/api';
 import {get} from '../services/requests';
@@ -49,7 +49,7 @@ export default function Result() {
             </>
         )
       
-    }, width: 280 },
+    }, width: 380, headerAlign: 'center', align: 'center' },
     { field: 'Away', renderCell: (cellValues) => {
       const teamFind = teams.find((team) => parseInt(cellValues.row.away,10) === team.publicid)
         return (
@@ -58,8 +58,8 @@ export default function Result() {
             </>
         )
       
-    }, width: 280 },
-    { field: 'slot', renderCell: (cellValues) => {
+    },headerAlign: 'center', align: 'center', width: 380 },
+    { field: 'Slot', renderCell: (cellValues) => {
       const slotFind = slots.find((slot) => parseInt(cellValues.row.slot,10) === slot.publicid)
         return (
             <>
@@ -67,9 +67,8 @@ export default function Result() {
             </>
         )
       
-    }, width: 280 },
+    }, width: 280,headerAlign: 'center', align: 'center' },
   ]
-
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
@@ -89,7 +88,7 @@ export default function Result() {
   }
   return (
     <>
-    <Stack direction="row" alignContent="center" alignItems="center" spacing={2}>
+    <Stack direction="row" alignContent="center" alignItems="center" spacing={2} mb={4}>
       <LinearProgress isLoading={isLoading}/>
       <Button
         variant="contained"
@@ -108,9 +107,10 @@ export default function Result() {
           message={objectMessage.message}
           severity={objectMessage.severity}
         /> */}
-
-    <DataGrid columnData={columns} rowsData={file} />
-
+    <Card>
+      <AppBar titleAppBar="Calendar"/>
+      <DataGrid columnData={columns} rowsData={file} />
+    </Card>
     <div />
     </>
   )
