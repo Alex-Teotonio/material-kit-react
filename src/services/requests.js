@@ -1,8 +1,25 @@
 import api from "./api";
 
+const token = localStorage.getItem('token')
+if(token) {
+api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+}
+
 export async function loadSlots(id = 39) {
     const response = await api.get(`/slot/${id}`);
     return response.data;
+}
+
+export async function get(path) {
+    const response = await api.get(path);
+    if(response.status === 200) return response.data
+    throw new Error(`${response.status} - ${response.statusText}`)
+}
+
+
+export async function post(path, payload) {
+    const response = await api.post(path, payload);
+    return response;
 }
 
 

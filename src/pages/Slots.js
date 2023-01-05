@@ -52,8 +52,6 @@ export default function Slots() {
           fetchData();
         }
       ,[currentLeague.id]);
-
-      console.log(slots)
     return (
         <>
         <Container maxWidth='lg'>
