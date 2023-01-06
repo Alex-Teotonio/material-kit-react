@@ -10,10 +10,6 @@ import api from '../services/api';
 
 import Loader from '../components/Loader';
 
-
-
-
-
 export default function Ca1() {
 
   const [teams, setTeams] = useState([]);

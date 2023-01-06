@@ -13,8 +13,6 @@ export default function MultSelect({
   valueMultSelect
 }) {
   const [value,] = useState();
-
-  console.log(dataMultSelect, valueMultSelect)
   
   return (
     <Stack spacing={3} sx={{ width: 500, marginTop: marginTopString}}>

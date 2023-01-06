@@ -23,6 +23,9 @@ export default function ChangeCa1() {
   const [mode, setMode] = useState('');
   const [teamForm, setTeamForm] = useState([]);
   const [slotForm, setSlotForm] = useState([]);
+
+  const [teamFormIds, setTeamFormIds] = useState([]);
+  const [slotFormIds, setSlotFormIds] = useState([]);
   const {id} = useParams();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,11 +55,15 @@ export default function ChangeCa1() {
 
       const ca1Slots = await get(`/ca1_slots/${id}`);
       const newSlots = ca1Slots.map((ca1) => ca1);
+      const newSlotsIds = ca1Slots.map((ca1) => ca1.id);
+      setSlotFormIds(newSlotsIds)
       setSlotForm(newSlots);
 
       const ca1Teams = await get(`/ca1_teams/${id}`);
       const newTeams = ca1Teams.map((ca1) => ca1);
+      const newTeamsIds = ca1Teams.map((ca1) => ca1.id);
       setTeamForm(newTeams);
+      setTeamFormIds(newTeamsIds)
 
 
       const response = await api.get(`/team/${currentLeague.id}`);
@@ -75,6 +82,9 @@ export default function ChangeCa1() {
         arrayTeams.push(team);
         return arrayTeams;
       });
+
+      const newTeamsIds = arrayTeams.map((team) => team.id);
+      setTeamFormIds(newTeamsIds)
       setTeamForm(arrayTeams);
     }
 
@@ -95,6 +105,9 @@ export default function ChangeCa1() {
         arraySlots.push(slot);
         return arraySlots;
       });
+
+      const newSlotsIds = arraySlots.map((slot) => slot.id);
+      setSlotFormIds(newSlotsIds)
       setSlotForm(arraySlots)
     }
 
@@ -129,13 +142,16 @@ export default function ChangeCa1() {
     setIsLoading(true);
     await delay(500);
     const leagueId = currentLeague.id;
-    const {data} = await api.post('/ca1', {
+
+    console.log(teamFormIds)
+
+    const {data} = await api.put(`/ca1/${id}`, {
       max,
       mode,
       type,
       leagueId,
-      teamForm,
-      slotForm,
+      teamFormIds,
+      slotFormIds,
       penalty,
       slotPublicId,
       teamPublicId
