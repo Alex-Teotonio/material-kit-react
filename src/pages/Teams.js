@@ -10,6 +10,7 @@ import Modal from '../components/Modal';
 import FormTeams from "../components/FormTeams";
 import { delay } from '../utils/formatTime'
 import api from '../services/api';
+import {colors} from '../components/color-utils/Colors';
 import setRandomColor from '../components/color-utils/ColorsAleatory'
 
 // import EditTable from '../components/Table';
@@ -21,6 +22,20 @@ export default function Teams() {
   const {t} = useTranslation();
   const [isOpenModal, setIsOpenModal] = useState();
   const [teamSelected, setTeamSelected] = useState({});
+  const [color, setColors] = useState();
+
+
+  useEffect(() => {
+    function getColors() {
+
+      colors.map((c) => {
+        console.log(c);
+        return c
+      })
+      setColors(setRandomColor())
+    }
+    getColors()
+  },[])
 
   
   const columns = [

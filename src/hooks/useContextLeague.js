@@ -39,7 +39,7 @@ export function LeagueProvider({ children }) {
 
     async function loadRestrictions() {
       const arrayData = [];
-      const response = await api.get(`/ca1/${currentLeagueStorage.id}`);
+      const response = await api.get(`/ca1_league/${currentLeagueStorage.id}`);
       response.data.map((data) => arrayData.push(data));
 
       const response2 = await api.get(`/ca2/${currentLeagueStorage.id}`);
@@ -50,8 +50,7 @@ export function LeagueProvider({ children }) {
   
       const response4 = await api.get(`/ca4/${currentLeagueStorage.id}`);
       response4.data.map((data) => arrayData.push(data));
-      
-  
+
       // const response5 = await api.get(`/br1/${currentLeague.id}`);
       // response5.data.map((data) => arrayData.push(data));
   

@@ -1,5 +1,5 @@
 
-import {colors} from './Colors'
+import {colors} from './Colors';
 
 export default function setRandomColor() { 
   const intensities = [400, 500, 600, 700, 800, 900];

@@ -1,4 +1,5 @@
 import { useEffect , useState, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import {Button, Container, Card, Box, Grid,MenuItem, Select,Slider,Stack, TextField,Typography, Tooltip} from '@mui/material';
 import {SaveAs} from '@mui/icons-material'
 import {useTranslation} from 'react-i18next'
@@ -7,14 +8,10 @@ import MultipleSelectChip from '../components/MultSelect';
 import AppBar from '../components/AppBar'
 import {LeagueContext} from '../hooks/useContextLeague';
 import api from '../services/api';
-
 import Loader from '../components/Loader';
+import {get} from '../services/requests'
 
-
-
-
-
-export default function Ca1() {
+export default function ChangeCa1() {
 
   const [teams, setTeams] = useState([]);
   const [teamPublicId, setTeamPublicId] = useState([]);
@@ -25,9 +22,11 @@ export default function Ca1() {
   const [type, setType] = useState('');
   const [mode, setMode] = useState('');
   const [teamForm, setTeamForm] = useState([]);
-  const [slotForm, setSlotForm] = useState();
+  const [slotForm, setSlotForm] = useState([]);
+  const {id} = useParams();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false)
+  
 
   const {handleRestrictions} = useContext(LeagueContext);
 
@@ -35,7 +34,8 @@ export default function Ca1() {
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
-  const [allSelected, setAllSelected] = useState(false)
+  const [allSelectedTeams, setAllSelectedTeams] = useState(false);
+  const [allSelectedSlots, setAllSelectedSlots] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -43,6 +43,22 @@ export default function Ca1() {
       if(token) {
         api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
       }
+
+      const ca1Response = await get(`/ca1/${id}`);
+      setType(ca1Response.type);
+      setMode(ca1Response.mode);
+      setMaximum(ca1Response.max);
+      setPenalty(ca1Response.penalty);
+
+      const ca1Slots = await get(`/ca1_slots/${id}`);
+      const newSlots = ca1Slots.map((ca1) => ca1);
+      setSlotForm(newSlots);
+
+      const ca1Teams = await get(`/ca1_teams/${id}`);
+      const newTeams = ca1Teams.map((ca1) => ca1);
+      setTeamForm(newTeams);
+
+
       const response = await api.get(`/team/${currentLeague.id}`);
       const responseSlots = await api.get(`/slot/${currentLeague.id}`);
       setTeams(response.data);
@@ -56,7 +72,7 @@ export default function Ca1() {
     const arrayPublicId = [];
     if (newTeamValue) {
       newTeamValue.map((team) => {
-        arrayTeams.push(team.id);
+        arrayTeams.push(team);
         return arrayTeams;
       });
       setTeamForm(arrayTeams);
@@ -76,7 +92,7 @@ export default function Ca1() {
     const arrayPublicId = [];
     if (newSlotValue) {
       newSlotValue.map((slot) => {
-        arraySlots.push(slot.id);
+        arraySlots.push(slot);
         return arraySlots;
       });
       setSlotForm(arraySlots)
@@ -113,8 +129,6 @@ export default function Ca1() {
     setIsLoading(true);
     await delay(500);
     const leagueId = currentLeague.id;
-
-    console.log(teamForm)
     const {data} = await api.post('/ca1', {
       max,
       mode,
@@ -140,19 +154,14 @@ export default function Ca1() {
   }
 
   const handleSelectAllClickSlots = () => {
-    const arraySlots = [];
-    slots.map((slot) =>arraySlots.push(slot.id) )
-    setSlotForm(arraySlots);
-    setAllSelected(true)
+    setSlotForm(slots);
+    setAllSelectedSlots(true)
   }
 
 
   const handleSelectAllClickTeams = () => {
-    const arrayTeams = [];
-    teams.map((team) =>arrayTeams.push(team.id) )
-    handleChangeTeam(null,arrayTeams)
-    setTeamForm(arrayTeams)
-    setAllSelected(true)
+    setTeamForm(teams)
+    setAllSelectedTeams(true)
   }
 
   return (
@@ -215,6 +224,7 @@ export default function Ca1() {
                 <Stack direction="row" alignContent="center" spacing={2} sx={{ width: '85%'}}>              
                   <MultipleSelectChip
                     dataMultSelect={slots}
+                    valueMultSelect={slotForm}
                     labelMultSelect=""
                     placeholderMultSelect=""
                     onHandleChange={handleChangeSlot}
@@ -222,7 +232,7 @@ export default function Ca1() {
 
                   />
 
-                  <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickSlots}>{t('buttonAllSelect')}</Button>
+                  <Button disabled={allSelectedSlots}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickSlots}>{t('buttonAllSelect')}</Button>
                 </Stack>
             </Stack>
             
@@ -240,11 +250,12 @@ export default function Ca1() {
               <Stack direction="row" alignContent="center" spacing={2}>              
                 <MultipleSelectChip 
                   dataMultSelect={teams}
+                  valueMultSelect={teamForm}
                   labelMultSelect=""
                   placeholderMultSelect=""
                   onHandleChange={handleChangeTeam}
                 />
-                <Button disabled={allSelected}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
+                <Button disabled={allSelectedTeams}variant='outlined' sx={{ width:'15%'}} onClick={handleSelectAllClickTeams}>{t('buttonAllSelect')}</Button>
               </Stack>
             </Stack>
             

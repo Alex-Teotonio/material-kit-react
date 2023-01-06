@@ -14,6 +14,7 @@ import Teams from './pages/Teams';
 import Slots from './pages/Slots';
 import Restrictions from './pages/Restrictions';
 import Ca1 from './pages/Ca1';
+import ChangeCa1 from './pages/ChangeCa1';
 import Ca2 from './pages/Ca2';
 import Ca3 from './pages/Ca3';
 import Ca4 from './pages/Ca4';
@@ -36,6 +37,7 @@ export default function Router() {
         { path: 'teams', element: <Teams/>},
         { path: 'slots', element: <Slots/>},
         { path: 'restrictions', element: <Restrictions/>},
+        { path: 'ca1/:id', element: <ChangeCa1/>},
         { path: 'ca1', element: <Ca1/>},
         { path: 'ca2', element: <Ca2/>},
         { path: 'ca3', element: <Ca3/>},

@@ -1,4 +1,5 @@
-import {useEffect, useState , useContext } from 'react'
+import {useEffect, useState , useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {Avatar, Button, Card, Container, Stack} from '@mui/material';
 import {useTranslation} from 'react-i18next'
 import DataGrid from '../components/DataGrid'
@@ -19,7 +20,8 @@ import Modal from '../components/ModalRestrictions'
 export default function Restrictions() {
 
     const {t} = useTranslation();
-
+    const navigate = useNavigate();
+    
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isItemSelected, setIsItemSelected] = useState(false);
     const [newSelected, setNewSelected] = useState({});
@@ -102,12 +104,23 @@ export default function Restrictions() {
     const handleClose = () => {
         setIsOpenModal(false)
     }
+
+
+    const handleRowClick = (params) => {
+        navigate(`/dashboard/${params.row.type_constraint.toLowerCase()}/${params.row.idconstraint}`)
+    }
     return (
         <Container maxWidth='xl'>
             <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
             <Card>
                 <AppBar titleAppBar={t('headTableRestriction')}/>
-                <DataGrid columnData={columns} rowsData={restrictions} onHandleCheckbox={handleClick} onHandleClickSelected={handleClickSelected} />
+                <DataGrid 
+                    columnData={columns}
+                    rowsData={restrictions}
+                    onHandleCheckbox={handleClick}
+                    onHandleClickSelected={handleClickSelected}
+                    onHandleRowClick={handleRowClick}
+                />
                 <Button 
                     disabled ={!isItemSelected}
                     variant="outlined"
