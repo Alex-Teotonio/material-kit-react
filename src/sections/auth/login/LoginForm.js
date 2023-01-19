@@ -58,6 +58,7 @@ export default function LoginForm() {
         await delay(500)
         navigate('/dashboard/app', { replace: true });
       } catch(error) {
+        console.log(error)
         setObjectMessage('Ocorreu um erro !')
         setSeverity('error');
         delay(500)

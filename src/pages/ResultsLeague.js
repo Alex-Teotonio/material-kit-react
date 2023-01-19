@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {useTranslation} from 'react-i18next'
-import {Avatar,Button,Card,Divider, Stack, Typography } from '@mui/material';
+import {Avatar,Button,Card,Divider, Stack, Typography, Table, TableBody, TableCell, TableHead, TableRow  } from '@mui/material';
 import LinearProgress  from '../components/LinearProgress';
 import Iconify from '../components/Iconify';
 import AppBar from '../components/AppBar';
@@ -38,9 +38,13 @@ export default function Result() {
         setFile(newSolution)
     }
     getSolution();
-  },[]);
+  },[]); 
 
   const columns = [
+    slots.map((s) => ({
+      field: s.name,
+      headerderName: s.name
+    })),
     { field: 'Home', renderCell: (cellValues) => {
       const teamFind = teams.find((team) => parseInt(cellValues.row.home,10) === team.publicid)
         return (
@@ -70,8 +74,12 @@ export default function Result() {
     }, width: 280,headerAlign: 'center', align: 'center' },
   ]
 
+  console.log(columns)
+
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
+  const arrayWrite = [];
+  const render  = null;
 
   const handleResult = async () => {
     setIsLoading(true)
@@ -90,29 +98,61 @@ export default function Result() {
   }
   return (
     <>
-    <Stack direction="row" alignContent="center" alignItems="center" spacing={2} mb={4}>
-      <LinearProgress isLoading={isLoading}/>
-      <Button
-        variant="contained"
-        startIcon={<Iconify icon="eva:plus-fill" />}
-        sx={{height: '30px',width: '20%'}}
-        onClick={handleResult}
-      >
-        Gerar
-      </Button>
-    </Stack>
-    {/* <Toast 
-          open={objectMessage.open}
-          onHandleClose={()=> setObjectMessage({
-            open: false
-          })}
-          message={objectMessage.message}
-          severity={objectMessage.severity}
-        /> */}
-    <Card>
-      <AppBar titleAppBar="Calendar"/>
-      <DataGrid columnData={columns} rowsData={file} />
-    </Card>
+      <Stack direction="row" alignContent="center" alignItems="center" spacing={2} mb={4}>
+        <LinearProgress isLoading={isLoading}/>
+        <Button
+          variant="contained"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          sx={{height: '30px',width: '20%'}}
+          onClick={handleResult}
+        >
+          Gerar
+        </Button>
+      </Stack>
+      {/* <Toast 
+            open={objectMessage.open}
+            onHandleClose={()=> setObjectMessage({
+              open: false
+            })}
+            message={objectMessage.message}
+            severity={objectMessage.severity}
+          /> */}
+      <Card>
+        <AppBar titleAppBar="Calendar"/>
+        {/* <DataGrid columnData={columns} rowsData={file} /> */}
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Time/Rodada</TableCell>
+              <Divider orientation="vertical" sx={{borderColor: 'red', borderWidth: '10px'}} flexItem />
+                {
+                  slots.map((slot) => (
+                      <TableCell key={slot.id}>{slot.name}</TableCell>
+                    ))
+                }
+            </TableRow>
+            {
+              teams.map((team) => {
+                const render =  <TableRow key={team.id}>
+                    <TableCell key={team.id}>{team.name}</TableCell>
+                    {
+                      slots.map((s) => {
+                        const tst =  file.find((f) => (+f.home) ===  (team.publicid) && (+f.slot) === (s.publicid));
+                        const gameTeam = teams.find((t) => (t.publicid) ===  +tst?.away);
+                        console.log(gameTeam)
+                        const renderCell =  <TableCell>{gameTeam?.name}</TableCell>
+                        return renderCell
+                      })
+
+                    }
+                </TableRow>
+              
+              return render
+              })
+          }
+          </TableHead>
+        </Table>
+      </Card>
     <div />
     </>
   )
