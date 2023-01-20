@@ -1,17 +1,33 @@
 import { useState, useEffect } from 'react';
+import { makeStyles } from "@material-ui/styles";
 import {useTranslation} from 'react-i18next'
 import {Avatar,Button,Card,Divider, Stack, Typography, Table, TableBody, TableCell, TableHead, TableRow  } from '@mui/material';
 import LinearProgress  from '../components/LinearProgress';
 import Iconify from '../components/Iconify';
 import AppBar from '../components/AppBar';
 
-
 import api from '../services/api';
 import {get} from '../services/requests';
 
-import DataGrid from '../components/DataGrid'
 
-import {delay} from '../utils/formatTime'
+const useStyles = makeStyles(() => ({
+  tableContainer: {
+    maxWidth: "150vh",
+    margin: "auto",
+    marginTop: "15vh",
+    height: "70vh",
+    background: "#ccffff",
+    borderWidth: 2,
+    borderColor: "black",
+    borderStyle: "solid"
+  },
+  table: {
+    height: "70vh"
+  },
+  tableCell: {
+    borderRight: "1px solid rgba(241,243,244,1)"
+  }
+}));
 
 export default function Result() {
 
@@ -19,7 +35,8 @@ export default function Result() {
   const [teams, setTeams] = useState([])
   const [slots, setSlots] = useState([])
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const classes = useStyles();
 
   const {t} = useTranslation(); 
 
@@ -38,48 +55,10 @@ export default function Result() {
         setFile(newSolution)
     }
     getSolution();
-  },[]); 
-
-  const columns = [
-    slots.map((s) => ({
-      field: s.name,
-      headerderName: s.name
-    })),
-    { field: 'Home', renderCell: (cellValues) => {
-      const teamFind = teams.find((team) => parseInt(cellValues.row.home,10) === team.publicid)
-        return (
-            <>
-                <Typography>{teamFind?.name}</Typography>
-            </>
-        )
-      
-    }, width: 380, headerAlign: 'center', align: 'center' },
-    { field: 'Away', renderCell: (cellValues) => {
-      const teamFind = teams.find((team) => parseInt(cellValues.row.away,10) === team.publicid)
-        return (
-            <>
-                <Typography>{teamFind?.name}</Typography>
-            </>
-        )
-      
-    },headerAlign: 'center', align: 'center', width: 380 },
-    { field: 'Slot', renderCell: (cellValues) => {
-      const slotFind = slots.find((slot) => parseInt(cellValues.row.slot,10) === slot.publicid)
-        return (
-            <>
-                <Typography>{slotFind?.name}</Typography>
-            </>
-        )
-      
-    }, width: 280,headerAlign: 'center', align: 'center' },
-  ]
-
-  console.log(columns)
+  },[]);
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
-  const arrayWrite = [];
-  const render  = null;
 
   const handleResult = async () => {
     setIsLoading(true)
@@ -119,28 +98,27 @@ export default function Result() {
           /> */}
       <Card>
         <AppBar titleAppBar="Calendar"/>
-        {/* <DataGrid columnData={columns} rowsData={file} /> */}
-        <Table>
+        <Table className={classes.table} aria-label="caption table">
           <TableHead>
             <TableRow>
-              <TableCell>Time/Rodada</TableCell>
-              <Divider orientation="vertical" sx={{borderColor: 'red', borderWidth: '10px'}} flexItem />
+              <TableCell className={classes.tableCell}>Time/Rodada</TableCell>
                 {
                   slots.map((slot) => (
-                      <TableCell key={slot.id}>{slot.name}</TableCell>
+                      <TableCell className={classes.tableCell} key={slot.id}>{slot.name}</TableCell>
                     ))
                 }
             </TableRow>
+
+          </TableHead>
             {
               teams.map((team) => {
                 const render =  <TableRow key={team.id}>
-                    <TableCell key={team.id}>{team.name}</TableCell>
+                    <TableCell sx={{fontWeight: 'bold'}} className={classes.tableCell} key={team.id}>{team.name}</TableCell>
                     {
                       slots.map((s) => {
                         const tst =  file.find((f) => (+f.home) ===  (team.publicid) && (+f.slot) === (s.publicid));
                         const gameTeam = teams.find((t) => (t.publicid) ===  +tst?.away);
-                        console.log(gameTeam)
-                        const renderCell =  <TableCell>{gameTeam?.name}</TableCell>
+                        const renderCell =  <TableCell className={classes.tableCell}>{gameTeam?.name}</TableCell>
                         return renderCell
                       })
 
@@ -150,7 +128,6 @@ export default function Result() {
               return render
               })
           }
-          </TableHead>
         </Table>
       </Card>
     <div />
