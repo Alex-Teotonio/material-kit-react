@@ -98,7 +98,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardSidebar() {
   const { pathname } = useLocation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -156,9 +156,9 @@ export default function DashboardSidebar() {
           open={open}
         >
           <DrawerHeader>
-            <IconButton sx={{color: '#FFF'}}onClick={handleDrawerClose}>
+            {/* <IconButton sx={{color: '#FFF'}}onClick={handleDrawerClose}>
               <ChevronLeft  />
-            </IconButton>
+            </IconButton> */}
           </DrawerHeader>
           {renderContent}
         </Drawer>
@@ -170,9 +170,9 @@ export default function DashboardSidebar() {
           variant="permanent"
         >
           <DrawerHeader>
-            <IconButton sx={{color: '#FFF'}} onClick={handleDrawerClose}>
+            {/* <IconButton sx={{color: '#FFF'}} onClick={handleDrawerClose}>
               <ChevronLeft />
-            </IconButton>
+            </IconButton> */}
           </DrawerHeader>
           {renderContent}
         </Drawer>

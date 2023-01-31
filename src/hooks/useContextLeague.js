@@ -42,7 +42,7 @@ export function LeagueProvider({ children }) {
       const response = await api.get(`/ca1_league/${currentLeagueStorage.id}`);
       response.data.map((data) => arrayData.push(data));
 
-      const response2 = await api.get(`/ca2/${currentLeagueStorage.id}`);
+      const response2 = await api.get(`/ca2_league/${currentLeagueStorage.id}`);
       response2.data.map((data) => arrayData.push(data));
   
       const response3 = await api.get(`/ca3/${currentLeagueStorage.id}`);

@@ -28,9 +28,15 @@ const navConfig = [
     icon: <BlockTwoTone/>
   },
 
+  // {
+  //   title: 'Results',
+  //   path: '/dashboard/result',
+  //   icon: <CalendarMonthTwoTone/>
+  // },
+
   {
     title: 'Results',
-    path: '/dashboard/result',
+    path: '/dashboard/listSolutions',
     icon: <CalendarMonthTwoTone/>
   },
 ];

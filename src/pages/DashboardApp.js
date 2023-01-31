@@ -187,7 +187,7 @@ export default function DashboardApp() {
             onHandleRowClick={handleRowClick}
           />
         </Card>
-      <Button 
+        <Button 
         variant="contained"
         startIcon={<AddOutlined/>}
         sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}

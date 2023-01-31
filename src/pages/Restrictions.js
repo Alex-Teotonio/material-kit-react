@@ -107,6 +107,7 @@ export default function Restrictions() {
 
 
     const handleRowClick = (params) => {
+        console.log(params.row);
         navigate(`/dashboard/${params.row.type_constraint.toLowerCase()}/${params.row.idconstraint}`)
     }
     return (

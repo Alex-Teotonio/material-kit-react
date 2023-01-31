@@ -143,8 +143,6 @@ export default function ChangeCa1() {
     await delay(500);
     const leagueId = currentLeague.id;
 
-    console.log(teamFormIds)
-
     const {data} = await api.put(`/ca1/${id}`, {
       max,
       mode,

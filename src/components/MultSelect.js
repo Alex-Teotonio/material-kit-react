@@ -10,7 +10,8 @@ export default function MultSelect({
   placeholderMultSelect,
   onHandleChange,
   marginTopString,
-  valueMultSelect
+  valueMultSelect,
+  name
 }) {
   const [value,] = useState();
   
@@ -19,9 +20,10 @@ export default function MultSelect({
       <Autocomplete
         multiple
         value={valueMultSelect}
+        name={name}
         id="tags-outlined"
         onChange={(e, newTeamValue) => {
-          onHandleChange(e, newTeamValue);
+          onHandleChange(e, newTeamValue, name);
         }}
         options={dataMultSelect}
         getOptionLabel={(option) => option.name}
@@ -40,5 +42,6 @@ MultSelect.propTypes = {
   placeholderMultSelect: propTypes.string,
   onHandleChange: propTypes.func,
   marginTopString: propTypes.string,
+  name: propTypes.string,
   valueMultSelect: propTypes.array
 }

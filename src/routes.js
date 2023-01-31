@@ -15,12 +15,14 @@ import Slots from './pages/Slots';
 import Restrictions from './pages/Restrictions';
 import Ca1 from './pages/Ca1';
 import ChangeCa1 from './pages/ChangeCa1';
+import ChangeCa2 from './pages/ChangeCa2';
 import Ca2 from './pages/Ca2';
 import Ca3 from './pages/Ca3';
 import Ca4 from './pages/Ca4';
 import ResultsLeague from './pages/ResultsLeague';
+import DashboardSolutions from './pages/DashboardSolution';
 
-// ----------------------------------------------------------------------
+// ---------------------------------s-------------------------------------
 
 export default function Router() {
   return useRoutes([
@@ -38,11 +40,13 @@ export default function Router() {
         { path: 'slots', element: <Slots/>},
         { path: 'restrictions', element: <Restrictions/>},
         { path: 'ca1/:id', element: <ChangeCa1/>},
+        { path: 'ca2/:id', element: <ChangeCa2/>},
         { path: 'ca1', element: <Ca1/>},
         { path: 'ca2', element: <Ca2/>},
         { path: 'ca3', element: <Ca3/>},
         { path: 'ca4', element: <Ca4/>},
         { path: 'result', element: <ResultsLeague/>},
+        { path: 'listSolutions', element: <DashboardSolutions/>},
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
       ],
