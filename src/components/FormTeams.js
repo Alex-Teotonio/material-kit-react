@@ -3,6 +3,7 @@ import propTypes from 'prop-types'
 import { Box, Card, Container, Button, TextField, Stack } from '@mui/material';
 
 import api from '../services/api';
+import {put} from '../services/requests'
 import AvatarUpload from './AvatarUpload';
 
 export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
@@ -12,16 +13,11 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
     const [file, setFile] = useState(data.url);
     const [image, setImage] = useState(data.url);
 
-
-    console.log(data, image)
-
     const handleChangeTeam = async (e) => {
       e.preventDefault();
 
       const {leagueId} = data;
       const {id} = data;
-
-      console.log(image !== data.url)
 
 
       const formData = new FormData()
@@ -29,9 +25,9 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
       formData.append("leagueId",leagueId);
       formData.append("venue",venue);
       formData.append("initials",initials);
-      if(image !== data.url) formData.append("file", image)
+      if(image !== data.url) formData.append("file", image);
       
-      await api.put(`/team/${id}`, formData);
+      await put(`/team/${id}`, formData);
       onHandleTeams();
       onRequestCloseModal();
     }
