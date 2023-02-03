@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/styles";
 import {useTranslation} from 'react-i18next'
-import {Avatar,Button,Card,Divider, Stack, Typography, Table, TableBody, TableCell, TableHead, TableRow  } from '@mui/material';
+import {Button,Card, Stack, Table, TableCell, TableHead, TableRow  } from '@mui/material';
 import LinearProgress  from '../components/LinearProgress';
 import Iconify from '../components/Iconify';
 import AppBar from '../components/AppBar';
-
-import api from '../services/api';
 import {get} from '../services/requests';
 
 
@@ -51,7 +49,8 @@ export default function Result() {
         const newSolution = solutions.map((s) => {
           const row = s.$;
           row.id = Math.floor(Math.random() * 500)
-          return row        })
+          return row
+        })
         setFile(newSolution)
     }
     getSolution();
@@ -61,7 +60,7 @@ export default function Result() {
   const currentLeague = JSON.parse(currentLeagueString);
 
   const handleResult = async () => {
-    setIsLoading(true)
+      setIsLoading(true)
       const solutions = await get(`/archive/${currentLeague.id}`);
       const dataTeams = await get(`/team/${currentLeague.id}`);
       setTeams(dataTeams);
@@ -75,6 +74,7 @@ export default function Result() {
       })
       setFile((newSolution))
   }
+
   return (
     <>
       <Stack direction="row" alignContent="center" alignItems="center" spacing={2} mb={4}>
@@ -88,14 +88,6 @@ export default function Result() {
           Gerar
         </Button>
       </Stack>
-      {/* <Toast 
-            open={objectMessage.open}
-            onHandleClose={()=> setObjectMessage({
-              open: false
-            })}
-            message={objectMessage.message}
-            severity={objectMessage.severity}
-          /> */}
       <Card>
         <AppBar titleAppBar="Calendar"/>
         <Table className={classes.table} aria-label="caption table">

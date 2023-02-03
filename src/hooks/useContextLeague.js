@@ -1,8 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
 import propTypes from 'prop-types'
-import Loader from '../components/Loader';
 import api from '../services/api';
-import { auth} from '../services/requests';
+
+import {get, auth} from  '../services/requests'
+import { useLocalStorage } from './useLocalStorage';
 
 
 import i18n from '../i18n/index';
@@ -11,27 +12,47 @@ import {LANGS} from '../utils/dataComponents'
 export const LeagueContext = createContext({});
 
 export function LeagueProvider({ children }) {
-    const [currentLeague, setCurrentLeague] = useState({});
+    const [currentLeague, setCurrentLeague] = useLocalStorage('myLeague',{});
+    const [solutionExists, setSolutionExists] = useLocalStorage('mySolution', 'not');
+    const [dadosUser, setDadosUser] = useLocalStorage('myUser', {});
+    const [leaguesToUser, setLeaguesToUser] = useLocalStorage('leagueUser', {});
     const [currentLanguage, setCurrentLanguage] = useState(LANGS[0]);
 
     const [authenticated, setAuthenticated] = useState(false);
-    const [restrictions, setRestrictions] = useState([])
-    const [isLoadingContext, setIsloadingContext] = useState(false);
-    const [dadosUser, setDadosUser] = useState('');
+    const [restrictions, setRestrictions] = useState([]);
+    
 
-
-    const currentLeagueString = localStorage.getItem('myLeague');
-    const currentLeagueStorage = JSON.parse(currentLeagueString);
     useEffect(() => {
         (async () => {
         const token = localStorage.getItem('token')
         if(token) {
           api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
-          setAuthenticated(true)
+          setAuthenticated(true);
+
+          // Carregando ligas casdastradas para o usuário logado.
+          const responseLeagues = await get(`/league_user/${dadosUser.id}`);
+          setLeaguesToUser(responseLeagues);
+
         }
         })();
     }, []);
 
+
+    async function handleAddLeaguesForUser(newLeague) {
+      try {
+       setLeaguesToUser([...leaguesToUser, newLeague])
+      } catch(e) {
+        console.log(e)
+      }
+    }
+
+    async function handleLeaguesForUser(leagues) {
+      try {
+       setLeaguesToUser(leagues)
+      } catch(e) {
+        console.log(e)
+      }
+    }
 
     async function handleRestrictions(restriction) {
       setRestrictions([...restrictions, restriction])
@@ -39,16 +60,16 @@ export function LeagueProvider({ children }) {
 
     async function loadRestrictions() {
       const arrayData = [];
-      const response = await api.get(`/ca1_league/${currentLeagueStorage.id}`);
+      const response = await api.get(`/ca1_league/${currentLeague.id}`);
       response.data.map((data) => arrayData.push(data));
 
-      const response2 = await api.get(`/ca2_league/${currentLeagueStorage.id}`);
+      const response2 = await api.get(`/ca2_league/${currentLeague.id}`);
       response2.data.map((data) => arrayData.push(data));
   
-      const response3 = await api.get(`/ca3/${currentLeagueStorage.id}`);
+      const response3 = await api.get(`/ca3/${currentLeague.id}`);
       response3.data.map((data) => arrayData.push(data));
   
-      const response4 = await api.get(`/ca4/${currentLeagueStorage.id}`);
+      const response4 = await api.get(`/ca4/${currentLeague.id}`);
       response4.data.map((data) => arrayData.push(data));
 
       // const response5 = await api.get(`/br1/${currentLeague.id}`);
@@ -67,9 +88,6 @@ export function LeagueProvider({ children }) {
     }
 
     async function deleteRestriction(arrayRestrictions) {
-
-
-      const token = localStorage.getItem('token');
         arrayRestrictions.map(async (restriction) => {
 
         await api.delete(`/${restriction.split('-')[1]}/${restriction.split('-')[0]}`)
@@ -81,18 +99,15 @@ export function LeagueProvider({ children }) {
     }
   
     async function handleLogin(email, password) {
-      // setIsloadingContext(true);
       try {
         const {data} = await auth(email, password)
         localStorage.setItem('token', JSON.stringify(data.token));
-        setDadosUser({email: data.email, name: data.name})
-
+        
+        setDadosUser({id: data.id,email: data.email, name: data.name})
         api.defaults.headers.authorization = `Bearer ${data.token}`;
-        setAuthenticated(true);
       } catch(error) {
         throw new Error(error)
       }
-        // setIsloadingContext(false);
     }
 
     async function saveCurrentLeague(league =29) {
@@ -100,15 +115,18 @@ export function LeagueProvider({ children }) {
         const leagueString = localStorage.getItem('myLeague');
         setCurrentLeague(JSON.parse(leagueString));
     }
-    if(isLoadingContext) return <Loader isLoading={isLoadingContext}/>
 
   async function saveCurrentLanguage(languageSelected) {
     setCurrentLanguage(LANGS.find((lang) => lang.value === languageSelected));
     i18n.changeLanguage(languageSelected);
   }
+
+  function setValueStatusSolution(value) {
+    setSolutionExists(value)
+  }
     return (
         <LeagueContext.Provider
-          value={{saveCurrentLeague,  currentLeague, currentLanguage, saveCurrentLanguage, handleLogin, authenticated, restrictions, handleRestrictions, loadRestrictions, deleteRestriction, dadosUser}}
+          value={{saveCurrentLeague,  currentLeague, currentLanguage, saveCurrentLanguage, handleLogin, authenticated, restrictions, handleRestrictions, loadRestrictions, deleteRestriction, dadosUser, solutionExists, setValueStatusSolution,leaguesToUser, handleAddLeaguesForUser,handleLeaguesForUser}}
         >
           {children}
         </LeagueContext.Provider>

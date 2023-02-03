@@ -8,8 +8,12 @@ import {
   Stack,
   Container,
  CssBaseline } from '@mui/material';
+ 
 
 import { DeleteOutlineOutlined, EditOutlined, AddOutlined } from '@mui/icons-material';
+import { delay } from '../utils/formatTime';
+ import Loader from '../components/Loader'
+
 import {LeagueContext} from '../hooks/useContextLeague';
 
 import DataGrid from '../components/DataGrid'
@@ -20,9 +24,10 @@ import Modal from '../components/Modal';
 import Form from '../components/FormLeague';
 import AppBar from '../components/AppBar';
 import Dialog from '../components/Dialog';
-import Toast from '../components/Toast';
+import Snackbar from '../components/SnackBar'
 
 import api from '../services/api';
+import {get} from '../services/requests'
 
 export default function DashboardApp() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -31,15 +36,14 @@ export default function DashboardApp() {
   const [leagues, setLeagues] = useState([]);
   const [leaguesSelected, setLeaguesSelected] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [message, setMessage] = useState('');
+  const [severity, setSeverity] = useState('');
 
 
   const [openToast, setOpenToast] = useState(false);
-  const [objectMessage, setObjectMessage] = useState({
-    message: '',
-    severity: ''
-  });
   const {t} = useTranslation();
-  const {saveCurrentLeague} = useContext(LeagueContext)
+  const {handleAddLeaguesForUser,handleLeaguesForUser, saveCurrentLeague, leaguesToUser} = useContext(LeagueContext)
 
   const columns = [
     { field: 'name', headerName: t('headTableName'), width: 300, headerAlign: 'center', align: 'center' },
@@ -60,12 +64,15 @@ export default function DashboardApp() {
   ]
   useEffect(() => {
     async function loadInstances() {
-      const token = localStorage.getItem('token')
-      if(token) {
-        api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+      try {
+        setIsLoading(true)
+        const response = await get('/league');
+        setLeagues(response);
+      } catch(e) {
+        console.log(e)
+      }finally {
+        setIsLoading(false)
       }
-      const response = await api.get('/league');
-      setLeagues(response.data);
     }
     loadInstances()
 
@@ -77,28 +84,46 @@ export default function DashboardApp() {
   }
 
   const updateLeague = async (newLeague) => {
-    handleSucces('Instância adicionada com sucesso!')
-    if(newLeague) setLeagues([...leagues, newLeague]);
+    try {
+      setIsLoading(true)
+      await delay(700)
+      handleSucces('Instância adicionada com sucesso!');
+      if(newLeague) handleAddLeaguesForUser(newLeague);
+    } catch(e) {
+      console.log(e)
+      setIsLoading(false)   
+    }finally{
+      setIsLoading(false)
+    }
   }
 
   const handleChangeLeague = (row) => {
     setDataSelected(row)
     setIsOpenChangeModal(true)
   }
-  const renderUpdateLeague = (newLeague) => {
-    leagues.map((league) => {
-      if(league.id === newLeague.id) 
-      {
-        league.name = newLeague.name;
-        league.roud_robin = newLeague.roud_robin
-        league.mirred = newLeague.mirred
-        league.number_teams = newLeague.number_teams
-        league.short = newLeague.short
-      }
-      return league
-    })
-    handleSucces('Instância atualizada com sucesso!')
-    setLeagues(leagues)
+  const renderUpdateLeague = async (newLeague) => {
+    try {
+      setIsLoading(true)
+      await delay(700)
+      leagues.map((league) => {
+        if(league.id === newLeague.id) 
+        {
+          league.name = newLeague.name;
+          league.roud_robin = newLeague.roud_robin
+          league.mirred = newLeague.mirred
+          league.number_teams = newLeague.number_teams
+          league.short = newLeague.short
+        }
+        return league
+      })
+      handleSucces('Instância atualizada com sucesso!')
+      handleLeaguesForUser(leagues)
+    } catch(e) {
+      console.log(e)
+      setIsLoading(false)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleClickCheckbox = (arrayLeaguesSelected) => {
@@ -107,45 +132,35 @@ export default function DashboardApp() {
 
   const handleClickSelected = () => {}
 
-  const handleCloseToast = () => {
-    setOpenToast(false)
-  }
-
   const handleError = ()  => {
-    setObjectMessage({
-      message: 'Não foi possível realizar a operação!',
-      severity: 'error'
-    })
+    setMessage('Não foi possível realizar a operação!');
+    setSeverity('error')
     setOpenToast(true);
   }
 
-  const handleSucces = (text)  => {
-    setObjectMessage({
-      message: text,
-      severity: 'success'
-    })
+  const handleSucces = ()  => {
+    setMessage('Operação efetuada com sucesso!');
+    setSeverity('success');
     setOpenToast(true);
   }
   
   const handleDeleteLeague = async () => {
     try {
-      leaguesSelected.map(async (idLeague) => {
+        leaguesSelected.map(async (idLeague) => {
         await api.delete(`/league/${idLeague}`);
       })
       const leaguesFilter = leagues.filter(object => !leaguesSelected.some(toDelete => toDelete === object.id));
-      setOpenDialog(false)
+      setOpenDialog(false);
+      setIsLoading(true)
+      await delay(700)
+      handleLeaguesForUser(leaguesFilter)
       setLeagues(leaguesFilter);
-      setObjectMessage({
-        message: 'Instância deletada com sucesso!',
-        severity: 'success'
-      })
-      setOpenToast(true);
+      handleSucces()
     } catch(error) {
-      setObjectMessage({
-        message: 'Não foi possível realizar a operação!',
-        severity: 'error'
-      })
-      setOpenToast(true);
+      setIsLoading(false)
+      handleError();
+    } finally{
+      setIsLoading(false)
     }
   }
   const handleClose = () =>  {setIsOpenModal(false)}
@@ -157,6 +172,7 @@ export default function DashboardApp() {
     <Page title="Dashboard">
       <CssBaseline />
       <Container >
+        <Loader isLoading={isLoading}/>
         <Dialog 
           open={openDialog}
           title="Alerta"
@@ -164,24 +180,20 @@ export default function DashboardApp() {
           onClickAgree={handleDeleteLeague}
           onClickDisagree={() => setOpenDialog(false)}
         />
-        <Toast 
-          open={openToast}
-          onHandleClose={handleCloseToast}
-          message={objectMessage.message}
-          severity={objectMessage.severity}
-        />
+        {<Snackbar open={openToast} message={message} severity={severity} onHandleClose={() => setOpenToast(false)}/>}
         <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
           <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected} onError={handleError}/>
         </Modal>
         <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
           <Form onRequestClose={handleClose} onHandleLeague={updateLeague} onError={handleError}/>
         </Modal>
+
         <Grid container spacing={3} />
         <Card>
           <AppBar titleAppBar={t('leagueDashboard')}/>
           <DataGrid 
             columnData={columns}
-            rowsData={leagues}
+            rowsData={leaguesToUser}
             onHandleCheckbox={handleClickCheckbox}
             onHandleClickSelected={handleClickSelected}
             onHandleRowClick={handleRowClick}

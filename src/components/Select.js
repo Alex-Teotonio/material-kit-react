@@ -1,80 +1,54 @@
-import * as React from 'react';
+import {useEffect, useContext, useState} from 'react';
+import { makeStyles } from "@material-ui/styles";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { LeagueContext } from '../hooks/useContextLeague';
 
-import propTypes from 'prop-types';
-
-
-
-import {LeagueContext} from '../hooks/useContextLeague'
-
-import api from '../services/api'
-
-export default function SelectAutoWidth({label}) {
-  const [leagues, setLeagues] = React.useState([]);
-  const [leagueSelected, setLeagueSelected] = React.useState(0)
-  const {currentLeague} = React.useContext(LeagueContext);
-  const currentLeagueString = localStorage.getItem('myLeague');
-  const currentLeagueStorage = JSON.parse(currentLeagueString);
-
-
-
-
-
-  React.useEffect(() => {
-    async function loadInstances() {
-      const token = localStorage.getItem('token')
-      if(token) {
-        api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
-      }
-
-      if(Object.keys(currentLeague).length !== 0) {
-        setLeagueSelected(currentLeague)
-      } else if(Object.keys(currentLeagueStorage).length !== 0) {
-        setLeagueSelected(currentLeagueStorage)
-      }
-      const response = await api.get('/league');
-      setLeagues(response.data);
-    }
-    loadInstances()
-
-  },[]
-  )
-
+const useStyles = makeStyles(() => ({
+  root: {
+   '& .MuiFormControl-root': {
+     width: '70%',
+     margin: '8px',
+ 
+     '& .MuiInputLabel-formControl': {
+       fontSize: '18px',
+       color: '#fff'
+     }
+   }
+  }
+ }))
+export default function SelectSmall() {
+  const {leaguesToUser, saveCurrentLeague, currentLeague} = useContext(LeagueContext)
+  const [age, setAge] = useState('');
 
   const handleChange = (event) => {
-    setLeagueSelected(event.target.value);
+    const {value} = event.target;
+
+    const league = leaguesToUser.find((f) => f.id === value);
+    saveCurrentLeague(league);
   };
 
-  return (
-    <div>
-      <FormControl  color='primary' variant='standard' sx={{ m: 1, minWidth: 100 }}>
-        <InputLabel id="demo-simple-select-autowidth-label">{label}</InputLabel>
-        <Select
-          labelId="demo-simple-select-autowidth-label"
-          id="demo-simple-select-autowidth"
-          value={() => {
-              if(Object.keys(currentLeague).length !== 0) {
-                return currentLeague.id
-              } if(Object.keys(currentLeagueStorage).length !== 0) {
-                return currentLeagueStorage.id
-              }
-              return null;
-          }} 
-          onChange={handleChange}
-          autoWidth
-        >
-          {
-            leagues.map((value)  => <MenuItem key={value.id} value={value.id}>{value.name}</MenuItem>)
-          }
-          </Select>
-      </FormControl>
-    </div>
-  );
-}
+  const classes = useStyles();
 
-SelectAutoWidth.propTypes = {
-  label: propTypes.string
+  return (
+    <FormControl sx={{ m: 1, minWidth: 260, margin: 0 }} size="small" className={classes.root}>
+      <InputLabel id="demo-select-small">Age</InputLabel>
+      <Select
+        labelId="demo-select-small"
+        id="demo-select-small"
+        value={currentLeague.id}
+        label="League"
+        onChange={handleChange}
+        variant="outlined"
+      >
+        {
+          leaguesToUser.map((l) => (
+              <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>
+            ))
+        }
+      </Select>
+    </FormControl>
+  );
 }

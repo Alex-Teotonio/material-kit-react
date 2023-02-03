@@ -1,12 +1,13 @@
 import {useState} from 'react'
 import {Box,Button, Card, Container, MenuItem, Select, TextField} from '@mui/material';
 import propTypes from 'prop-types'
-import api from '../services/api'
+import api from '../services/api';
+import {put} from '../services/requests'
 
 
 export default function Form({onRequestClose, onHandleLeague, data = '', onError= null}) {
 
-        const [name, setName] = useState(data.name? data.name: '');
+    const [name, setName] = useState(data.name? data.name: '');
     const [short, setShort] = useState(data.short? data.short: '');
     const [numberTeams, setNumberTeams] = useState(data.number_teams? data.number_teams: '');
     const [round, setRound] = useState(data.roud_robin? data.roud_robin: 10);
@@ -18,13 +19,8 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
     }
 
     async function changeLeagues(idLeague, { name, short, numberTeams, round, mirred }) {
-        const {data: newUpdateLeague} = await api.put(`/league/${idLeague}`, {
-          name,
-          short,
-          numberTeams,
-          round,
-          mirred
-        })
+        const payload = { name, short, numberTeams, round, mirred }
+        const {data: newUpdateLeague} = await put(`/league/${idLeague}`, payload)
 
         return newUpdateLeague;
     }
@@ -66,20 +62,6 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
                     <TextField id="outlined-basic" label="League" value={name} onChange={(event) => setName(event.target.value)} />
                     <TextField label="Short"  sx={{marginTop: '10px'}} value={short} onChange={(event) => setShort(event.target.value)}/>
                     <TextField label="NºTeams" type="number"  sx={{marginTop: '10px'}} value={numberTeams} onChange={(event) => setNumberTeams(event.target.value)}/>
-                    {/* <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Round Robin"
-                        placeholder="Round Robin"
-                        defaultValue={10}
-                        value={round}
-                        onChange={(event) => setRound(event.target.value)}
-                        sx={{marginTop: '15px'}}
-                    >
-                        <MenuItem value={10}>Yes</MenuItem>
-                        <MenuItem value={20}>No</MenuItem>
-                    </Select>
-                    */}
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"

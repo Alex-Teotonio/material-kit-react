@@ -1,9 +1,9 @@
 
 import {useState, useEffect} from 'react'
 import { makeStyles } from "@material-ui/styles";
-import {Button, Card, CardContent, Divider, Grid, Stack, Slider, Typography} from '@mui/material';
+import {Button, Card, CardContent, Divider, Grid, Stack, Slider} from '@mui/material';
 import { PropTypes } from 'prop-types';
-import {SaveAs, DoubleArrow} from '@mui/icons-material';
+import {SaveAs} from '@mui/icons-material';
 import {get} from '../../services/requests';
 
 import Input from '../Input';
@@ -41,7 +41,14 @@ export default function FormRestrictions(props) {
     }
     loadTeams()
   },[])
-  const {initialValues, handleChangeValues, itemsRadioType, itemsRadioMode, handleChangeMultipleValues, onHandleSubmit } = props;
+  const {
+    initialValues,
+    handleChangeValues,
+    itemsRadioType,
+    itemsRadioMode,
+    handleChangeMultipleValues,
+    onHandleSubmit
+  } = props;
 
   const handleInputChange = (e) => {console.log(e)
 
@@ -180,3 +187,11 @@ export default function FormRestrictions(props) {
   )
 }
 
+FormRestrictions.propTypes = {
+    initialValues: PropTypes.array,
+    handleChangeValues: PropTypes.func,
+    itemsRadioType: PropTypes.array,
+    itemsRadioMode: PropTypes.array,
+    handleChangeMultipleValues:PropTypes.func,
+    onHandleSubmit:PropTypes.func
+}

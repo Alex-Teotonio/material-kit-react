@@ -32,3 +32,7 @@ DataTable.propTypes = {
   onHandleClickSelected: propTypes.func,
   onHandleRowClick: propTypes.func
 }
+
+DataTable.defaultProps = {
+  onHandleClickSelected: () => {}
+}

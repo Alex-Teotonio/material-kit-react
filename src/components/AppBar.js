@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {Info} from '@mui/icons-material'
 import {Button,Toolbar, Tooltip} from '@mui/material';
-import Modal from "./Modal"
+import Modal from "./Modal";
 
 export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionModal}) {
 
@@ -19,16 +19,16 @@ export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionM
     setIsOpen(true)
   }
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} >
       <Modal 
         titleModal={titleModal}
         descriptionModal={descriptionModal}
         isOpen={isOpen}
         onRequestClose={handleClose}
       />
-      <AppBar position="static">
+      <AppBar position="relative">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, alignItems: 'center' }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
             {titleAppBar}
           </Typography>
           {

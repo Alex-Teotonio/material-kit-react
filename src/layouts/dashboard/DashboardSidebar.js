@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 import { AppBar as MuiAppBar, Box, IconButton, Drawer as MuiDrawer,Stack, Toolbar } from '@mui/material';
 import {ChevronLeft, Menu} from '@mui/icons-material';
-
+import Select from '../../components/Select'
 // mock
 // hooks
 import useResponsive from '../../hooks/useResponsive';
@@ -15,6 +15,9 @@ import NavSection from '../../components/NavSection';
 import navConfig from './NavConfig';
 import AccountPopover from './AccountPopover';
 import LanguagePopover from './LanguagePopover';
+
+import {get} from '../../services/requests';
+import {LeagueContext} from '../../hooks/useContextLeague'
 
 // ----------------------------------------------------------------------
 
@@ -99,6 +102,8 @@ const RootStyle = styled('div')(({ theme }) => ({
 export default function DashboardSidebar() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(true);
+  const [leagues, setLeagues] = useState(true);
+  const {dadosUser} = useContext(LeagueContext)
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -109,7 +114,16 @@ export default function DashboardSidebar() {
   const isDesktop = useResponsive('up', 'lg');
 
   useEffect(() => {
-  
+    async function loadLeaguesForUser() {
+      try {
+        const {id} = dadosUser;
+        const responseLeagues = await get(`league_user/${id}`);
+        setLeagues(responseLeagues)
+      } catch(e) {
+        console.log(e)
+      }
+    } 
+    loadLeaguesForUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
   const renderContent = (
@@ -159,6 +173,7 @@ export default function DashboardSidebar() {
             {/* <IconButton sx={{color: '#FFF'}}onClick={handleDrawerClose}>
               <ChevronLeft  />
             </IconButton> */}
+            <Select/>
           </DrawerHeader>
           {renderContent}
         </Drawer>
@@ -173,6 +188,7 @@ export default function DashboardSidebar() {
             {/* <IconButton sx={{color: '#FFF'}} onClick={handleDrawerClose}>
               <ChevronLeft />
             </IconButton> */}
+            <Select/>
           </DrawerHeader>
           {renderContent}
         </Drawer>

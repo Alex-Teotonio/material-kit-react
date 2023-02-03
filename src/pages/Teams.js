@@ -1,5 +1,5 @@
-import { useEffect , useState } from "react";
-import { Avatar, Card, Container,IconButton, Stack, Typography } from "@mui/material";
+import { useContext, useEffect , useState } from "react";
+import { Avatar, Card, Container,IconButton, Stack } from "@mui/material";
 import {useTranslation} from "react-i18next"
 import {EditOutlined} from '@mui/icons-material'
 import Page from "../components/Page";
@@ -11,7 +11,8 @@ import FormTeams from "../components/FormTeams";
 import { delay } from '../utils/formatTime'
 import api from '../services/api';
 import {colors} from '../components/color-utils/Colors';
-import setRandomColor from '../components/color-utils/ColorsAleatory'
+import setRandomColor from '../components/color-utils/ColorsAleatory';
+import { LeagueContext } from "../hooks/useContextLeague";
 
 // import EditTable from '../components/Table';
 
@@ -23,15 +24,15 @@ export default function Teams() {
   const [isOpenModal, setIsOpenModal] = useState();
   const [teamSelected, setTeamSelected] = useState({});
   const [color, setColors] = useState();
+  const {currentLeague} = useContext(LeagueContext)
+
+
 
 
   useEffect(() => {
     function getColors() {
 
-      colors.map((c) => {
-        console.log(c);
-        return c
-      })
+      colors.map((c) => c)
       setColors(setRandomColor())
     }
     getColors()
@@ -75,9 +76,6 @@ export default function Teams() {
   ];
 
   const [teams, setTeams] = useState([]);
-
-  const currentLeagueString = localStorage.getItem('myLeague');
-  const currentLeague = JSON.parse(currentLeagueString);
 
   useEffect(
     () => {

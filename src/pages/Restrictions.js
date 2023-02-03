@@ -1,8 +1,10 @@
 import {useEffect, useState , useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Avatar, Button, Card, Container, Stack} from '@mui/material';
+import {Avatar, Button, Card, Container} from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import DataGrid from '../components/DataGrid'
+import {DeleteOutline} from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import DataGrid from '../components/DataGrid';
 
 import api from '../services/api';
 import {loadTeams} from '../services/requests'
@@ -23,12 +25,13 @@ export default function Restrictions() {
     const navigate = useNavigate();
     
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [isItemSelected, setIsItemSelected] = useState(false);
     const [newSelected, setNewSelected] = useState({});
     const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext);
     const [teams, setTeams] =  useState([]);
     const currentLeagueString = localStorage.getItem('myLeague');
     const currentLeague = JSON.parse(currentLeagueString);
+
+    const theme = useTheme()
     useEffect(
         () => {
             async function loadData() {
@@ -48,6 +51,7 @@ export default function Restrictions() {
         setIsOpenModal(true)
     }
     const handleClick = (arrayRestrictions) => {
+        console.log(arrayRestrictions);
         setNewSelected(arrayRestrictions)
     }
 
@@ -94,11 +98,7 @@ export default function Restrictions() {
 
 
     const handleClickButtonDelete = async () => {
-            await deleteRestriction(newSelected);
-    }
-
-    const handleClickSelected = () => {
-        setIsItemSelected(!isItemSelected)
+        await deleteRestriction(newSelected);
     }
 
     const handleClose = () => {
@@ -107,7 +107,6 @@ export default function Restrictions() {
 
 
     const handleRowClick = (params) => {
-        console.log(params.row);
         navigate(`/dashboard/${params.row.type_constraint.toLowerCase()}/${params.row.idconstraint}`)
     }
     return (
@@ -119,17 +118,18 @@ export default function Restrictions() {
                     columnData={columns}
                     rowsData={restrictions}
                     onHandleCheckbox={handleClick}
-                    onHandleClickSelected={handleClickSelected}
                     onHandleRowClick={handleRowClick}
                 />
-                <Button 
-                    disabled ={!isItemSelected}
-                    variant="outlined"
-                    sx={{float: 'right', margin: '10px' }}
-                    onClick={handleClickButtonDelete}
-                >
-                    {t('buttonDelete')}
-                </Button>                                
+                { newSelected.length > 0 && (
+                    <Button 
+                        variant="contained"
+                        sx={{float: 'right', margin: '10px',backgroundColor: theme.palette.error.main }}
+                        onClick={handleClickButtonDelete}
+                        startIcon={<DeleteOutline/>}
+                    >
+                        {t('buttonDelete')}
+                    </Button>
+                )}
                 <Button variant="outlined" sx={{float: 'right', margin: '10px' }} onClick={handleClickButton}>{t('buttonAdd')}</Button>
             </Card>
         </Container>

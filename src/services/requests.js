@@ -1,4 +1,5 @@
 import api from "./api";
+import {delay} from '../utils/formatTime'
 
 const token = localStorage.getItem('token')
 if(token) {
@@ -11,8 +12,15 @@ export async function loadSlots(id = 39) {
 }
 
 export async function get(path) {
+    await delay(700)
     const response = await api.get(path);
     if(response.status === 200) return response.data
+    throw new Error(`${response.status} - ${response.statusText}`)
+}
+
+export async function put(path, payload) {
+    const response = await api.put(path, payload);
+    if(response.status === 200) return response
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 
