@@ -11,16 +11,17 @@ export default function MultSelect({
   onHandleChange,
   marginTopString,
   valueMultSelect,
-  name
+  name,
+  disabled
 }) {
   const [value,] = useState();
-  
   return (
     <Stack spacing={3} sx={{ width: 500, marginTop: marginTopString}}>
       <Autocomplete
         multiple
         value={valueMultSelect}
         name={name}
+        disabled={disabled}
         id="tags-outlined"
         onChange={(e, newTeamValue) => {
           onHandleChange(e, newTeamValue, name);
@@ -43,5 +44,6 @@ MultSelect.propTypes = {
   onHandleChange: propTypes.func,
   marginTopString: propTypes.string,
   name: propTypes.string,
-  valueMultSelect: propTypes.array
+  valueMultSelect: propTypes.array,
+  disabled: propTypes.bool
 }

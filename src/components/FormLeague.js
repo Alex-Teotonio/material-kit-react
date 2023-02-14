@@ -1,11 +1,14 @@
-import {useState} from 'react'
+import {useState, useContext} from 'react'
 import {Box,Button, Card, Container, MenuItem, Select, TextField} from '@mui/material';
 import propTypes from 'prop-types'
 import api from '../services/api';
-import {put} from '../services/requests'
+import {put} from '../services/requests';
+import toast from '../utils/toast';
+
+import { LeagueContext } from '../hooks/useContextLeague';
 
 
-export default function Form({onRequestClose, onHandleLeague, data = '', onError= null}) {
+export default function Form({onRequestClose, onHandleLeague, data = ''}) {
 
     const [name, setName] = useState(data.name? data.name: '');
     const [short, setShort] = useState(data.short? data.short: '');
@@ -13,16 +16,22 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
     const [round, setRound] = useState(data.roud_robin? data.roud_robin: 10);
     const [mirred, setMirred] = useState(10);
 
+    const {setValueStatusSolution} = useContext(LeagueContext)
+
     async function createLeague({ name, short, numberTeams, round, mirred }) {
         const {data} =  await api.post('/league', { name, short, numberTeams, round, mirred });
         return data;
     }
 
     async function changeLeagues(idLeague, { name, short, numberTeams, round, mirred }) {
-        const payload = { name, short, numberTeams, round, mirred }
-        const {data: newUpdateLeague} = await put(`/league/${idLeague}`, payload)
-
-        return newUpdateLeague;
+        try {
+            const payload = { name, short, numberTeams, round, mirred }
+            const {data: newUpdateLeague} = await put(`/league/${idLeague}`, payload)
+            setValueStatusSolution('outdated');
+            return newUpdateLeague;
+        } catch(e) {
+            return e;
+        }
     }
     
 
@@ -40,7 +49,11 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
                 onHandleLeague(league)
                 onRequestClose();
             } catch(error) {
-                onError();
+                toast({
+                  type: 'error',
+                  text: 'Houve um erro ao cadastrar a restrição'
+                })
+                
             }
         } else {
             try{
@@ -50,10 +63,12 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
                 onHandleLeague(league)
                 onRequestClose();
             } catch(error) {
-                onError();
+                toast({
+                  type: 'error',
+                  text: 'Houve um erro ao cadastrar a restrição'
+                })
             }
         }
-
     }
     return (
         <Container sx={{display: 'flex'}} >
@@ -86,6 +101,5 @@ export default function Form({onRequestClose, onHandleLeague, data = '', onError
 Form.propTypes = {
     onHandleLeague: propTypes.func,
     onRequestClose: propTypes.func,
-    data: propTypes.object,
-    onError: propTypes.func
+    data: propTypes.object
 }

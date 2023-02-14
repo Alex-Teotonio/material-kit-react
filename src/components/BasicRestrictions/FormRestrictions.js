@@ -1,13 +1,16 @@
 
 import {useState, useEffect} from 'react'
 import { makeStyles } from "@material-ui/styles";
-import {Button, Card, CardContent, Divider, Grid, Stack, Slider} from '@mui/material';
+import {Box, Button, Card, CardContent, Divider, Grid, Slider, Stack} from '@mui/material';
+
 import { PropTypes } from 'prop-types';
-import {SaveAs} from '@mui/icons-material';
+import {SaveAs, Send} from '@mui/icons-material';
+import SliderCustom from "../Slider";
 import {get} from '../../services/requests';
 
 import Input from '../Input';
 import RadioGroup from '../RadioGroup';
+import RadioGroupCustomize from '../RadioGroupCustomize';
 import AppBar from '../AppBar';
 import MultipleSelectChip from '../MultSelect';
 
@@ -16,7 +19,6 @@ import ContainerInline from './Utilities'
 const useStyle = makeStyles(() => ({
  root: {
   '& .MuiFormControl-root': {
-    width: '70%',
     margin: '8px',
 
     '& .MuiFormLabel-root': {
@@ -32,6 +34,19 @@ export default function FormRestrictions(props) {
   const [teams, setTeams] = useState([]);
   const [slots, setSlots] = useState([]);
 
+  const {
+    initialValues,
+    handleChangeValues,
+    itemsRadioType,
+    itemsRadioMode,
+    handleChangeMultipleValues,
+    onHandleSubmit,
+    labelButton
+  } = props;
+
+
+  const [values, setValues] = useState(initialValues);
+
   useEffect(() => {
     async function loadTeams() {
       const response = await get(`/team/${currentLeague.id}`);
@@ -41,16 +56,7 @@ export default function FormRestrictions(props) {
     }
     loadTeams()
   },[])
-  const {
-    initialValues,
-    handleChangeValues,
-    itemsRadioType,
-    itemsRadioMode,
-    handleChangeMultipleValues,
-    onHandleSubmit
-  } = props;
-
-  const handleInputChange = (e) => {console.log(e)
+  const handleInputChange = (e) => {
 
     const {name, value } = e.target;
     handleChangeValues(name, value)
@@ -58,6 +64,16 @@ export default function FormRestrictions(props) {
       ...values,
       [name]: value
     })
+  }
+
+  const handleClickSelectAll = (name) => {
+    const renderValues = {'teamsSelected': teams,'teams2Selected': teams, 'slots':slots}
+    const selectAll = renderValues[name]
+    setValues({
+      ...values,
+      [name]: selectAll
+    })
+    handleChangeMultipleValues(null,selectAll, name)
   }
 
   const handleInputChangeMultSelect = (e,newTeamValue , name) => {
@@ -73,7 +89,6 @@ export default function FormRestrictions(props) {
     onHandleSubmit();
   }
 
-  const [values, setValues] = useState(initialValues);
   const classes = useStyle();
   return (
     <>
@@ -82,81 +97,115 @@ export default function FormRestrictions(props) {
 
       <CardContent>
         <form className={classes.root} onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid container  direction="row" item spacing={1} sm={12} md={6} >
-
-                  <Stack direction='row' spacing={1}>
+            <Grid container>
+              <Grid container item>
+                <Grid item xs={6}>
                     <Input value={values.max}
                       onChange={handleInputChange}
                       name="max"
+                      disabled={!values.max && values.max !== 0}
                       label="Max"
                       type="number"
                     />
-                    { (Boolean(values.min) || values.min >=0) && (
-                      <Input value={values.min}
-                        onChange={handleInputChange}
-                        name="min"
-                        label="Min"
-                        type="number"
-                      />
-
-                    )}
-                  </Stack>
-                  <RadioGroup
-                    name="type"
-                    label="Type"
-                    value={values.type}
-                    onChange={handleInputChange}
-                    items={itemsRadioType}
-                  />
-
-                  <RadioGroup
-                    name="mode"
-                    label="Mode"
-                    value={values.mode}
-                    onChange={handleInputChange}
-                    items={itemsRadioMode}
-                  />
-                  <Slider
-                   sx={{width:'70%' , marginLeft: '10px'}}
-                   name="penalty"
-                   value={values.penalty}
-                   onChange={handleInputChange}
-                  >
-                    Penalty
-                  </Slider>
-              </Grid>
-                {/* <Divider orientation="vertical" flexItem sx={{color:'red'}}/> */}
+                    <Input value={values.min}
+                      onChange={handleInputChange}
+                      disabled={!values.min && values.min !== 0}
+                      name="min"
+                      label="Min"
+                      type="number"
+                    />
+                    <Input value={values.intp}
+                      onChange={handleInputChange}
+                      disabled={!values.intp && values.intp !== 0}
+                      name="intp"
+                      label="Intp"
+                      type="number"
+                    />
+                </Grid>
               <Grid item xs={6}>
-                {(Boolean(values.slots)) && (
-                  <ContainerInline>
-                  <MultipleSelectChip 
-                    dataMultSelect={slots}
-                    valueMultSelect={values.slots}
-                    name="slots"
-                    labelMultSelect="Intervalo de tempo"
-                    placeholderMultSelect=""
-                    onHandleChange={handleInputChangeMultSelect}
-                  />
-                </ContainerInline>
-                )}
-                {(Boolean(values.teamsSelected)) && (
-                <ContainerInline>
+                <ContainerInline onHandleClick={handleClickSelectAll} name="teamsSelected">
                   <MultipleSelectChip 
                     dataMultSelect={teams}
                     valueMultSelect={values.teamsSelected}
+                    disabled={!values.teamsSelected}
                     name="teamsSelected"
                     labelMultSelect="Teams"
                     placeholderMultSelect=""
                     onHandleChange={handleInputChangeMultSelect}
                   />
                 </ContainerInline>
-                )}     
+              </Grid>
+              </Grid>
+   
+            <Grid container item>              
+            <Grid item xs={6}>
+                  {/* <RadioGroup
+                    name="type"
+                    label="Type"
+                    value={values.type}
+                    onChange={handleInputChange}
+                    items={itemsRadioType}
+                  />
+                  <RadioGroup
+                    name="mode"
+                    label="Mode"
+                    value={values.mode}
+                    onChange={handleInputChange}
+                    items={itemsRadioMode}
+                  /> */}
+                  <Stack direction="row" divider={<Divider sx={{marginLeft: '35px', marginRight: '50px'}} orientation="vertical" flexItem />} sx={{marginTop: 2}}>
+                    <RadioGroupCustomize 
+                      name="type"
+                      label="Type"
+                      value={values.type}
+                      onChange={handleInputChange}
+                      items={itemsRadioType}
+                    />
+                    <RadioGroupCustomize
+                      name="mode"
+                      label="Mode"
+                      value={values.mode}
+                      onChange={handleInputChange}
+                      items={itemsRadioMode}
+                    />
+                  </Stack>
+                </Grid>
+              <Grid item xs={6}>
+                  <ContainerInline onHandleClick={handleClickSelectAll} name="slots">
+                  <MultipleSelectChip 
+                    dataMultSelect={slots}
+                    valueMultSelect={values.slots}
+                    disabled={!values.slots}
+                    name="slots"
+                    labelMultSelect="Intervalo de tempo"
+                    placeholderMultSelect=""
+                    onHandleChange={handleInputChangeMultSelect}
+                  />
+                </ContainerInline>
+              </Grid>
 
-              {(Boolean(values.teams2Selected)) && (
-                <ContainerInline>
+
+            </Grid>
+            <Grid container item>
+              <Grid item xs={6}>
+                <SliderCustom
+                  name="penalty"
+                  value={values.penalty}
+                  onChange={handleInputChange}
+                />
+                {/* <Slider
+                  name="penalty"
+                  value={values.penalty}
+                  onChange={handleInputChange}
+                >
+                  Penalty
+                </Slider> */}
+              </Grid>
+              <Grid item xs={6}>
+              <ContainerInline onHandleClick={handleClickSelectAll} name="teams2Selected">
                   <MultipleSelectChip 
                     dataMultSelect={teams}
+                    disabled={!values.teams2Selected}
                     valueMultSelect={values.teams2Selected}
                     name="teams2Selected"
                     labelMultSelect="Teams - Gp2"
@@ -164,26 +213,23 @@ export default function FormRestrictions(props) {
                     onHandleChange={handleInputChangeMultSelect}
                   />
                 </ContainerInline>
-                )}
               </Grid>
-
-
-              <Button 
-                  startIcon={<SaveAs/>}
-                  sx={{
-                    width: '15%',
-                    marginTop: '50px',
-                    bottom:'15px',
-                    position: 'relative',
-                    float: 'right'
-                  }}
-                  variant="outlined"
-                  type="submit" >Salvar</Button>
             </Grid>
-        </form>
-      </CardContent>
-    </Card>
-    </>
+          <Grid />
+        </Grid>
+
+        <Box sx={{ marginTop: '50px',right: '15px', float: 'right', bottom: '25px', position:'relative'}} >
+          <Button 
+            endIcon={<Send/>}
+            variant="contained"
+            type="submit" >
+              {labelButton}
+          </Button>
+        </Box>
+      </form>
+    </CardContent>
+  </Card>
+  </>
   )
 }
 
@@ -193,5 +239,10 @@ FormRestrictions.propTypes = {
     itemsRadioType: PropTypes.array,
     itemsRadioMode: PropTypes.array,
     handleChangeMultipleValues:PropTypes.func,
-    onHandleSubmit:PropTypes.func
+    onHandleSubmit:PropTypes.func,
+    labelButton: PropTypes.string
+}
+
+FormRestrictions.defaultProps = {
+  labelButton: 'Cadastrar'
 }

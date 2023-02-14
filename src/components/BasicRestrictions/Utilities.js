@@ -2,18 +2,20 @@ import { PropTypes } from 'prop-types';
 import {Button, Stack} from '@mui/material';
 import {DoubleArrow} from '@mui/icons-material';
 
-export default function Utilities({children}) {
+export default function Utilities({onHandleClick,name, children}) {
 
   return (
 
-      <Stack direction='row'>
+      <Stack direction='row' spacing={2} alignItems="center">
         {children}
-        <Button startIcon={<DoubleArrow/>}>Todos</Button>
+        <Button variant="outlined" onClick={() => onHandleClick(name)} sx={{height: '55px'}}startIcon={<DoubleArrow/>}>Todos</Button>
       </Stack>
   )
 
 }
 
 Utilities.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node.isRequired,
+  onHandleClick: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired
 }

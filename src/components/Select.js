@@ -44,7 +44,7 @@ export default function SelectSmall() {
         variant="outlined"
       >
         {
-          leaguesToUser.map((l) => (
+          leaguesToUser.length > 0 && leaguesToUser.map((l) => (
               <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>
             ))
         }

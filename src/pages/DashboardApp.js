@@ -15,7 +15,7 @@ import { delay } from '../utils/formatTime';
  import Loader from '../components/Loader'
 
 import {LeagueContext} from '../hooks/useContextLeague';
-
+import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid'
 // @mui
 // components
@@ -24,7 +24,6 @@ import Modal from '../components/Modal';
 import Form from '../components/FormLeague';
 import AppBar from '../components/AppBar';
 import Dialog from '../components/Dialog';
-import Snackbar from '../components/SnackBar'
 
 import api from '../services/api';
 import {get} from '../services/requests'
@@ -37,11 +36,6 @@ export default function DashboardApp() {
   const [leaguesSelected, setLeaguesSelected] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [message, setMessage] = useState('');
-  const [severity, setSeverity] = useState('');
-
-
-  const [openToast, setOpenToast] = useState(false);
   const {t} = useTranslation();
   const {handleAddLeaguesForUser,handleLeaguesForUser, saveCurrentLeague, leaguesToUser} = useContext(LeagueContext)
 
@@ -75,7 +69,6 @@ export default function DashboardApp() {
       }
     }
     loadInstances()
-
   },[]
   )
 
@@ -87,10 +80,16 @@ export default function DashboardApp() {
     try {
       setIsLoading(true)
       await delay(700)
-      handleSucces('Instância adicionada com sucesso!');
+      toast({
+        type: 'success',
+        text: 'Restrição cadastrada com sucesso'
+      })
       if(newLeague) handleAddLeaguesForUser(newLeague);
     } catch(e) {
-      console.log(e)
+      toast({
+        type: 'error',
+        text: 'Houve um erro ao cadastrar a restrição'
+      })
       setIsLoading(false)   
     }finally{
       setIsLoading(false)
@@ -105,7 +104,7 @@ export default function DashboardApp() {
     try {
       setIsLoading(true)
       await delay(700)
-      leagues.map((league) => {
+      const leagueUpdate = leagues.map((league) => {
         if(league.id === newLeague.id) 
         {
           league.name = newLeague.name;
@@ -114,13 +113,21 @@ export default function DashboardApp() {
           league.number_teams = newLeague.number_teams
           league.short = newLeague.short
         }
+        console.log(league)
         return league
       })
-      handleSucces('Instância atualizada com sucesso!')
-      handleLeaguesForUser(leagues)
+
+      handleLeaguesForUser(leagueUpdate)
+      toast({
+        type: 'success',
+        text: 'Restrição cadastrada com sucesso'
+      })
     } catch(e) {
-      console.log(e)
       setIsLoading(false)
+      toast({
+        type: 'error',
+        text: 'Houve um erro ao cadastrar a restrição'
+      })
     } finally {
       setIsLoading(false)
     }
@@ -131,18 +138,6 @@ export default function DashboardApp() {
   }
 
   const handleClickSelected = () => {}
-
-  const handleError = ()  => {
-    setMessage('Não foi possível realizar a operação!');
-    setSeverity('error')
-    setOpenToast(true);
-  }
-
-  const handleSucces = ()  => {
-    setMessage('Operação efetuada com sucesso!');
-    setSeverity('success');
-    setOpenToast(true);
-  }
   
   const handleDeleteLeague = async () => {
     try {
@@ -155,10 +150,16 @@ export default function DashboardApp() {
       await delay(700)
       handleLeaguesForUser(leaguesFilter)
       setLeagues(leaguesFilter);
-      handleSucces()
+      toast({
+        type: 'success',
+        text: 'Restrição excluída com sucesso'
+      })
     } catch(error) {
       setIsLoading(false)
-      handleError();
+      toast({
+        type: 'error',
+        text: 'Houve um erro ao deletar a restrição'
+      })
     } finally{
       setIsLoading(false)
     }
@@ -180,12 +181,11 @@ export default function DashboardApp() {
           onClickAgree={handleDeleteLeague}
           onClickDisagree={() => setOpenDialog(false)}
         />
-        {<Snackbar open={openToast} message={message} severity={severity} onHandleClose={() => setOpenToast(false)}/>}
         <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
-          <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected} onError={handleError}/>
+          <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected}/>
         </Modal>
         <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
-          <Form onRequestClose={handleClose} onHandleLeague={updateLeague} onError={handleError}/>
+          <Form onRequestClose={handleClose} onHandleLeague={updateLeague}/>
         </Modal>
 
         <Grid container spacing={3} />

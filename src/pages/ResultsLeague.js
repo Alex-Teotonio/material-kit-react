@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/styles";
 import {useTranslation} from 'react-i18next'
-import {Button,Card, Stack, Table, TableCell, TableHead, TableRow  } from '@mui/material';
-import LinearProgress  from '../components/LinearProgress';
-import Iconify from '../components/Iconify';
+import {Card, Table, TableCell, TableHead, TableRow  } from '@mui/material';
 import AppBar from '../components/AppBar';
 import {get} from '../services/requests';
+import Loader from '../components/Loader';
+import Games from '../components/Games'
+
+import {delay} from '../utils/formatTime'
 
 
 const useStyles = makeStyles(() => ({
@@ -17,11 +19,12 @@ const useStyles = makeStyles(() => ({
     background: "#ccffff",
     borderWidth: 2,
     borderColor: "black",
-    borderStyle: "solid"
+    borderStyle: "solid",
   },
   table: {
     height: "70vh"
   },
+
   tableCell: {
     borderRight: "1px solid rgba(241,243,244,1)"
   }
@@ -40,6 +43,9 @@ export default function Result() {
 
   useEffect(() => {
     async function getSolution(){
+      try{
+        setIsLoading(true);
+        await delay(700)
         const solutions = await get(`/findSolution/${currentLeague.id}`);
         const dataTeams = await get(`/team/${currentLeague.id}`);
         const dataSlots = await get(`/slot/${currentLeague.id}`);
@@ -52,6 +58,11 @@ export default function Result() {
           return row
         })
         setFile(newSolution)
+      } catch(e) {
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false)
+      }
     }
     getSolution();
   },[]);
@@ -77,50 +88,11 @@ export default function Result() {
 
   return (
     <>
-      <Stack direction="row" alignContent="center" alignItems="center" spacing={2} mb={4}>
-        <LinearProgress isLoading={isLoading}/>
-        <Button
-          variant="contained"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          sx={{height: '30px',width: '20%'}}
-          onClick={handleResult}
-        >
-          Gerar
-        </Button>
-      </Stack>
-      <Card>
-        <AppBar titleAppBar="Calendar"/>
-        <Table className={classes.table} aria-label="caption table">
-          <TableHead>
-            <TableRow>
-              <TableCell className={classes.tableCell}>Time/Rodada</TableCell>
-                {
-                  slots.map((slot) => (
-                      <TableCell className={classes.tableCell} key={slot.id}>{slot.name}</TableCell>
-                    ))
-                }
-            </TableRow>
+      <Card >
+        <AppBar titleAppBar="Games"/>
+        <Loader isLoading={isLoading}/>
 
-          </TableHead>
-            {
-              teams.map((team) => {
-                const render =  <TableRow key={team.id}>
-                    <TableCell sx={{fontWeight: 'bold'}} className={classes.tableCell} key={team.id}>{team.name}</TableCell>
-                    {
-                      slots.map((s) => {
-                        const tst =  file.find((f) => (+f.home) ===  (team.publicid) && (+f.slot) === (s.publicid));
-                        const gameTeam = teams.find((t) => (t.publicid) ===  +tst?.away);
-                        const renderCell =  <TableCell className={classes.tableCell}>{gameTeam?.name}</TableCell>
-                        return renderCell
-                      })
-
-                    }
-                </TableRow>
-              
-              return render
-              })
-          }
-        </Table>
+        <Games data={file} slots={slots} teams={teams}/>
       </Card>
     <div />
     </>

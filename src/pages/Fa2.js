@@ -14,15 +14,15 @@ const itemsRadioMode = [
 ];
 
 
-export default function Ca1() {
+export default function Fa2() {
   const [values, setValues] = useState(
     {
-      typeRestriction: 'CA1',
-      max: 0,
+      typeRestriction: 'Fa2',
       type: 'soft',
-      mode: 'H',
       teamsSelected: [],
-      slots: [],
+      slots: [],  
+      intp: 0,
+      mode: 'H',
       penalty: 70
     })
 
@@ -37,7 +37,6 @@ export default function Ca1() {
   }
 
   const handleChangeTeams = (e, newTeamValues, name) => {
-    console.log('teste',newTeamValues)
     setValues({
       ...values,
       [name]: newTeamValues
@@ -52,19 +51,9 @@ export default function Ca1() {
     const teamForm = handleValueInArray(values.teamsSelected, 'id' );
     const slotForm = handleValueInArray(values.slots, 'id' );
     const leagueId = currentLeague.id;
-    const {max, penalty, mode, type} = values;
+    const {intp, mode,penalty, type} = values;
     
-    await api.post('/ca1', {
-      max,
-      mode,
-      type,
-      leagueId,
-      teamForm,
-      slotForm,
-      penalty,
-      slotPublicId,
-      teamPublicId
-    });
+    await api.post('/fa2', {intp, mode, type, leagueId, teamForm,slotForm, penalty,slotPublicId,teamPublicId});
     
   }
 

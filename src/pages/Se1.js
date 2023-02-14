@@ -10,19 +10,19 @@ const itemsRadioType = [
 
 const itemsRadioMode = [
   {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
+  {id: 'A', title: 'Away'},
+  {id: 'HA', title: 'Home/Away'},
 ];
 
 
-export default function Ca1() {
+export default function Se1() {
   const [values, setValues] = useState(
     {
-      typeRestriction: 'CA1',
-      max: 0,
+      typeRestriction: 'Se1',
       type: 'soft',
-      mode: 'H',
+      min: 0,
       teamsSelected: [],
-      slots: [],
+      intp: 0,
       penalty: 70
     })
 
@@ -37,7 +37,6 @@ export default function Ca1() {
   }
 
   const handleChangeTeams = (e, newTeamValues, name) => {
-    console.log('teste',newTeamValues)
     setValues({
       ...values,
       [name]: newTeamValues
@@ -47,24 +46,13 @@ export default function Ca1() {
   const handleValueInArray = (data, campo) => data.map((d) => d[campo])
 
   const handleSubmitValue = async () =>{
-    const slotPublicId = handleValueInArray(values.slots, 'publicid' );
     const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
     const teamForm = handleValueInArray(values.teamsSelected, 'id' );
-    const slotForm = handleValueInArray(values.slots, 'id' );
     const leagueId = currentLeague.id;
-    const {max, penalty, mode, type} = values;
+    const {min,penalty, type} = values;
+    const mode = "SLOTS";
     
-    await api.post('/ca1', {
-      max,
-      mode,
-      type,
-      leagueId,
-      teamForm,
-      slotForm,
-      penalty,
-      slotPublicId,
-      teamPublicId
-    });
+    await api.post('/se1', {min, mode, type, leagueId, teamForm,penalty,teamPublicId});
     
   }
 

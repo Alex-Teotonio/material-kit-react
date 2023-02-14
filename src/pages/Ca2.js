@@ -18,10 +18,10 @@ export default function Ca2() {
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA2',
+      min:0,
       max: 0,
       type: 'soft',
       mode: 'H',
-      min:0,
       teamsSelected: [],
       teams2Selected: [],
       slots: [],

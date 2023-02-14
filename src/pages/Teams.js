@@ -12,7 +12,9 @@ import { delay } from '../utils/formatTime'
 import api from '../services/api';
 import {colors} from '../components/color-utils/Colors';
 import setRandomColor from '../components/color-utils/ColorsAleatory';
+import Loader from '../components/Loader';
 import { LeagueContext } from "../hooks/useContextLeague";
+import Snackbar from '../components/SnackBar';
 
 // import EditTable from '../components/Table';
 
@@ -24,10 +26,11 @@ export default function Teams() {
   const [isOpenModal, setIsOpenModal] = useState();
   const [teamSelected, setTeamSelected] = useState({});
   const [color, setColors] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const {currentLeague} = useContext(LeagueContext)
 
-
-
+  const [message, setMessage] = useState(0);
+  const [severity, setSeverity] = useState('');
 
   useEffect(() => {
     function getColors() {
@@ -106,9 +109,21 @@ export default function Teams() {
   }
 
   const updatedTeams = async () => {
-    await delay(500)
-    const response = await loadTeams(currentLeague.id);
-    setTeams(response);
+    try {
+      setIsLoading(true)
+      await delay(700)
+      const response = await loadTeams(currentLeague.id);
+      setTeams(response);
+      setMessage('Operação efetuada com sucesso!');
+      setSeverity('success')
+    } catch(e) {
+      setIsLoading(false)
+      setMessage('Não foi possível realizar a operação');
+      setSeverity('error')
+      console.log(e)
+    } finally {
+      setIsLoading(false)
+    }
   };
 
     return (
@@ -116,6 +131,8 @@ export default function Teams() {
       <>
         <Page >
           <Container maxWidth='xl'>
+            <Loader isLoading={isLoading}/>
+            <Snackbar open={Boolean(message)} message={message} severity={severity} onHandleClose={() => setMessage(0)}/>
           <Modal titleModal="Teams" descriptionModal="Edit Team" isOpen={isOpenModal} onRequestClose={handleClose}>
             <FormTeams data={teamSelected} onRequestCloseModal={handleClose} onHandleTeams={updatedTeams}/>
           </Modal>

@@ -8,35 +8,40 @@ import Chip from '../components/Chip';
 import { LeagueContext } from '../hooks/useContextLeague';
 import {get} from '../services/requests';
 import AppBar from '../components/AppBar';
+import Loader from '../components/Loader'
 
 import api from '../services/api';
 
-
-
-
 export default function DashboardSolution() {
- 
-  const currentLeagueString = localStorage.getItem('myLeague');
-  const currentLeague = JSON.parse(currentLeagueString);
   const [listSolutions, setListSolutions] = useState([]);
+  const [isLoading, setIsLoading] = useState([])
   const navigate = useNavigate();
   const theme = useTheme();
-  const {solutionExists, setValueStatusSolution} = useContext(LeagueContext);
+  const {currentLeague, solutionExists, setValueStatusSolution} = useContext(LeagueContext);
 
   const COLORS = {
-    'not': "#ECECEC",
+    'not': "error",
     'active' : 'success',
-    'outdated' : 'warning'
+    'outdated' : 'warning',
+    '...processing' : 'warning'
   }
 
   useEffect(() => {
     async function loadSolutions() {
-      const response = await get(`/loadSolutions/${currentLeague.id}`)
-      setListSolutions(response)
+      try{
+        setIsLoading(true)
+        const response = await get(`/loadSolutions/${currentLeague.id}`)
+        setListSolutions(response)
+      } catch(e) {
+        console.log(e);
+        setIsLoading(false)
+      } finally {
+        setIsLoading(false)
+      }
     }
     loadSolutions();
     },
-  []);
+  [currentLeague]);
 
   const [arrayIds, setArrayIds] = useState([])
   const columns =   [
@@ -64,6 +69,7 @@ export default function DashboardSolution() {
   const handleResult = async () => {
     try{
       // if(solutionExists !== 'active'){
+        setValueStatusSolution('...processing');
         await get(`/archive/${currentLeague.id}`);
         setValueStatusSolution('active');
       // }
@@ -79,6 +85,7 @@ export default function DashboardSolution() {
       <Container>
         <Card>
         <AppBar titleAppBar='Solutions'/>
+        <Loader isLoading={isLoading}/>
         <DataGrid columnData={columns} rowsData={listSolutions} onHandleRowClick={handleRowClick} onHandleCheckbox={handleClickCheckbox}/>
         </Card>
       { arrayIds.length > 0 && (
@@ -95,7 +102,7 @@ export default function DashboardSolution() {
           }}
           onClick={handleDelete}
         >
-            Delete
+          Delete
         </Button>
       )}
         <Button 

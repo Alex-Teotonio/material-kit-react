@@ -66,23 +66,24 @@ export function LeagueProvider({ children }) {
       const response2 = await api.get(`/ca2_league/${currentLeague.id}`);
       response2.data.map((data) => arrayData.push(data));
   
-      const response3 = await api.get(`/ca3/${currentLeague.id}`);
+      const response3 = await api.get(`/ca3_league/${currentLeague.id}`);
       response3.data.map((data) => arrayData.push(data));
   
-      const response4 = await api.get(`/ca4/${currentLeague.id}`);
+      const response4 = await api.get(`/ca4_league/${currentLeague.id}`);
       response4.data.map((data) => arrayData.push(data));
 
-      // const response5 = await api.get(`/br1/${currentLeague.id}`);
-      // response5.data.map((data) => arrayData.push(data));
+      const response5 = await api.get(`/br1_league/${currentLeague.id}`);
+      response5.data.map((data) => arrayData.push(data));
   
-      // const response6 = await api.get(`/br2/${currentLeague.id}`);
-      // response6.data.map((data) => arrayData.push(data));
+      const response6 = await api.get(`/br2_league/${currentLeague.id}`);
+      response6.data.map((data) => arrayData.push(data));
   
-      // const response7 = await api.get(`/fa2/${currentLeague.id}`);
-      // response7.data.map((data) => arrayData.push(data));
+      const response7 = await api.get(`/fa2_league/${currentLeague.id}`);
+      response7.data.map((data) => arrayData.push(data));
   
-      // const response8 = await api.get(`/se1/${currentLeague.id}`);
-      // response8.data.map((data) => arrayData.push(data));
+      const response8 = await api.get(`/se1_league/${currentLeague.id}`);
+      console.log(response8)
+      response8.data.map((data) => arrayData.push(data));
 
       setRestrictions(arrayData)
     }

@@ -2,7 +2,7 @@ import {TextField} from '@mui/material';
 import propTypes from 'prop-types'
 
 export default function Input(props) {
-   const {label, name, value, onChange, type} = props;
+   const {label, name, value, onChange, type, disabled} = props;
 
 
    return (
@@ -12,6 +12,8 @@ export default function Input(props) {
       name={name}
       label={label}
       type={type}
+      disabled={disabled}
+      sx={{width: '150px'}}
       InputLabelProps={{
         shrink: true,
       }}
@@ -24,9 +26,11 @@ Input.propTypes = {
   name: propTypes.string,
   value: propTypes.string,
   onChange: propTypes.func,
-  type: propTypes.string
+  type: propTypes.string,
+  disabled: propTypes.bool
 }
 
 Input.defaultProps = {
-  type:'string'
+  type:'string',
+  disabled: false
 }

@@ -24,6 +24,12 @@ export async function put(path, payload) {
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 
+export async function deleteRegistry(path, payload) {
+    const response = await api.delete(path);
+    if(response.status === 200) return response
+    throw new Error(`${response.status} - ${response.statusText}`)
+}
+
 
 export async function post(path, payload) {
     const response = await api.post(path, payload);

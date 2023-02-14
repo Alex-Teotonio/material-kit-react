@@ -64,6 +64,10 @@ export default function BasicModal({isOpen, onRequestClose}) {
           <MenuItem value='ca2'>Ca2</MenuItem>
           <MenuItem value='ca3'>Ca3</MenuItem>
           <MenuItem value='ca4'>Ca4</MenuItem>
+          <MenuItem value='br1'>Br1</MenuItem>
+          <MenuItem value='br2'>Br2</MenuItem>
+          <MenuItem value='fa2'>Fa2</MenuItem>
+          <MenuItem value='se1'>Se1</MenuItem>
         </Select>
         <Stack direction="row" alignItems='center' sx={{float:'right', marginRight: '3px', marginTop: '10px'}}>
           <Button variant='outlined' onClick={handleCancel} sx={{marginRight:'5px'}}>{t('buttonCancel')}</Button>

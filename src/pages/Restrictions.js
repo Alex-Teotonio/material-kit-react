@@ -4,6 +4,7 @@ import {Avatar, Button, Card, Container} from '@mui/material';
 import {useTranslation} from 'react-i18next'
 import {DeleteOutline} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
 
 import api from '../services/api';
@@ -12,7 +13,7 @@ import {loadTeams} from '../services/requests'
 import AppBar from '../components/AppBar';
 
 import setRandomColor from '../components/color-utils/ColorsAleatory'
-
+import Dialog from '../components/Dialog';
 
 
 import { LeagueContext } from '../hooks/useContextLeague';
@@ -26,6 +27,7 @@ export default function Restrictions() {
     
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [newSelected, setNewSelected] = useState({});
+    const [openDialog, setOpenDialog] = useState(false);
     const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext);
     const [teams, setTeams] =  useState([]);
     const currentLeagueString = localStorage.getItem('myLeague');
@@ -51,15 +53,13 @@ export default function Restrictions() {
         setIsOpenModal(true)
     }
     const handleClick = (arrayRestrictions) => {
-        console.log(arrayRestrictions);
         setNewSelected(arrayRestrictions)
     }
 
-
     const columns = [
-        { field: 'type_constraint', headerName: t('headTableCategory'), width: 210 },
-        { field: 'type', headerName: t('headTableType'), width: 210 },
-        { field: 'penalty', headerName: t('headTablePenalty'), width: 210 },
+        { field: 'type_constraint', headerName: t('headTableCategory'), width: 80 , align: 'center'},
+        { field: 'type', headerName: t('headTableType'), width: 90, align: 'center' },
+        { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center'},
         { field: t('headTableNameTeams'), renderCell: (cellValues) => {
                 if(teams.length !== 0 && cellValues.row.teams.includes(';')) {
                     const renderContent = cellValues.row.teams.split(';').map((value) => {
@@ -92,13 +92,29 @@ export default function Restrictions() {
                         </>
                     )   
                 
-        }, width: 280 },
+        }, width: 360 },
         { field: 'criado_em', headerName: t('headTableCreated'), width: 250 }
     ];
 
 
     const handleClickButtonDelete = async () => {
-        await deleteRestriction(newSelected);
+        try {
+            setOpenDialog(false)
+            await deleteRestriction(newSelected);
+            toast({
+                type: 'success',
+                text: 'Instância deletada com sucesso!'
+            })
+        }catch(e) {
+            toast({
+                type: 'error',
+                text: 'Houve um erro durante a operação'
+            })
+        }
+    }
+
+    const handleDeleteLeague = () => {
+        handleClickButtonDelete()
     }
 
     const handleClose = () => {
@@ -113,6 +129,13 @@ export default function Restrictions() {
         <Container maxWidth='xl'>
             <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
             <Card>
+            <Dialog 
+                open={openDialog}
+                title="Alerta"
+                contentMessage=' A instância será excluída permanentemente.Deseja continuar?'
+                onClickAgree={handleDeleteLeague}
+                onClickDisagree={() => setOpenDialog(false)}
+            />
                 <AppBar titleAppBar={t('headTableRestriction')}/>
                 <DataGrid 
                     columnData={columns}
@@ -124,7 +147,7 @@ export default function Restrictions() {
                     <Button 
                         variant="contained"
                         sx={{float: 'right', margin: '10px',backgroundColor: theme.palette.error.main }}
-                        onClick={handleClickButtonDelete}
+                        onClick={() => setOpenDialog(true)}
                         startIcon={<DeleteOutline/>}
                     >
                         {t('buttonDelete')}

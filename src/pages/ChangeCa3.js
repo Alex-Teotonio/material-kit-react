@@ -18,51 +18,56 @@ const itemsRadioMode = [
 ];
 
 
-export default function ChangeCa1() {
+export default function ChangeCa3() {
   const {id} = useParams();
   const navigate = useNavigate();
   const [values, setValues] = useState(
     {
-      typeRestriction: 'CA1',
+      typeRestriction: 'CA3',
       max: 0,
       type: 'soft',
+      intp: 0,
       mode: 'H',
+      mode2: 'GLOBAL',
       teamsSelected: [],
+      teams2Selected: [],
       slots: [],
       penalty: 70
     });
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [oldSlotsIds, setOldSlotsIds] = useState([]);
     const [oldTeamsIds, setOldTeamsIds] = useState([])
+    const [oldTeams2Ids, setOldTeams2Ids] = useState([])
 
     useEffect(() => {
       (async () => {
         try{
           setIsLoading(true);
-          const ca1Response = await get(`/ca1/${id}`);
+          const ca3Response = await get(`/ca3/${id}`);
       
-          const ca1Slots = await get(`/ca1_slots/${id}`);
-          const newSlots = ca1Slots.map((ca1) => ca1);
-          const newSlotsIds = ca1Slots.map((ca1) => ca1.id);
-      
-          const ca1Teams = await get(`/ca1_teams/${id}`);
-          const newTeams = ca1Teams.map((ca1) => ca1);
-          const newTeamsIds = ca1Teams.map((ca1) => ca1.id);
+          const ca3Teams = await get(`/ca3_teams1/${id}`);
+          const newTeams = ca3Teams.map((ca1) => ca1);
+          const newTeamsIds = ca3Teams.map((ca1) => ca1.id);
+
+          const ca3Teams2 = await get(`/ca3_teams2/${id}`);
+          const newTeams2 = ca3Teams2.map((ca1) => ca1);
+          const newTeams2Ids = ca3Teams2.map((ca1) => ca1.id);
           setValues(
             {
-              typeRestriction: 'CA1',
-              max: ca1Response.max,
-              type: ca1Response.type,
-              mode: ca1Response.mode,
+              typeRestriction: 'CA3',
+              max: ca3Response.max,
+              type: ca3Response.type,
+              mode: ca3Response.mode1,
+              mode2: ca3Response.mode2,
+              intp: ca3Response.intp,
               teamsSelected: newTeams,
-              slots: newSlots,
-              penalty: ca1Response.penalty
+              teams2Selected: newTeams2,
+              penalty: ca3Response.penalty
               
             }
           )
-          setOldSlotsIds(newSlotsIds)
           setOldTeamsIds(newTeamsIds);
+          setOldTeams2Ids(newTeams2Ids)
         }catch {
           setIsLoading(false)
         }
@@ -89,6 +94,7 @@ export default function ChangeCa1() {
     })
   }
 
+
   const handleValueInArray = (data, campo) => data.map((d) => d[campo])
 
   const handleSubmitValue = async () =>{
@@ -96,24 +102,26 @@ export default function ChangeCa1() {
     try {
       setIsLoading(true);
       await delay(400)
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
       const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
+      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
-      const slotForm = handleValueInArray(values.slots, 'id' );
+      const team2Form = handleValueInArray(values.teams2Selected, 'id' );
       const leagueId = currentLeague.id;
-      const {max, penalty, mode, type} = values;
-      await put(`/ca1/${id}`, {
+      const {intp,max, penalty, mode,mode2, type} = values;
+      await put(`/ca3/${id}`, {
         max,
         mode,
+        intp,
+        mode2,
         type,
         leagueId,
         teamForm,
-        slotForm,
+        team2Form,
         penalty,
-        slotPublicId,
         teamPublicId,
+        team2PublicId,
         oldTeamsIds,
-        oldSlotsIds
+        oldTeams2Ids
       });
       toast({
         type: 'success',
@@ -136,15 +144,17 @@ export default function ChangeCa1() {
     <>
       <Loader isLoading={isLoading}/>
       { 
-        Boolean(oldSlotsIds.length)  && 
-        <FormRestrictions 
-          initialValues={values}
-          handleChangeValues={handleChangeInput}
-          handleChangeMultipleValues={handleChangeTeams}
-          itemsRadioType={itemsRadioType}
-          itemsRadioMode={itemsRadioMode}
-          onHandleSubmit={handleSubmitValue}
-        />
+        (Boolean(oldTeamsIds.length) && 
+          <FormRestrictions 
+            initialValues={values}
+            handleChangeValues={handleChangeInput}
+            handleChangeMultipleValues={handleChangeTeams}
+            itemsRadioType={itemsRadioType}
+            itemsRadioMode={itemsRadioMode}
+            onHandleSubmit={handleSubmitValue}
+            labelButton="Salvar Alterações"
+          />
+        )
       }
     </>
   )
