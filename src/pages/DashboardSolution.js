@@ -1,14 +1,16 @@
 import { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Button, Container, Card } from '@mui/material';
+import {Button,ButtonGroup, Paper } from '@mui/material';
 import {DeleteOutline, Event} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { delay } from "../utils/formatTime";
 import DataGrid from '../components/DataGrid';
 import Chip from '../components/Chip';
 import { LeagueContext } from '../hooks/useContextLeague';
 import {get} from '../services/requests';
-import AppBar from '../components/AppBar';
-import Loader from '../components/Loader'
+
+
 
 import api from '../services/api';
 
@@ -69,12 +71,19 @@ export default function DashboardSolution() {
   const handleResult = async () => {
     try{
       // if(solutionExists !== 'active'){
+        setIsLoading(true)
+        await delay(300);
         setValueStatusSolution('...processing');
         await get(`/archive/${currentLeague.id}`);
         setValueStatusSolution('active');
+        await delay(50);
+        navigate('/dashboard/result')
       // }
     } catch(e) {
+      setIsLoading(false)
       console.log(e)
+    } finally {
+      setIsLoading(false)
     }
   }
   const handleClickCheckbox = (id) => {
@@ -82,12 +91,11 @@ export default function DashboardSolution() {
   }
   return (
     <> 
-      <Container>
-        <Card>
-        <AppBar titleAppBar='Solutions'/>
-        <Loader isLoading={isLoading}/>
+    <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
+        <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+          <Button>Soluções</Button>
+        </ButtonGroup>
         <DataGrid columnData={columns} rowsData={listSolutions} onHandleRowClick={handleRowClick} onHandleCheckbox={handleClickCheckbox}/>
-        </Card>
       { arrayIds.length > 0 && (
         <Button 
           variant="contained"
@@ -105,23 +113,29 @@ export default function DashboardSolution() {
           Delete
         </Button>
       )}
-        <Button 
+
+
+
+        <LoadingButton
+          size="large"
+          color="secondary"
+          onClick={handleResult}
+          loading={isLoading}
+          loadingPosition="end"
+          startIcon={<Event />}
           variant="contained"
-          startIcon={<Event/>}
           sx=
           {{
             marginTop:'20px',
             height: '30px',
             float: 'right',
             marginRight: '4px',
-            width: '130px',
             backgroundColor: theme.palette.primary.main
           }}
-          onClick={handleResult}
         >
-          Gerar
-        </Button>
-      </Container>
+          <span>Gerar</span>
+        </LoadingButton>
+      </Paper>
     </>
   )
 }

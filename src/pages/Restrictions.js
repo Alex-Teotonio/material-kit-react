@@ -1,16 +1,16 @@
 import {useEffect, useState , useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Avatar, Button, Card, Container} from '@mui/material';
+import {Avatar, Button, Paper, ButtonGroup, Popover, Typography} from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import {DeleteOutline} from '@mui/icons-material';
+import {DeleteOutline, AddCircle,NotInterested} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import {GridActionsCell} from  '@mui/x-data-grid';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
+import MuiAccordion from '../components/Accordion';
 
 import api from '../services/api';
 import {loadTeams} from '../services/requests'
-
-import AppBar from '../components/AppBar';
 
 import setRandomColor from '../components/color-utils/ColorsAleatory'
 import Dialog from '../components/Dialog';
@@ -24,7 +24,8 @@ export default function Restrictions() {
 
     const {t} = useTranslation();
     const navigate = useNavigate();
-    
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorElGp, setAnchorElGp] = useState(null);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [newSelected, setNewSelected] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
@@ -57,43 +58,118 @@ export default function Restrictions() {
     }
 
     const columns = [
-        { field: 'type_constraint', headerName: t('headTableCategory'), width: 80 , align: 'center'},
-        { field: 'type', headerName: t('headTableType'), width: 90, align: 'center' },
-        { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center'},
-        { field: t('headTableNameTeams'), renderCell: (cellValues) => {
-                if(teams.length !== 0 && cellValues.row.teams.includes(';')) {
-                    const renderContent = cellValues.row.teams.split(';').map((value) => {
-                            const teamFind = teams.find((team) => parseInt(value,10) === team.id)
-                            return (
-                                <>
-                                    <Avatar 
-                                        sx={{marginRight: '2px' ,backgroundColor: setRandomColor()}}
+        { 
+            field: 'type_constraint',
+            headerName: t('headTableCategory'),
+            width: 80,
+            align: 'center',
+            headerAlign: 'center',
+            disableClickEventBubbling: true
+        },
+        { field: 'type', headerName: t('headTableType'), width: 90, align: 'center',headerAlign: 'center' },
+        { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
+        {
+            field: 'teams',
+            headerName: 'Aplica a',
+            renderCell: (cellValues) => {
+        
+              const handleClickGroup1 = (event) => {
+                event.stopPropagation();
+                setAnchorEl(event.currentTarget);
+              };
+
+        
+              const handleCloseGroup1 = () => {
+                setAnchorEl(null);
+              };
+
+              const handleClickGroup2 = (event) => {
+                event.stopPropagation();
+                setAnchorElGp(event.currentTarget);
+              };
+
+              const handleCloseGroup2 = () => {
+                setAnchorElGp(null);
+              };
+        
+              const open = Boolean(anchorEl);
+              const openGp = Boolean(anchorElGp);
+        
+              return (
+                <div>
+                  <ButtonGroup>
+                    <Button variant="contained" onClick={handleClickGroup1}>Times-Gp1</Button>
+                    <Button  variant="outlined" onClick={handleClickGroup2}>Times-Gp2</Button>
+                  </ButtonGroup>
+                  <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleCloseGroup1}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                  >
+                    <Typography>
+                      <ul>
+                        {
+                            cellValues.row.teams.split(';').length > 0 && cellValues.row.teams.split(';').map((value) => {
+                                const teamFind = teams.find((team) => parseInt(value,10) === team.id)
+                                console.log('into Popover 1', teamFind);
+                                console.log('into Popover 2', cellValues.row.id, cellValues.row.teams);
+                                return (
+                                    <li key={teamFind?.id}>
+                                        <Avatar 
+                                        sx={{marginRight: '3px' ,backgroundColor: setRandomColor()}}
                                         key={teamFind?.id}
                                         src={teamFind?.url}
                                         sizes="30"
                                         children={<small>{teamFind?.initials}</small>}
-                                    />
-                                </>
-                            )
-                    })
+                                        />
+                                    </li>
+                                )
+                            })
+                         }
+                      </ul>
+                    </Typography>
+                  </Popover>
 
-                    return renderContent
-                } 
-                    const teamFind = teams.find((team) => parseInt(cellValues.row.teams,10) === team.id)
-                    return (
-                        <>
-                            <Avatar 
-                                sx={{marginRight: '2px' ,backgroundColor: setRandomColor()}}
-                                key={teamFind?.id}
-                                src={teamFind?.url}
-                                sizes="30"
-                                children={<small>{teamFind?.initials}</small>}
-                            />
-                        </>
-                    )   
-                
-        }, width: 360 },
-        { field: 'criado_em', headerName: t('headTableCreated'), width: 250 }
+                  <Popover
+                    open={openGp}
+                    anchorEl={anchorElGp}
+                    onClose={handleCloseGroup2}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                  >
+                    <Typography>
+                      <ul>
+                        <li>Teste2</li>
+                        {/* {
+                            cellValues.row.teams.split(';').length > 0 && cellValues.row.teams.split(';').map((value) => (
+                                <li key={value.id}>{value.name}</li>
+                            ))
+                         } */}
+                      </ul>
+                    </Typography>
+                  </Popover>
+                </div>
+              );
+            },
+            width: 400,
+            align:'center',
+            headerAlign: 'center'
+          },
+        { field: 'criado_em', headerName: t('headTableCreated'), width: 250, headerAlign: 'center', align: 'center' },
     ];
 
 
@@ -121,40 +197,56 @@ export default function Restrictions() {
         setIsOpenModal(false)
     }
 
-
+    const handleCellClick = (event) => {
+        alert('here')
+    }
     const handleRowClick = (params) => {
         navigate(`/dashboard/${params.row.type_constraint.toLowerCase()}/${params.row.idconstraint}`)
     }
     return (
-        <Container maxWidth='xl'>
-            <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
-            <Card>
-            <Dialog 
-                open={openDialog}
-                title="Alerta"
-                contentMessage=' A instância será excluída permanentemente.Deseja continuar?'
-                onClickAgree={handleDeleteLeague}
-                onClickDisagree={() => setOpenDialog(false)}
+        <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
+          <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+            <Button startIcon={<NotInterested/>}>Restrições</Button>
+          </ButtonGroup>
+        <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
+        <Dialog 
+            open={openDialog}
+            title="Alerta"
+            contentMessage=' A instância será excluída permanentemente.Deseja continuar?'
+            onClickAgree={handleDeleteLeague}
+            onClickDisagree={() => setOpenDialog(false)}
+        />
+            <DataGrid
+                columnData={columns}
+                rowsData={restrictions}
+                onHandleCheckbox={handleClick}
+                onHandleRowClick={handleRowClick}
             />
-                <AppBar titleAppBar={t('headTableRestriction')}/>
-                <DataGrid 
-                    columnData={columns}
-                    rowsData={restrictions}
-                    onHandleCheckbox={handleClick}
-                    onHandleRowClick={handleRowClick}
-                />
-                { newSelected.length > 0 && (
-                    <Button 
-                        variant="contained"
-                        sx={{float: 'right', margin: '10px',backgroundColor: theme.palette.error.main }}
-                        onClick={() => setOpenDialog(true)}
-                        startIcon={<DeleteOutline/>}
-                    >
-                        {t('buttonDelete')}
-                    </Button>
-                )}
-                <Button variant="outlined" sx={{float: 'right', margin: '10px' }} onClick={handleClickButton}>{t('buttonAdd')}</Button>
-            </Card>
-        </Container>
+            { newSelected.length > 0 && (
+                <Button 
+                    variant="contained"
+                    sx={{float: 'right', margin: '10px',backgroundColor: theme.palette.error.main }}
+                    onClick={() => setOpenDialog(true)}
+                    startIcon={<DeleteOutline/>}
+                >
+                    {t('buttonDelete')}
+                </Button>
+            )}
+            <Button
+                endIcon={<AddCircle/>}
+                variant="contained" 
+                sx=
+                {{
+                    marginTop:'20px',
+                    height: '30px',
+                    float: 'right',
+                    marginRight: '4px'
+                }}
+                onClick={handleClickButton}
+            >
+                {t('buttonAdd')}
+            </Button>
+
+        </Paper>
     );
 }

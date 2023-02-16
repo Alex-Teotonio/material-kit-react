@@ -7,7 +7,7 @@ import {Info} from '@mui/icons-material'
 import {Button,Toolbar, Tooltip} from '@mui/material';
 import Modal from "./Modal";
 
-export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionModal}) {
+export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionModal, variant}) {
 
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -28,7 +28,7 @@ export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionM
       />
       <AppBar position="relative">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
+          <Typography variant={variant} component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
             {titleAppBar}
           </Typography>
           {
@@ -47,7 +47,10 @@ export default function ButtonAppBar({titleAppBar, titleModal = '', descriptionM
 ButtonAppBar.propTypes = {
   titleAppBar: propTypes.string,
   titleModal: propTypes.string,
-  descriptionModal: propTypes.string
+  descriptionModal: propTypes.string,
+  variant: propTypes.string
+}
 
-
+ButtonAppBar.defaultProps = {
+  variant: 'h6'
 }

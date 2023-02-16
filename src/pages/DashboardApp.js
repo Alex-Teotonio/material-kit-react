@@ -2,12 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useContext } from 'react';
 import {
   Button,
-  Grid,
-  Card,
+  ButtonGroup,
+  Paper,
   IconButton,
-  Stack,
-  Container,
- CssBaseline } from '@mui/material';
+  Stack } from '@mui/material';
  
 
 import { DeleteOutlineOutlined, EditOutlined, AddOutlined } from '@mui/icons-material';
@@ -171,8 +169,6 @@ export default function DashboardApp() {
   }
   return (
     <Page title="Dashboard">
-      <CssBaseline />
-      <Container >
         <Loader isLoading={isLoading}/>
         <Dialog 
           open={openDialog}
@@ -187,10 +183,10 @@ export default function DashboardApp() {
         <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
           <Form onRequestClose={handleClose} onHandleLeague={updateLeague}/>
         </Modal>
-
-        <Grid container spacing={3} />
-        <Card>
-          <AppBar titleAppBar={t('leagueDashboard')}/>
+        <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
+          <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+            <Button>Instâncias</Button>
+          </ButtonGroup>
           <DataGrid 
             columnData={columns}
             rowsData={leaguesToUser}
@@ -198,7 +194,7 @@ export default function DashboardApp() {
             onHandleClickSelected={handleClickSelected}
             onHandleRowClick={handleRowClick}
           />
-        </Card>
+        </Paper>
         <Button 
         variant="contained"
         startIcon={<AddOutlined/>}
@@ -218,7 +214,6 @@ export default function DashboardApp() {
       >
         {t('buttonDelete')}
       </Button>
-      </Container>
     </Page>
   );
 }

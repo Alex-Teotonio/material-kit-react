@@ -31,22 +31,25 @@ export default function LinearWithValueLabel({isLoading}) {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
-    if(isLoading){
     const timer = setInterval(() => {
-      setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
+      setProgress((prevProgress) => (prevProgress >= 100 ? 1 : prevProgress + 1));
     }, 800);
     return () => {
       clearInterval(timer);
     };
-  }}, []);
+  }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
-      <LinearProgressWithLabel value={progress} />
+      <LinearProgressWithLabel value={progress} variant="determinate" />
     </Box>
   );
 }
 
 LinearWithValueLabel.propTypes = {
   isLoading: PropTypes.bool
+}
+
+LinearWithValueLabel.defaultProps = {
+  isLoading: false
 }

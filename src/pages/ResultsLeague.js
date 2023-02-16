@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/styles";
 import {useTranslation} from 'react-i18next'
-import {Card, Table, TableCell, TableHead, TableRow  } from '@mui/material';
+import {Button,ButtonGroup,Paper } from '@mui/material';
 import AppBar from '../components/AppBar';
 import {get} from '../services/requests';
 import Loader from '../components/Loader';
@@ -88,13 +88,13 @@ export default function Result() {
 
   return (
     <>
-      <Card >
-        <AppBar titleAppBar="Games"/>
+     <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
+      <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+        <Button>Games</Button>
+      </ButtonGroup>
         <Loader isLoading={isLoading}/>
-
         <Games data={file} slots={slots} teams={teams}/>
-      </Card>
-    <div />
+      </Paper>
     </>
   )
 

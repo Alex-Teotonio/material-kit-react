@@ -15,8 +15,8 @@ export default function App() {
     <LeagueProvider>
       <ThemeProvider>
         <ToastContainer/>
-        <ScrollToTop />
-        <BaseOptionChartStyle />
+        {/* <ScrollToTop />
+        <BaseOptionChartStyle /> */}
         <Router />
       </ThemeProvider>
     </LeagueProvider>
