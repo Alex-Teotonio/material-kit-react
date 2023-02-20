@@ -1,11 +1,12 @@
 import * as Yup from 'yup';
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-// form
+// form Login
+import {Login} from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Link, Stack, IconButton, InputAdornment } from '@mui/material';
+import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { delay } from '../../../utils/formatTime';
@@ -72,7 +73,6 @@ export default function LoginForm() {
 
   return (
     <>
-    <ToastMessage open={open} onHandleClose = {handleClose} message={objectMessage} severity={severity}/>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3}>
           <RHFTextField name="email" label="Email address" />
@@ -100,8 +100,16 @@ export default function LoginForm() {
           </Link>
         </Stack>
 
-        <LoadingButton fullWidth size="large" type='submit' variant="contained" onClick={() => setOpen(true)} loading={isSubmitting}>
-          Login
+        <LoadingButton 
+          endIcon={<Login/>}
+          fullWidth
+          size="large"
+          type='submit'
+          variant="contained"
+          onClick={() => setOpen(true)}
+          loading={isSubmitting}
+        >
+          <Typography variant='subtitle'>Login</Typography>
         </LoadingButton>
       </FormProvider>
       </>

@@ -57,6 +57,10 @@ export default function DashboardApp() {
   useEffect(() => {
     async function loadInstances() {
       try {
+        toast({
+          type: 'success',
+          text: 'Login efetuado com sucesso'
+        })
         setIsLoading(true)
         const response = await get('/league');
         setLeagues(response);

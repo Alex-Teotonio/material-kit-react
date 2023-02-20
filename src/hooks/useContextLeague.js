@@ -84,6 +84,9 @@ export function LeagueProvider({ children }) {
       const response8 = await api.get(`/se1_league/${currentLeague.id}`);
       response8.data.map((data) => arrayData.push(data));
 
+      const response9 = await api.get(`/ga1_league/${currentLeague.id}`);
+      response9.data.map((data) => arrayData.push(data));
+
       setRestrictions(arrayData)
     }
 

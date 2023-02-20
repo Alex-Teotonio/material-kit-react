@@ -29,6 +29,7 @@ import Br1 from './pages/Br1';
 import Br2 from './pages/Br2';
 import Fa2 from './pages/Fa2';
 import Se1 from './pages/Se1';
+import Ga1 from './pages/Ga1';
 import ResultsLeague from './pages/ResultsLeague';
 import DashboardSolutions from './pages/DashboardSolution';
 
@@ -65,6 +66,7 @@ export default function Router() {
         { path: 'br2', element: <Br2/>},
         { path: 'fa2', element: <Fa2/>},
         { path: 'se1', element: <Se1/>},
+        { path: 'ga1', element: <Ga1/>},
         { path: 'result', element: <ResultsLeague/>},
         { path: 'listSolutions', element: <DashboardSolutions/>},
         { path: 'products', element: <Products /> },

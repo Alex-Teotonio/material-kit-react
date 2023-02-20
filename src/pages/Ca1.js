@@ -37,7 +37,6 @@ export default function Ca1() {
   }
 
   const handleChangeTeams = (e, newTeamValues, name) => {
-    console.log('teste',newTeamValues)
     setValues({
       ...values,
       [name]: newTeamValues

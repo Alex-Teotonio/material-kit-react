@@ -1,7 +1,7 @@
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Card, Link, Container, Typography } from '@mui/material';
+import { Card, Link, Container,Paper, Typography } from '@mui/material';
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
@@ -37,7 +37,7 @@ const HeaderStyle = styled('header')(({ theme }) => ({
 
 const SectionStyle = styled(Card)(({ theme }) => ({
   width: '100%',
-  maxWidth: 464,
+  maxWidth: 764,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -63,6 +63,7 @@ export default function Login() {
 
   return (
     <Page title="Login">
+    <Paper square>
       <RootStyle>
         <HeaderStyle>
           <Logo />
@@ -88,11 +89,11 @@ export default function Login() {
 
         <Container maxWidth="sm">
           <ContentStyle>
-            <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
+            <Typography variant="h4" gutterBottom align='center'>
+              Entrar
             </Typography>
 
-            <Typography sx={{ color: 'text.secondary', mb: 5 }}>Enter your details below.</Typography>
+            <Typography sx={{ color: 'text.secondary', mb: 5 }} align='center'>Enter your details below.</Typography>
 
             <AuthSocial />
 
@@ -109,6 +110,7 @@ export default function Login() {
           </ContentStyle>
         </Container>
       </RootStyle>
+        </Paper>
     </Page>
   );
 }

@@ -1,13 +1,11 @@
 import {useEffect, useState , useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Avatar, Button, Paper, ButtonGroup, Popover, Typography} from '@mui/material';
+import {Avatar, Grid, Button,Dialog as MuiDialog, DialogTitle, Paper, ButtonGroup,Stack, Typography, DialogContent, DialogActions} from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import {DeleteOutline, AddCircle,NotInterested} from '@mui/icons-material';
+import {DeleteOutline, AddCircle,NotInterested,Visibility,Help} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
-import {GridActionsCell} from  '@mui/x-data-grid';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
-import MuiAccordion from '../components/Accordion';
 
 import api from '../services/api';
 import {loadTeams} from '../services/requests'
@@ -18,15 +16,16 @@ import Dialog from '../components/Dialog';
 
 import { LeagueContext } from '../hooks/useContextLeague';
 
-import Modal from '../components/ModalRestrictions'
+import Modal from '../components/ModalRestrictions';
 
 export default function Restrictions() {
 
     const {t} = useTranslation();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
-    const [anchorElGp, setAnchorElGp] = useState(null);
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [restrictionsSelected, setRestrictionsSelected] = useState([])
+    const [restrictionsSelected2, setRestrictionsSelected2] = useState([])
     const [newSelected, setNewSelected] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
     const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext);
@@ -71,107 +70,29 @@ export default function Restrictions() {
         {
             field: 'teams',
             headerName: 'Aplica a',
-            renderCell: (cellValues) => {
-        
-              const handleClickGroup1 = (event) => {
-                event.stopPropagation();
-                setAnchorEl(event.currentTarget);
-              };
-
-        
-              const handleCloseGroup1 = () => {
-                setAnchorEl(null);
-              };
-
-              const handleClickGroup2 = (event) => {
-                event.stopPropagation();
-                setAnchorElGp(event.currentTarget);
-              };
-
-              const handleCloseGroup2 = () => {
-                setAnchorElGp(null);
-              };
-        
-              const open = Boolean(anchorEl);
-              const openGp = Boolean(anchorElGp);
-        
-              return (
+            renderCell: (cellValues) => (
                 <div>
-                  <ButtonGroup>
-                    <Button variant="contained" onClick={handleClickGroup1}>Times-Gp1</Button>
-                    <Button  variant="outlined" onClick={handleClickGroup2}>Times-Gp2</Button>
-                  </ButtonGroup>
-                  <Popover
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleCloseGroup1}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                  >
-                    <Typography>
-                      <ul>
-                        {
-                            cellValues.row.teams.split(';').length > 0 && cellValues.row.teams.split(';').map((value) => {
-                                const teamFind = teams.find((team) => parseInt(value,10) === team.id)
-                                console.log('into Popover 1', teamFind);
-                                console.log('into Popover 2', cellValues.row.id, cellValues.row.teams);
-                                return (
-                                    <li key={teamFind?.id}>
-                                        <Avatar 
-                                        sx={{marginRight: '3px' ,backgroundColor: setRandomColor()}}
-                                        key={teamFind?.id}
-                                        src={teamFind?.url}
-                                        sizes="30"
-                                        children={<small>{teamFind?.initials}</small>}
-                                        />
-                                    </li>
-                                )
-                            })
-                         }
-                      </ul>
-                    </Typography>
-                  </Popover>
-
-                  <Popover
-                    open={openGp}
-                    anchorEl={anchorElGp}
-                    onClose={handleCloseGroup2}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                  >
-                    <Typography>
-                      <ul>
-                        <li>Teste2</li>
-                        {/* {
-                            cellValues.row.teams.split(';').length > 0 && cellValues.row.teams.split(';').map((value) => (
-                                <li key={value.id}>{value.name}</li>
-                            ))
-                         } */}
-                      </ul>
-                    </Typography>
-                  </Popover>
+                    <ButtonGroup>
+                        <Button 
+                            variant="string"
+                            color="primary"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                handleClickGroup1(cellValues.row)
+                            }}
+                            endIcon={<Visibility/>}
+                        >
+                            Exibir
+                        </Button>
+                    </ButtonGroup>
                 </div>
-              );
-            },
+              ),
             width: 400,
             align:'center',
             headerAlign: 'center'
           },
         { field: 'criado_em', headerName: t('headTableCreated'), width: 250, headerAlign: 'center', align: 'center' },
     ];
-
 
     const handleClickButtonDelete = async () => {
         try {
@@ -189,6 +110,24 @@ export default function Restrictions() {
         }
     }
 
+        
+    const handleClickGroup1 = (params) => {
+        let arrayTeamsRestrictions = []; 
+        let arrayTeamsRestrictions2 = []
+        if(params.teams.split(';').length > 0){
+            arrayTeamsRestrictions = params.teams.split(';').map((value) => teams.find((team) => parseInt(value,10) === team.id))
+        }
+
+        if(params.teams2 && params.teams2.split(';').length > 0){
+            arrayTeamsRestrictions2 = params.teams2.split(';').map((value) => teams.find((team) => parseInt(value,10) === team.id))
+        }
+        setRestrictionsSelected(arrayTeamsRestrictions)
+        setRestrictionsSelected2(arrayTeamsRestrictions2)
+        setAnchorEl(true);
+    }
+    const handleCloseGroup1 = () => {
+    setAnchorEl(false);
+    };
     const handleDeleteLeague = () => {
         handleClickButtonDelete()
     }
@@ -196,14 +135,11 @@ export default function Restrictions() {
     const handleClose = () => {
         setIsOpenModal(false)
     }
-
-    const handleCellClick = (event) => {
-        alert('here')
-    }
     const handleRowClick = (params) => {
         navigate(`/dashboard/${params.row.type_constraint.toLowerCase()}/${params.row.idconstraint}`)
     }
     return (
+        <>
         <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
           <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
             <Button startIcon={<NotInterested/>}>Restrições</Button>
@@ -246,7 +182,69 @@ export default function Restrictions() {
             >
                 {t('buttonAdd')}
             </Button>
-
         </Paper>
+
+        <MuiDialog onClose={handleCloseGroup1} open={anchorEl}>
+            <DialogTitle sx={{textAlign: 'center', marginBottom: '20px'}}>
+                <ButtonGroup fullWidth variant="outlined">
+                    <Button endIcon={<NotInterested/>}>Aplica a</Button>
+                    <Button size="small" sx={{width: '35px'}} endIcon={<Help/>} />
+                </ButtonGroup>
+            </DialogTitle>
+            <DialogContent style={{minWidth: '400px'}}>
+                <Grid container spacing={restrictionsSelected2.length > 0 ? 17 : 0}>
+                
+                    <Grid container item xs={restrictionsSelected2.length > 0 ? 6 : 12} direction="column" justifyContent="center">
+                        <Typography variant='subtitle1' align="center" gutterBottom>Teams-Gp1</Typography>
+                        {
+                            restrictionsSelected.map((value) => (
+                                <Stack direction="row" key={value.id} alignItems="center" spacing={1} justifyContent="center">
+                                <Avatar
+                                    key={value?.id}
+                                    src={value?.url}
+                                    children={<small>{value?.initials}</small>}
+                                    sx={{margin: '10px 0px'}}
+                                />
+                                <Typography>{value.name}</Typography>
+                                </Stack>
+                            ))
+                        }
+                    </Grid>
+                
+                { 
+                
+                restrictionsSelected2.length  > 0 && 
+                <>  
+
+                
+                    <Grid container item xs={6} direction="column">
+                    <Typography variant='subtitle1' align="center" gutterBottom>Teams-Gp2</Typography>
+                    {
+                        restrictionsSelected2.map((value) => (
+                            <Stack direction="row" key={value.id} alignItems="center" spacing={1} justifyContent="center">
+                            <Avatar
+                                key={value?.id}
+                                src={value?.url}
+                                children={<small>{value?.initials}</small>}
+                                sx={{margin: '10px 0px'}}
+                            />
+                            <Typography align='center'>{value.name}</Typography>
+                            </Stack>
+                        ))
+                    }
+                    </Grid>
+                </>
+                }
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseGroup1}>
+                    Fechar
+                </Button>
+            </DialogActions>
+            
+        </MuiDialog>
+        </>
+
     );
 }

@@ -15,7 +15,7 @@ const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: 'eva:home-fill',
-    linkTo: '/',
+    linkTo: '/dashboard/app',
   },
   // {
   //   label: 'Profile',
@@ -104,7 +104,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={handleClose} sx={{ m: 1 }}  to='/' component={RouterLink}>
           Logout
         </MenuItem>
       </MenuPopover>
