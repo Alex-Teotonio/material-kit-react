@@ -2,7 +2,8 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Slider, { SliderThumb } from '@mui/material/Slider';
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import { Button} from '@mui/material';
+import {Sports, Warning} from '@mui/icons-material'
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 
@@ -42,6 +43,7 @@ const marks = [
 const IOSSlider = styled(Slider)(({ theme }) => ({
   color: theme.palette.mode === 'dark' ? '#3880ff' : '#3880ff',
   height: 2,
+  width: '250px',
   padding: '15px 0',
   '& .MuiSlider-thumb': {
     height: 28,
@@ -106,18 +108,42 @@ AirbnbThumbComponent.propTypes = {
 
 export default function CustomizedSlider({value, onChange, name}) {
   return (
-    <Box sx={{ width: 350 }}>
-      <Typography gutterBottom>Penalty</Typography>
-      <IOSSlider
-        name={name}
-        value={value}
-        onChange={onChange}
-        aria-label="ios slider"
-        defaultValue={60}
-        marks={marks}
-        valueLabelDisplay="on"
-      />
-    </Box>
+    <Tooltip 
+      title="Caso a restrição não seja atendida, defina o peso da penalidade."
+      sx={{ 
+        backgroundColor: 'gray',
+        color: 'white' 
+      }}
+    >
+      <Box 
+        sx={{ 
+          display:'flex',
+          alignItems: 'center',
+          marginTop: '32px',
+          marginBottom: '10px'
+        }}
+      >
+        <Button 
+          sx={{ 
+            marginLeft: '8px',
+            color:"#2065D1",
+            width: '150px'
+          }}
+          variant="string"
+          startIcon={<Warning/>}
+        >
+          Penalidade
+        </Button>
+        <IOSSlider
+          name={name}
+          value={value}
+          onChange={onChange}
+          defaultValue={60}
+          marks={marks}
+          valueLabelDisplay="on"
+        />
+      </Box>
+    </Tooltip>
   );
 }
 

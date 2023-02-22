@@ -8,11 +8,11 @@ export default function ToastContainer() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    function handleAddToast({type, text, duration} ) {
+    function handleAddToast({type, text} ) {
       setOpen(true)
       setMessages((prevState) => [
         ...prevState,
-        {id: Math.random(), type, text, duration}
+        {id: Math.random(), type, text}
       ]);
     }
 

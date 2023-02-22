@@ -1,4 +1,5 @@
-import {useState, useContext} from 'react'
+import {useState, useContext} from 'react';
+import * as Yup from 'yup';
 import {Box,Button, Card, Container, MenuItem, Select, TextField} from '@mui/material';
 import propTypes from 'prop-types'
 import api from '../services/api';
@@ -16,10 +17,18 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
     const [round, setRound] = useState(data.roud_robin? data.roud_robin: 10);
     const [mirred, setMirred] = useState(10);
 
+
+    const validationSchema = Yup.object().shape({
+        name: Yup.string().required('Campo obrigatório'),
+        short: Yup.string().required('Campo obrigatório'),
+        numberTeams: Yup.number().required('Campo obrigatório').positive('Digite um número positivo').integer('Digite um número inteiro'),
+        mirred: Yup.number().required('Campo obrigatório')
+    });
+
     const {setValueStatusSolution} = useContext(LeagueContext)
 
-    async function createLeague({ name, short, numberTeams, round, mirred }) {
-        const {data} =  await api.post('/league', { name, short, numberTeams, round, mirred });
+    async function createLeague({ name, short, numberTeams, mirred }) {
+        const {data} =  await api.post('/league', { name, short, numberTeams, mirred });
         return data;
     }
 
@@ -40,6 +49,7 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
 
         if(!data) {
             try{
+                await validationSchema.validate({name, short, numberTeams, mirred});
                 const league = await createLeague({name, short, numberTeams, round, mirred})
                 setName('');
                 setShort('');
@@ -51,12 +61,12 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
             } catch(error) {
                 toast({
                   type: 'error',
-                  text: 'Houve um erro ao cadastrar a restrição'
+                  text: error.message
                 })
-                
             }
         } else {
             try{
+                await validationSchema.validate({name, short, numberTeams, mirred});
                 const currentLeagueString = localStorage.getItem('myLeague');
                 const currentLeague = JSON.parse(currentLeagueString);
                 const league = await changeLeagues(currentLeague.id, { name, short, numberTeams, round, mirred });
@@ -74,9 +84,25 @@ export default function Form({onRequestClose, onHandleLeague, data = ''}) {
         <Container sx={{display: 'flex'}} >
             <Card sx = {{padding: '25px 25px', width:"1024px"}}>
                 <Box sx={{display: 'flex', flexDirection: 'column'}} component="form" onSubmit={handleSubmit}>
-                    <TextField id="outlined-basic" label="League" value={name} onChange={(event) => setName(event.target.value)} />
-                    <TextField label="Short"  sx={{marginTop: '10px'}} value={short} onChange={(event) => setShort(event.target.value)}/>
-                    <TextField label="NºTeams" type="number"  sx={{marginTop: '10px'}} value={numberTeams} onChange={(event) => setNumberTeams(event.target.value)}/>
+                    <TextField 
+                        id="name"
+                        label="League"
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                    />
+                    <TextField 
+                        label="Short" 
+                        sx={{marginTop: '10px'}}
+                        value={short}
+                        onChange={(event) => setShort(event.target.value)}
+                    />
+                    <TextField 
+                        label="NºTeams"
+                        type="number" 
+                        sx={{marginTop: '10px'}}
+                        value={numberTeams}
+                        onChange={(event) => setNumberTeams(event.target.value)}
+                    />
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import {Container} from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom';
 import {get, put} from '../services/requests'
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
@@ -136,7 +137,8 @@ export default function ChangeCa1() {
     <>
       <Loader isLoading={isLoading}/>
       { 
-        Boolean(oldSlotsIds.length)  && 
+        Boolean(oldSlotsIds.length)  &&
+        <Container maxWidth="xl" fixed>
         <FormRestrictions 
           initialValues={values}
           handleChangeValues={handleChangeInput}
@@ -145,6 +147,7 @@ export default function ChangeCa1() {
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
         />
+        </Container>
       }
     </>
   )

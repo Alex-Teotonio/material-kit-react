@@ -19,12 +19,14 @@ import DataGrid from '../components/DataGrid'
 // components
 import Page from '../components/Page';
 import Modal from '../components/Modal';
-import Form from '../components/FormLeague';
-import AppBar from '../components/AppBar';
 import Dialog from '../components/Dialog';
 
 import api from '../services/api';
-import {get} from '../services/requests'
+import {get} from '../services/requests';
+
+
+import AddLeagueForm from './AddLeagueForm';
+import EditLeagueForm from './EditLeagueForm';
 
 export default function DashboardApp() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -115,7 +117,6 @@ export default function DashboardApp() {
           league.number_teams = newLeague.number_teams
           league.short = newLeague.short
         }
-        console.log(league)
         return league
       })
 
@@ -181,12 +182,30 @@ export default function DashboardApp() {
           onClickAgree={handleDeleteLeague}
           onClickDisagree={() => setOpenDialog(false)}
         />
-        <Modal titleModal="Edit League" descriptionModal="Edit your League" isOpen={isOpenChangeModal} onRequestClose={handleCloseChangeModal}>
-          <Form onRequestClose={handleCloseChangeModal} onHandleLeague={renderUpdateLeague} data={dataSelected}/>
+        <Modal 
+          titleModal="Edit League"
+          descriptionModal="Edit your League"
+          isOpen={isOpenChangeModal}
+          onRequestClose={handleCloseChangeModal}
+        >
+          <EditLeagueForm 
+            onRequestClose={handleCloseChangeModal}
+            onHandleLeague={renderUpdateLeague}
+            data={dataSelected}
+          />
         </Modal>
-        <Modal titleModal={t('titleModalLeague')} descriptionModal= {t('descriptionModalLeague')} isOpen={isOpenModal} onRequestClose={handleClose}>
-          <Form onRequestClose={handleClose} onHandleLeague={updateLeague}/>
+        <Modal
+          titleModal={t('titleModalLeague')}
+          descriptionModal= {t('descriptionModalLeague')}
+          isOpen={isOpenModal}
+          onRequestClose={handleClose}
+        >
+          <AddLeagueForm
+            onRequestClose={handleClose}
+            onHandleLeague={updateLeague}
+          />
         </Modal>
+
         <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
           <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
             <Button>Instâncias</Button>

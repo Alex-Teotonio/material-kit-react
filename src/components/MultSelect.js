@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
@@ -12,9 +11,11 @@ export default function MultSelect({
   marginTopString,
   valueMultSelect,
   name,
-  disabled
+  disabled,
+  error,
+  messageError
 }) {
-  const [value,] = useState();
+
   return (
     <Stack spacing={3} sx={{ width: 500, marginTop: marginTopString}}>
       <Autocomplete
@@ -30,20 +31,29 @@ export default function MultSelect({
         getOptionLabel={(option) => option.name}
         filterSelectedOptions
         renderInput={(params) => (
-          <TextField {...params} label={labelMultSelect} placeholder={placeholderMultSelect} />
+          <TextField {...params} label={labelMultSelect} error={error} helperText={error? messageError: ''} placeholder={placeholderMultSelect} />
         )}
+        error={error}
+        helperText={messageError}
       />
     </Stack>
   );
 }
 
 MultSelect.propTypes = {
-  dataMultSelect: propTypes.array,
-  labelMultSelect: propTypes.string,
-  placeholderMultSelect: propTypes.string,
-  onHandleChange: propTypes.func,
+  dataMultSelect: propTypes.array.isRequired,
+  labelMultSelect: propTypes.string.isRequired,
+  placeholderMultSelect: propTypes.string.isRequired,
+  onHandleChange: propTypes.func.isRequired,
   marginTopString: propTypes.string,
-  name: propTypes.string,
-  valueMultSelect: propTypes.array,
-  disabled: propTypes.bool
+  name: propTypes.string.isRequired,
+  valueMultSelect: propTypes.array.isRequired,
+  disabled: propTypes.bool,
+  error: propTypes.bool.isRequired,
+  messageError: propTypes.string.isRequired
+}
+
+MultSelect.defaultProps = {
+  marginTopString: '8px',
+  disabled: false
 }

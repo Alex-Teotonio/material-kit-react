@@ -2,7 +2,7 @@ import {useEffect, useState , useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Avatar, Grid, Button,Dialog as MuiDialog, DialogTitle, Paper, ButtonGroup,Stack, Typography, DialogContent, DialogActions} from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import {DeleteOutline, AddCircle,NotInterested,Visibility,Help} from '@mui/icons-material';
+import {DeleteOutline, AddCircle,NotInterested,Visibility,Help,FileCopyOutlined} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
@@ -159,14 +159,36 @@ export default function Restrictions() {
                 onHandleRowClick={handleRowClick}
             />
             { newSelected.length > 0 && (
+                <>
                 <Button 
                     variant="contained"
-                    sx={{float: 'right', margin: '10px',backgroundColor: theme.palette.error.main }}
+                    sx={{
+                        float: 'right',
+                        margin: '10px',
+                        height: '30px',
+                        marginTop:'20px',
+                        backgroundColor: theme.palette.error.main
+                    }}
                     onClick={() => setOpenDialog(true)}
                     startIcon={<DeleteOutline/>}
                 >
                     {t('buttonDelete')}
                 </Button>
+
+                <Button
+                variant="outlined"
+                sx={{
+                    float: 'right',
+                    margin: '8px',
+                    height: '30px',
+                    marginTop:'20px',
+                }}
+                startIcon={<FileCopyOutlined/>}
+                // onClick={handleCopy}
+                >
+                Copiar
+                </Button>
+                </>
             )}
             <Button
                 endIcon={<AddCircle/>}
@@ -179,11 +201,12 @@ export default function Restrictions() {
                     marginRight: '4px'
                 }}
                 onClick={handleClickButton}
+                disabled={newSelected.length > 0}
             >
                 {t('buttonAdd')}
             </Button>
         </Paper>
-
+{/*  */}
         <MuiDialog onClose={handleCloseGroup1} open={anchorEl}>
             <DialogTitle sx={{textAlign: 'center', marginBottom: '20px'}}>
                 <ButtonGroup fullWidth variant="outlined">
@@ -214,9 +237,7 @@ export default function Restrictions() {
                 { 
                 
                 restrictionsSelected2.length  > 0 && 
-                <>  
-
-                
+                <>                 
                     <Grid container item xs={6} direction="column">
                     <Typography variant='subtitle1' align="center" gutterBottom>Teams-Gp2</Typography>
                     {

@@ -2,9 +2,7 @@ import {TextField} from '@mui/material';
 import propTypes from 'prop-types'
 
 export default function Input(props) {
-   const {label, name, value, onChange, type, disabled} = props;
-
-
+   const {label, name, value, onChange, type, disabled, error, messageError} = props;
    return (
     <TextField
       value={value}
@@ -13,10 +11,12 @@ export default function Input(props) {
       label={label}
       type={type}
       disabled={disabled}
-      sx={{width: '150px'}}
+      sx={{width: '250px'}}
       InputLabelProps={{
         shrink: true,
       }}
+      error={error}
+      helperText = {messageError}
     />
    )
 }
@@ -24,10 +24,12 @@ export default function Input(props) {
 Input.propTypes = {
   label: propTypes.string,
   name: propTypes.string,
-  value: propTypes.string,
+  value: propTypes.number.isRequired,
   onChange: propTypes.func,
   type: propTypes.string,
-  disabled: propTypes.bool
+  disabled: propTypes.bool,
+  error: propTypes.bool.isRequired,
+  messageError: propTypes.string.isRequired
 }
 
 Input.defaultProps = {
