@@ -33,8 +33,6 @@ export default function MultSelect({
         renderInput={(params) => (
           <TextField {...params} label={labelMultSelect} error={error} helperText={error? messageError: ''} placeholder={placeholderMultSelect} />
         )}
-        error={error}
-        helperText={messageError}
       />
     </Stack>
   );
@@ -50,10 +48,11 @@ MultSelect.propTypes = {
   valueMultSelect: propTypes.array.isRequired,
   disabled: propTypes.bool,
   error: propTypes.bool.isRequired,
-  messageError: propTypes.string.isRequired
+  messageError: propTypes.string
 }
 
 MultSelect.defaultProps = {
   marginTopString: '8px',
-  disabled: false
+  disabled: false,
+  messageError: ''
 }

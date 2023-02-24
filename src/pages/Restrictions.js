@@ -37,10 +37,6 @@ export default function Restrictions() {
     useEffect(
         () => {
             async function loadData() {
-                const token = localStorage.getItem('token')
-                if(token) {
-                    api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
-                }
                 await loadRestrictions();
                 const data = await loadTeams(currentLeague.id);
                 setTeams(data)
@@ -173,20 +169,6 @@ export default function Restrictions() {
                     startIcon={<DeleteOutline/>}
                 >
                     {t('buttonDelete')}
-                </Button>
-
-                <Button
-                variant="outlined"
-                sx={{
-                    float: 'right',
-                    margin: '8px',
-                    height: '30px',
-                    marginTop:'20px',
-                }}
-                startIcon={<FileCopyOutlined/>}
-                // onClick={handleCopy}
-                >
-                Copiar
                 </Button>
                 </>
             )}

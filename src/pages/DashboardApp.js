@@ -5,10 +5,14 @@ import {
   ButtonGroup,
   Paper,
   IconButton,
-  Stack } from '@mui/material';
- 
+  Stack 
+} from '@mui/material';
 
-import { DeleteOutlineOutlined, EditOutlined, AddOutlined } from '@mui/icons-material';
+import {
+  DeleteOutlineOutlined,
+  EditOutlined, AddOutlined,FileCopyOutlined } from '@mui/icons-material';
+import {post,get} from '../services/requests'
+
 import { delay } from '../utils/formatTime';
  import Loader from '../components/Loader'
 
@@ -22,7 +26,6 @@ import Modal from '../components/Modal';
 import Dialog from '../components/Dialog';
 
 import api from '../services/api';
-import {get} from '../services/requests';
 
 
 import AddLeagueForm from './AddLeagueForm';
@@ -37,7 +40,13 @@ export default function DashboardApp() {
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const {t} = useTranslation();
-  const {handleAddLeaguesForUser,handleLeaguesForUser, saveCurrentLeague, leaguesToUser} = useContext(LeagueContext)
+  const {
+    handleAddLeaguesForUser,
+    handleLeaguesForUser,
+    saveCurrentLeague,
+    leaguesToUser,
+    currentLeague
+  } = useContext(LeagueContext)
 
   const columns = [
     { field: 'name', headerName: t('headTableName'), width: 300, headerAlign: 'center', align: 'center' },
@@ -80,6 +89,23 @@ export default function DashboardApp() {
     setIsOpenModal(true);
   }
 
+  const handleCopy = async() => {
+    try {
+
+      setIsLoading(true)
+      await delay(700)
+      const { data } = await api.post(`/league_copy/${currentLeague.id}`);
+      handleAddLeaguesForUser(data)
+    }catch(e) {
+      setIsLoading(false)
+      toast({
+        type: 'error',
+        text: 'Houve um erro ao copiar o arquivo'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
   const updateLeague = async (newLeague) => {
     try {
       setIsLoading(true)
@@ -227,16 +253,30 @@ export default function DashboardApp() {
         {t('buttonAdd')}
       </Button>
 
-      <Button 
-        variant="contained"
-        startIcon={<DeleteOutlineOutlined />}
-        sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
-        color="error"
-        onClick={() => setOpenDialog(true)}
-        disabled={leaguesSelected.length === 0}
-      >
-        {t('buttonDelete')}
-      </Button>
+      { leaguesSelected.length > 0 && (
+        <>
+        <Button 
+          variant="contained"
+          startIcon={<DeleteOutlineOutlined />}
+          sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
+          color="error"
+          onClick={() => setOpenDialog(true)}
+          disabled={leaguesSelected.length === 0}
+        >
+          {t('buttonDelete')}
+        </Button>
+
+        <Button 
+          variant="contained"
+          startIcon={<FileCopyOutlined />}
+          sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
+          onClick={handleCopy}
+        >
+          Copiar
+        </Button>
+        
+        </>
+      )}
     </Page>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 
@@ -34,6 +35,16 @@ export default function Ca3() {
       intp: 0,
       penalty: 70
     })
+
+    const validationSchema = Yup.object().shape({
+      intp: Yup.number()
+      .typeError('Defina a quantidade de jogos consecutivos')
+      .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+      .required('O campo "Jogos consecutivos" é obrigatório'),
+      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    });
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
@@ -73,7 +84,7 @@ export default function Ca3() {
         type: 'success',
         text: 'Restrição cadastrada com sucesso'
       })
-      navigate(`/dashboard/restrictions`)
+      navigate(`/dashboard/restrictions`);
     } catch(e) {
       toast({
         type: 'error',
@@ -95,6 +106,7 @@ export default function Ca3() {
         itemsRadioType={itemsRadioType}
         itemsRadioMode={itemsRadioMode}
         onHandleSubmit={handleSubmitValue}
+        validationSchema={validationSchema}
       />
     </>
   )

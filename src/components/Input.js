@@ -1,8 +1,8 @@
 import {TextField} from '@mui/material';
-import propTypes from 'prop-types'
+import PropTypes from 'prop-types'
 
 export default function Input(props) {
-   const {label, name, value, onChange, type, disabled, error, messageError} = props;
+   const {label, name, value, onChange, type, disabled, error, messageError, widthProp} = props;
    return (
     <TextField
       value={value}
@@ -11,28 +11,31 @@ export default function Input(props) {
       label={label}
       type={type}
       disabled={disabled}
-      sx={{width: '250px'}}
+      sx={{width: widthProp}}
       InputLabelProps={{
         shrink: true,
       }}
       error={error}
-      helperText = {messageError}
+      helperText = {error && messageError}
     />
    )
 }
 
 Input.propTypes = {
-  label: propTypes.string,
-  name: propTypes.string,
-  value: propTypes.number.isRequired,
-  onChange: propTypes.func,
-  type: propTypes.string,
-  disabled: propTypes.bool,
-  error: propTypes.bool.isRequired,
-  messageError: propTypes.string.isRequired
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.number.isRequired,
+  onChange: PropTypes.func,
+  type: PropTypes.string,
+  disabled: PropTypes.bool,
+  error: PropTypes.bool.isRequired,
+  messageError: PropTypes.string,
+  widthProp: PropTypes.string
 }
 
 Input.defaultProps = {
   type:'string',
-  disabled: false
+  disabled: false,
+  widthProp: '500px',
+  messageError: ''
 }

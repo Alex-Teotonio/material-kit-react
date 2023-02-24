@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as Yup from 'yup';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 
@@ -10,7 +11,8 @@ const itemsRadioType = [
 
 const itemsRadioMode = [
   {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
+  {id: 'A', title: 'Away'},
+  {id: 'HA', title: 'Home/Away'}
 ];
 
 
@@ -27,6 +29,23 @@ export default function Ca2() {
       slots: [],
       penalty: 70
     })
+
+    const validationSchema = Yup.object().shape({
+      min: Yup.number()
+      .typeError('O campo "Min" é obrigatório')
+      .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Min" é 0')
+      .required('O campo "Min" é obrigatório'),
+      max: Yup.number()
+      .typeError('O campo "Max" é obrigatório')
+      .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Max" é 0')
+      .required('O campo "Max" é obrigatório'),
+      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo')
+    });
+  
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
@@ -85,6 +104,7 @@ export default function Ca2() {
         itemsRadioType={itemsRadioType}
         itemsRadioMode={itemsRadioMode}
         onHandleSubmit={handleSubmitValue}
+        validationSchema={validationSchema}
       />
     </>
   )

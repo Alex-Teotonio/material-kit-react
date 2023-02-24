@@ -15,7 +15,7 @@ export default function Ga1() {
   const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState(
     {
-      typeRestriction: 'Ga1',
+      typeRestriction: 'GA1',
       min: 0,
       max: 0,
       type: 'soft',

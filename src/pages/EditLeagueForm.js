@@ -7,7 +7,6 @@ import api from '../services/api';
 import { useLeagueForm } from '../hooks/useLeagueForm';
 
 export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) {
-  console.log(data);
   const { valueStatusSolution, setValueStatusSolution, currentLeague } = useContext(LeagueContext);
   const initialValues = {
     name: data.name,
@@ -99,5 +98,5 @@ export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) 
   EditLeagueForm.propTypes = {
     onRequestClose: PropTypes.func.isRequired, 
     onHandleLeague: PropTypes.func.isRequired,
-    data: PropTypes.array.isRequired
+    data: PropTypes.object.isRequired
   }

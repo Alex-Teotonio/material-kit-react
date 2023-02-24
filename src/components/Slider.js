@@ -150,5 +150,5 @@ export default function CustomizedSlider({value, onChange, name}) {
 CustomizedSlider.propTypes = {
   value: PropTypes.number,
   onChange: PropTypes.func,
-  name: PropTypes.func,
+  name: PropTypes.string.isRequired,
 }

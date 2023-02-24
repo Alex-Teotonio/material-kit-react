@@ -40,8 +40,6 @@ export default function Ca1() {
     .min(0, 'O valor mínimo para "Max" é 0')
     .required('O campo "Max" é obrigatório'),
     teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
-    type: Yup.string().required('Selecione uma opção para "Type"'),
-    mode: Yup.string().required('Selecione uma opção para "Mode"'),
     slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo')
   });
 

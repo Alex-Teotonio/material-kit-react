@@ -35,7 +35,7 @@ export default function DataTable(
 }
 
 DataTable.propTypes = {
-  columnData: propTypes.object,
+  columnData: propTypes.array.isRequired,
   rowsData: propTypes.object,
   onHandleCheckbox: propTypes.func,
   onHandleClickSelected: propTypes.func,

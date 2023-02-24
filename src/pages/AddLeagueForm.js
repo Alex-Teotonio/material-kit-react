@@ -18,8 +18,6 @@ export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
 
     if (validate()) {
       try {
-
-        console.log(values)
         const { data } = await api.post('/league', values);
         onHandleLeague(data);
         onRequestClose();

@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
-
+import toast from '../utils/toast';
+import Loader from '../components/Loader';
+import { delay } from '../utils/formatTime';
 
 const itemsRadioType = [
   {id: 'hard', title: 'Hard'},
@@ -15,6 +19,7 @@ const itemsRadioMode = [
 
 
 export default function Ca4() {
+  const navigate = useNavigate();
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA4',
@@ -25,7 +30,19 @@ export default function Ca4() {
       teams2Selected: [],
       slots: [],
       penalty: 70
-    })
+    });
+    const [isLoading, setIsLoading] = useState(false);
+
+    const validationSchema = Yup.object().shape({
+      max: Yup.number()
+      .typeError('Campo Max é obrigatório')
+      .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+      .required('O campo "Jogos consecutivos" é obrigatório'),
+      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      slots: Yup.array().min(1, 'Defina ao menos um intervalo de tempo'),
+      teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    });
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
@@ -47,35 +64,53 @@ export default function Ca4() {
   const handleValueInArray = (data, campo) => data.map((d) => d[campo])
 
   const handleSubmitValue = async () =>{
-    const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-    const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-    const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
-    const teamForm = handleValueInArray(values.teamsSelected, 'id' );
-    const team2Form = handleValueInArray(values.teams2Selected, 'id' );
-    const slotForm = handleValueInArray(values.slots, 'id' );
-    const leagueId = currentLeague.id;
-    const mode2 = 'GLOBAL';
-    const {max, penalty, mode, type} = values;
-    
-    await api.post('/ca4', {
-      max,
-      mode,
-      mode2,
-      type,
-      leagueId,
-      teamForm,
-      team2Form,
-      slotForm,
-      penalty,
-      slotPublicId,
-      teamPublicId,
-      team2PublicId
-    });
+
+
+    try {
+      setIsLoading(true);
+      await delay(400);
+      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
+      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
+      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
+      const teamForm = handleValueInArray(values.teamsSelected, 'id' );
+      const team2Form = handleValueInArray(values.teams2Selected, 'id' );
+      const slotForm = handleValueInArray(values.slots, 'id' );
+      const leagueId = currentLeague.id;
+      const mode2 = 'GLOBAL';
+      const {max, penalty, mode, type} = values;
+      
+      await api.post('/ca4', {
+        max,
+        mode,
+        mode2,
+        type,
+        leagueId,
+        teamForm,
+        team2Form,
+        slotForm,
+        penalty,
+        slotPublicId,
+        teamPublicId,
+        team2PublicId
+      });toast({
+        type: 'success',
+        text: 'Restrição cadastrada com sucesso'
+      })
+      navigate(`/dashboard/restrictions`);
+    }  catch(e) {
+      toast({
+        type: 'error',
+        text: 'Houve um erro durante a operação'
+      })
+    } finally {
+      setIsLoading(false);
+    }
     
   }
 
   return (
     <>
+      <Loader isLoading={isLoading}/>
       <FormRestrictions 
         initialValues={values}
         handleChangeValues={handleChangeInput}
@@ -83,6 +118,7 @@ export default function Ca4() {
         itemsRadioType={itemsRadioType}
         itemsRadioMode={itemsRadioMode}
         onHandleSubmit={handleSubmitValue}
+        validationSchema={validationSchema}
       />
     </>
   )

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import * as XLSX from 'xlsx';
 import {
   Avatar,
+  Button,
   Stack,
   Table,
   TableBody,
@@ -65,6 +67,67 @@ export default function Games({data, slots, teams}) {
     setPage(0);
   };
 
+  const exportToExcel = (data, slots, teams) => {
+    const worksheet = buildWorksheet(data, slots, teams);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    saveAsExcelFile(excelBuffer, 'table.xlsx');
+  }
+  
+const buildWorksheet = (data) => {
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    ['Slot', 'Casa', '', 'Fora', 'Local'],
+    ...data.map(d => [
+      findSlots(d.slot),
+      findTeams(d.home).name,
+      'vs',
+      findTeams(d.away).name,
+      findTeams(d.home).venue,
+    ]),
+  ], {cellDates: false, sheetFormat: {baseColWidth: 20}});
+
+  // Definir a altura da primeira linha do cabeçalho e deixar o texto em negrito
+  const headerRow = 1;
+  const headerStyle = { font: { bold: true } };
+  worksheet['!rows'] = [{ hpt: 40, hpx: 40 }];
+  worksheet[`A${headerRow}:E${headerRow}`].forEach((cell) => {
+    cell.s = headerStyle;
+  });
+
+  // Inserir as imagens na planilha
+  data.forEach((d, rowIndex) => {
+    const homeTeam = findTeams(d.home);
+    const img = new Image();
+    img.src = homeTeam.url;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const cellRef = XLSX.utils.encode_cell({r: rowIndex+1, c: 1}); // célula da coluna "Casa"
+      XLSX.utils.sheet_add_image(worksheet, canvas, {tl: {col: 1, row: rowIndex+1}, br: {col: 2, row: rowIndex+2}}); // insere a imagem na planilha
+      worksheet[cellRef].s = {alignment: {vertical: 'center', horizontal: 'left'}}; // alinha o texto à esquerda e centraliza verticalmente
+    }
+  });
+  return worksheet;
+}
+
+  const saveAsExcelFile = (buffer, fileName) => {
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  const handleExport = () => {
+    exportToExcel(data)
+  }
 
   const classes = useStyles();
   const findTeams = (publicid) => {
@@ -129,6 +192,7 @@ export default function Games({data, slots, teams}) {
     onPageChange={handleChangePage}
     onRowsPerPageChange={handleChangeRowsPerPage}
   />
+   <Button variant="contained" onClick={handleExport}>Exportar para Excel</Button>
   </>
     
   )
