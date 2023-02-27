@@ -67,10 +67,8 @@ export default function Br2() {
 
   const handleSubmitValue = async () => {
     try {
-      setIsLoading(true);
-      await delay(400)
-    const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-    const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
+    setIsLoading(true);
+    await delay(400)
     const teamForm = handleValueInArray(values.teamsSelected, 'id' );
     const slotForm = handleValueInArray(values.slots, 'id' );
     const leagueId = currentLeague.id;
@@ -78,7 +76,7 @@ export default function Br2() {
     const homeMode = 'HA';
     const {intp,penalty, type} = values;
     
-    await api.post('/br2', {homeMode, mode,intp, type, leagueId, teamForm,slotForm,penalty,slotPublicId,teamPublicId});
+    await api.post('/br2', {homeMode, mode,intp, type, leagueId, teamForm,slotForm,penalty});
     toast({
       type: 'success',
       text: 'Restrição cadastrada com sucesso'

@@ -26,7 +26,6 @@ export default function DataTable(
         getRowId={(row) => row.id}
         onSelectionModelChange={(ids) => {
           onHandleCheckbox(ids)
-          onHandleClickSelected()
         }}
         checkboxSelection
       />

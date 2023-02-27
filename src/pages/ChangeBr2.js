@@ -101,8 +101,6 @@ export default function ChangeBr2() {
     try
     {
       setIsLoading(true)
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
@@ -117,8 +115,6 @@ export default function ChangeBr2() {
       teamForm,
       slotForm,
       penalty,
-      slotPublicId,
-      teamPublicId,
       oldSlotsIds,
       oldTeamsIds});
 

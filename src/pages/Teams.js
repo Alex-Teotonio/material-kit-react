@@ -10,8 +10,6 @@ import Modal from '../components/Modal';
 import FormTeams from "../components/FormTeams";
 import { delay } from '../utils/formatTime'
 import api from '../services/api';
-import {colors} from '../components/color-utils/Colors';
-import setRandomColor from '../components/color-utils/ColorsAleatory';
 import Loader from '../components/Loader';
 import { LeagueContext } from "../hooks/useContextLeague";
 import Snackbar from '../components/SnackBar';
@@ -25,21 +23,29 @@ export default function Teams() {
   const {t} = useTranslation();
   const [isOpenModal, setIsOpenModal] = useState();
   const [teamSelected, setTeamSelected] = useState({});
-  const [color, setColors] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const {currentLeague} = useContext(LeagueContext)
+  const [teamColors, setTeamColors] = useState({});
+  const {currentLeague, teamColor, setTeamColor} = useContext(LeagueContext)
 
   const [message, setMessage] = useState(0);
   const [severity, setSeverity] = useState('');
 
   useEffect(() => {
-    function getColors() {
-
-      colors.map((c) => c)
-      setColors(setRandomColor())
+    async function loadData() {
+      const token = localStorage.getItem('token')
+      if(token) {
+        api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
+      }
+      const data = await loadTeams(currentLeague.id);
+      const colors = {};
+      data.forEach(team => {
+        colors[team.id] = setTeamColor(team);
+      });
+      setTeamColors(colors);
+      setTeams(data)
     }
-    getColors()
-  },[])
+    loadData();
+  },[]);
 
   
   const columns = [
@@ -49,7 +55,7 @@ export default function Teams() {
         <Stack>
           <Avatar 
             key={cellValues.row.id}
-            sx={{backgroundColor: setRandomColor()}}
+            style={{ backgroundColor: `${teamColor[cellValues.row?.id]}` }}
             sizes="20"
             src={cellValues.row?.url}
             children={<small>{cellValues.row?.initials}</small>}

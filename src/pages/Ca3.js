@@ -70,15 +70,13 @@ export default function Ca3() {
     try {
       setIsLoading(true);
       await delay(400)
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const team2Form = handleValueInArray(values.teams2Selected, 'id' );
       const leagueId = currentLeague.id;
       const mode2 = 'SLOTS';
       const {max,intp, penalty, mode, type} = values;
       
-      await api.post('/ca3', {max, mode,intp, mode2, type, leagueId, teamForm,team2Form, penalty,teamPublicId,team2PublicId});
+      await api.post('/ca3', {max, mode,intp, mode2, type, leagueId, teamForm,team2Form, penalty});
 
       toast({
         type: 'success',

@@ -23,7 +23,7 @@ export default function Ga1() {
       teams2Selected: [],
       slots: [],
       penalty: 70,
-      gameId: 0
+      games: []
     })
 
   const currentLeagueString = localStorage.getItem('myLeague');
@@ -43,28 +43,29 @@ export default function Ga1() {
     })
   }
 
-  const handleChangeTeams = (name, value) => {
-
+  const handleChangeTeams = (e, value, name) => {
     setValues({
       ...values,
       [name]: value
     })
   }
+  
+  const handleValueInArray = (data, campo) => data.map((d) => d[campo]);
   const handleSubmitValue = async () =>{
     try{
       setIsLoading(true);
       await delay(400);
-      const slotId = values.slots
+      const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
-      const {gameId,min,max, penalty, type} = values;
+      const {games,min,max, penalty, type} = values;
       
 
-      const game_id = gameId
+      const game_id = games
       await post('/ga1', {
         min,
         max,
         type,
-        slotId,
+        slotForm,
         leagueId,
         penalty,
         game_id

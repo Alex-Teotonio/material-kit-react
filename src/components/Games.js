@@ -12,6 +12,8 @@ import {
   TableHead,
   Typography
 } from '@mui/material';
+
+import {SaveAlt as SaveAltIcon } from '@mui/icons-material'
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/styles";
 
@@ -28,7 +30,7 @@ const useStyles = makeStyles(() => ({
     borderCollapse: 'separate'
   },
   table: {
-    height: "70vh"
+    height: "50vh"
   },
   center: {
     textAlign: 'center'
@@ -41,6 +43,11 @@ const useStyles = makeStyles(() => ({
   },
   tableCell: {
     border: "5px solid rgba(241,243,244,1)",
+  },
+
+  exportButton: {
+    float: 'right',
+    marginTop: '16px'
   }
 }));
 
@@ -192,7 +199,14 @@ const buildWorksheet = (data) => {
     onPageChange={handleChangePage}
     onRowsPerPageChange={handleChangeRowsPerPage}
   />
-   <Button variant="contained" onClick={handleExport}>Exportar para Excel</Button>
+   <Button
+    variant="contained"
+    startIcon={<SaveAltIcon />}
+    onClick={handleExport}
+    className={classes.exportButton}
+  >
+    Exportar para Excel
+  </Button>
   </>
     
   )

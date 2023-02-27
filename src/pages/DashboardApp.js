@@ -163,10 +163,9 @@ export default function DashboardApp() {
   }
 
   const handleClickCheckbox = (arrayLeaguesSelected) => {
-    setLeaguesSelected(arrayLeaguesSelected)
+    setLeaguesSelected(arrayLeaguesSelected);
   }
-
-  const handleClickSelected = () => {}
+  const handleClickSelected = (params) => {console.log(params)}
   
   const handleDeleteLeague = async () => {
     try {

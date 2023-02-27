@@ -12,35 +12,42 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  Select as MuiSelect} from '@mui/material';
+  Select as MuiSelect,
+  Tooltip
+} from '@mui/material';
+
+import { Sports , Send,DoubleArrow, Settings, WatchLater} from '@mui/icons-material';
 
 import { PropTypes } from 'prop-types';
-import { Send,DoubleArrow} from '@mui/icons-material';
   import Loader from '../Loader'
 import SliderCustom from "../Slider";
 import {get} from '../../services/requests';
 
 import Input from '../Input';
-import RadioGroupCustomize from '../RadioGroupCustomize';
+import ContainerInline from '../BasicRestrictions/Utilities'
 import AppBar from '../AppBar';
 import MultipleSelectChip from '../MultSelect';
 
 import GameModal from '../../pages/ModalGames'
 
-
 import Select from '../SelectDefault'
 
-const useStyle = makeStyles(() => ({
- root: {
-  '& .MuiFormControl-root': {
-    margin: '8px',
-
-    '& .MuiFormLabel-root': {
-      fontSize: '12px'
-    }
-  }
- }
-}))
+const useStyles = makeStyles(() => ({
+  root: {
+    "& .MuiTextField-root": {
+      margin: '12px',
+    },
+  },
+  column: {
+    display: "inline-block",
+    verticalAlign: "top",
+    width: "50%",
+    marginTop: '8px'
+  },
+  button: {
+    margin: '12 px',
+  },
+}));
 
 export default function FormRestrictions(props) {
   const currentLeagueString = localStorage.getItem('myLeague');
@@ -108,6 +115,7 @@ export default function FormRestrictions(props) {
     })
   }
   const handleInputChangeMultSelect = (e,newTeamValue , name) => {
+    console.log('FOrmGa1', e, newTeamValue, name)
     setValues({
       ...values,
       [name]: newTeamValue
@@ -131,7 +139,15 @@ export default function FormRestrictions(props) {
     onHandleSubmit();
   }
 
-
+  const handleClickSelectAll = (name) => {
+    const renderValues = {'teamsSelected': teams,'teams2Selected': teams, 'slots':slots}
+    const selectAll = renderValues[name]
+    setValues({
+      ...values,
+      [name]: selectAll
+    })
+    handleChangeMultipleValues(null,selectAll, name)
+  }
 
   const handleOpenModal = () => {
     setIsOpenModal(true)
@@ -156,7 +172,12 @@ export default function FormRestrictions(props) {
     onHandleGames(gameId)
   };
 
-  const classes = useStyle();
+  const gameOptions = games.map((game) => {
+    const optionLabel = `${game.teamshome.name} x ${game.teamsaway.name}`;
+    return { id: game.id, name: optionLabel };
+  });
+
+  const classes = useStyles();
   return (
     <>
     <Card>
@@ -165,97 +186,218 @@ export default function FormRestrictions(props) {
       <GameModal open={isOpenModal} onClose={handleCloseModal} onSave={() => {}}/>
       <CardContent>
         <form className={classes.root} onSubmit={handleSubmit}>
-          <Grid container>
-            <Grid container item>
-              <Grid item xs={6}>
-                  <Input value={values.max}
-                    onChange={handleInputChange}
-                    name="max"
-                    disabled={!values.max && values.max !== 0}
-                    label="Max"
-                    type="number"
-                  />
-                  <Input value={values.min}
-                    onChange={handleInputChange}
-                    disabled={!values.min && values.min !== 0}
-                    name="min"
-                    label="Min"
-                    type="number"
-                  />
-              </Grid>
-              <Grid item xs={6}>
-                  <Select 
-                  dataSelect={slots}
-                  onHandleChange={handleInputChangeSelect}
-                  label="Intervalo de tempo"
-                  valueSelect={values.slots}
-                  name="slots"
-                  />
-              </Grid>
-
-            </Grid>
-            <Grid container item>              
-              <Grid item xs={6}>
-                <Stack direction="row" divider={<Divider sx={{marginLeft: '35px', marginRight: '50px'}} orientation="vertical" flexItem />} sx={{marginTop: 2}}>
-                  <RadioGroupCustomize 
-                    name="type"
-                    label="Type"
-                    value={values.type}
-                    onChange={handleInputChange}
-                    items={itemsRadioType}
-                  />
-                </Stack>
-              </Grid>
-            </Grid>
-            <Grid container item>
-              <Grid item xs={6}>
-                <SliderCustom
-                  name="penalty"
-                  value={values.penalty}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Stack direction='row' spacing={2} alignItems="center">
-                <MuiSelect sx={{width: '500px'}}
-                  multiple
-                  value={selectedGames.map(game => game.id)}
-                  onChange={handleGameSelect}
-                  renderValue={selected => (
-                    <div>
-                      {selected.map(gameId => {
-                        const game = games.find(game => game.id === gameId);
-                        return (
-                          <div key={game.id}>
-                            {game.teamshome.name} x {game.teamsaway.name}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                >
-                  {games.map(game => (
-                    <MenuItem key={game.id} value={game.id}>
-                      {game.teamshome.name} x {game.teamsaway.name}
-                    </MenuItem>
-                  ))}
-                </MuiSelect>
-                  <Button onClick={handleOpenModal}variant="outlined"sx={{height: '55px'}}startIcon={<DoubleArrow/>}>Add Game</Button>
-                </Stack>
-              </Grid>
-            </Grid>
-          <Grid />
-        </Grid>
-
-        <Box sx={{ marginTop: '50px',right: '15px', float: 'right', bottom: '25px', position:'relative'}} >
-          <Button 
-            endIcon={<Send/>}
-            variant="contained"
-            type="submit" >
-              {labelButton}
-          </Button>
+        <div className={classes.column}>
+        <Tooltip 
+          title="Defina a quantidade de jogos ao qual a restrição será aplicada."
+          sx={{ 
+            backgroundColor: '#ececec',
+            color: 'white' 
+          }}
+        >
+        <Box sx={{ 
+            display: 'flex',
+            alignItems: 'center',
+            whiteSpace: 'nowrap'
+          }}>
+            <Button 
+              sx={{ 
+                marginLeft: '8px',
+                color:"#2065D1",
+                width: '150px'
+              }}
+              variant="string"
+              startIcon={<Sports/>}
+            >
+              Nº min de jogos
+            </Button>
+          <Input value={values.max}
+            onChange={handleInputChange}
+            name="max"
+            disabled={!values.max && values.max !== 0}
+            label="Max"
+            type="number"
+            widthProp ='250px'
+          />
+          <Input value={values.min}
+            onChange={handleInputChange}
+            disabled={!values.min && values.min !== 0}
+            name="min"
+            label="Min"
+            type="number"
+            widthProp ='250px'
+          />
         </Box>
+        </Tooltip>
+<Tooltip 
+  title="Defina a importcia dessa restrição."
+  sx={{ 
+    backgroundColor: 'gray',
+    color: 'white' 
+  }}
+  >
+  <Box 
+    sx={{ 
+      display:'flex',
+      alignItems: 'center',
+      marginBottom: '12px'
+    }}
+  >
+    <Button 
+      sx={{
+        marginLeft:'8px',
+        color:"#2065D1" ,
+        width: '150px'
+      }}
+      variant="string"
+      startIcon={<Settings/>}
+    >
+      Prioridade
+    </Button>
+
+    <MuiSelect
+      name="type"
+      label="Type"
+      value={values.type}
+      onChange={handleInputChange}
+      sx={{marginLeft: '14px',width: '500px'}}
+    >
+      {
+        itemsRadioType.map((item) => (
+          <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
+        ))
+      }
+    </MuiSelect>
+  </Box>
+  </Tooltip>
+
+  <SliderCustom
+    name="penalty"
+    value={values.penalty}
+    onChange={handleInputChange}
+  />
+</div>
+
+      <div  className={classes.column}>
+      <Box sx={{ 
+        marginTop: '50px',
+        right: '15px',
+        top: '17px',
+        position: 'absolute'
+      }}>
+        <Button 
+          onClick={handleOpenModal}
+          variant="string"
+          sx={{height: '25px'}}
+          startIcon={<DoubleArrow/>}
+        >
+          Add Game
+        </Button>
+      </Box>
+
+      <Box 
+        sx={{ 
+          display: 'flex',
+          alignItems: 'center',
+          whiteSpace: 'nowrap',
+          marginBottom: '12px'
+        }}
+      >
+      <Button 
+        sx={{ 
+          marginLeft: '8px',
+          color:"#2065D1",
+          width: '100px'
+        }}
+        variant="string"
+        startIcon={<WatchLater/>}
+      >
+        Slots
+      </Button>
+        {/* <Select 
+        dataSelect={slots}
+        onHandleChange={handleInputChangeSelect}
+        label="Intervalo de tempo"
+        valueSelect={values.slots}
+        name="slots"
+        /> */}
+
+
+<ContainerInline onHandleClick={handleClickSelectAll} name="slots">
+  <MultipleSelectChip
+    dataMultSelect={slots}
+    valueMultSelect={values.slots}
+    disabled={!values.slots}
+    name="slots"
+    labelMultSelect="Intervalo de tempo"
+    placeholderMultSelect=""
+    onHandleChange={handleInputChangeMultSelect}
+  />
+</ContainerInline>
+        </Box>
+        <Box
+          sx={{ 
+            display: 'flex',
+            alignItems: 'center',
+            whiteSpace: 'nowrap',
+            marginBottom: '12px'
+          }}
+        >
+        <Button 
+          sx={{ 
+            marginLeft: '8px',
+            color:"#2065D1",
+            width: '100px'
+          }}
+          variant="string"
+          startIcon={<WatchLater/>}
+        >
+          Games
+        </Button>
+        {/* <MuiSelect sx={{width: '500px'}}
+          multiple
+          value={selectedGames.map(game => game.id)}
+          onChange={handleGameSelect}
+          renderValue={selected => (
+            <div>
+              {selected.map(gameId => {
+                const game = games.find(game => game.id === gameId);
+                return (
+                  <div key={game.id}>
+                    {game.teamshome.name} x {game.teamsaway.name}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        >
+          {games.map(game => (
+            <MenuItem key={game.id} value={game.id}>
+              {game.teamshome.name} x {game.teamsaway.name}
+            </MenuItem>
+          ))}
+        </MuiSelect> */}
+
+<ContainerInline onHandleClick={handleClickSelectAll} name="games">
+  <MultipleSelectChip
+    dataMultSelect={gameOptions}
+    valueMultSelect={values.games}
+    name="games"
+    labelMultSelect="Games"
+    placeholderMultSelect=""
+    onHandleChange={handleInputChangeMultSelect}
+  />
+</ContainerInline>
+        </Box>
+      <Box sx={{ marginTop: '50px', right: '15px', float: 'right', bottom: '0px', position: 'relative' }}>
+        <Button 
+          endIcon={<Send />}
+          variant="contained"
+          type="submit"
+        >
+          {labelButton}
+        </Button>
+      </Box>
+      </div>
       </form>
     </CardContent>
   </Card>

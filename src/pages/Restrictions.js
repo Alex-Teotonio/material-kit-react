@@ -1,13 +1,25 @@
 import {useEffect, useState , useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Avatar, Grid, Button,Dialog as MuiDialog, DialogTitle, Paper, ButtonGroup,Stack, Typography, DialogContent, DialogActions} from '@mui/material';
+import {
+    Avatar,
+    AvatarGroup,
+    Grid,
+    Button,
+    Dialog as MuiDialog,
+    DialogTitle,
+    Paper,
+    ButtonGroup,
+    Stack,
+    Typography,
+    DialogContent,
+    DialogActions
+} from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import {DeleteOutline, AddCircle,NotInterested,Visibility,Help,FileCopyOutlined} from '@mui/icons-material';
+import {DeleteOutline, AddCircle,NotInterested,Visibility,Help} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
 
-import api from '../services/api';
 import {loadTeams} from '../services/requests'
 
 import setRandomColor from '../components/color-utils/ColorsAleatory'
@@ -22,13 +34,10 @@ export default function Restrictions() {
 
     const {t} = useTranslation();
     const navigate = useNavigate();
-    const [anchorEl, setAnchorEl] = useState(null);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [restrictionsSelected, setRestrictionsSelected] = useState([])
-    const [restrictionsSelected2, setRestrictionsSelected2] = useState([])
     const [newSelected, setNewSelected] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
-    const {restrictions , loadRestrictions, deleteRestriction} = useContext(LeagueContext);
+    const {restrictions , loadRestrictions, deleteRestriction, teamColor, setTeamColor} = useContext(LeagueContext);
     const [teams, setTeams] =  useState([]);
     const currentLeagueString = localStorage.getItem('myLeague');
     const currentLeague = JSON.parse(currentLeagueString);
@@ -39,6 +48,10 @@ export default function Restrictions() {
             async function loadData() {
                 await loadRestrictions();
                 const data = await loadTeams(currentLeague.id);
+                const colors = {}
+                data.forEach(team => {
+                    colors[team.id] = setTeamColor(team);
+                  });
                 setTeams(data)
             }
             loadData()
@@ -56,38 +69,36 @@ export default function Restrictions() {
         { 
             field: 'type_constraint',
             headerName: t('headTableCategory'),
-            width: 80,
+            width: 100,
             align: 'center',
             headerAlign: 'center',
             disableClickEventBubbling: true
         },
         { field: 'type', headerName: t('headTableType'), width: 90, align: 'center',headerAlign: 'center' },
         { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
-        {
-            field: 'teams',
-            headerName: 'Aplica a',
-            renderCell: (cellValues) => (
-                <div>
-                    <ButtonGroup>
-                        <Button 
-                            variant="string"
-                            color="primary"
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                handleClickGroup1(cellValues.row)
-                            }}
-                            endIcon={<Visibility/>}
-                        >
-                            Exibir
-                        </Button>
-                    </ButtonGroup>
-                </div>
-              ),
-            width: 400,
-            align:'center',
-            headerAlign: 'center'
-          },
-        { field: 'criado_em', headerName: t('headTableCreated'), width: 250, headerAlign: 'center', align: 'center' },
+        { field: 'max', headerName: 'Nº Max De Jogos', width: 150 , align: 'center',headerAlign: 'center'},
+        { 
+          field: 'teams', 
+          headerName: 'Aplica a', 
+          width: 400,
+          align: 'center',
+          headerAlign: 'center',
+          renderCell: (params) => (
+            <AvatarGroup max={params.row?.teams.length}>
+              {params.row?.teams.map((t) => {
+                const team = teams.find((te) => te.id === t)
+                return(
+                <Avatar
+                    sizes="20"
+                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    src={team?.url}
+                    children={<small>{team?.initials}</small>} key={team?.id}
+                />
+              )})}
+            </AvatarGroup>
+          )
+        },
+        { field: 'criado_em', headerName: t('headTableCreated'), width: 250, headerAlign: 'center', align: 'center' }
     ];
 
     const handleClickButtonDelete = async () => {
@@ -105,25 +116,6 @@ export default function Restrictions() {
             })
         }
     }
-
-        
-    const handleClickGroup1 = (params) => {
-        let arrayTeamsRestrictions = []; 
-        let arrayTeamsRestrictions2 = []
-        if(params.teams.split(';').length > 0){
-            arrayTeamsRestrictions = params.teams.split(';').map((value) => teams.find((team) => parseInt(value,10) === team.id))
-        }
-
-        if(params.teams2 && params.teams2.split(';').length > 0){
-            arrayTeamsRestrictions2 = params.teams2.split(';').map((value) => teams.find((team) => parseInt(value,10) === team.id))
-        }
-        setRestrictionsSelected(arrayTeamsRestrictions)
-        setRestrictionsSelected2(arrayTeamsRestrictions2)
-        setAnchorEl(true);
-    }
-    const handleCloseGroup1 = () => {
-    setAnchorEl(false);
-    };
     const handleDeleteLeague = () => {
         handleClickButtonDelete()
     }
@@ -188,66 +180,7 @@ export default function Restrictions() {
                 {t('buttonAdd')}
             </Button>
         </Paper>
-{/*  */}
-        <MuiDialog onClose={handleCloseGroup1} open={anchorEl}>
-            <DialogTitle sx={{textAlign: 'center', marginBottom: '20px'}}>
-                <ButtonGroup fullWidth variant="outlined">
-                    <Button endIcon={<NotInterested/>}>Aplica a</Button>
-                    <Button size="small" sx={{width: '35px'}} endIcon={<Help/>} />
-                </ButtonGroup>
-            </DialogTitle>
-            <DialogContent style={{minWidth: '400px'}}>
-                <Grid container spacing={restrictionsSelected2.length > 0 ? 17 : 0}>
-                
-                    <Grid container item xs={restrictionsSelected2.length > 0 ? 6 : 12} direction="column" justifyContent="center">
-                        <Typography variant='subtitle1' align="center" gutterBottom>Teams-Gp1</Typography>
-                        {
-                            restrictionsSelected.map((value) => (
-                                <Stack direction="row" key={value.id} alignItems="center" spacing={1} justifyContent="center">
-                                <Avatar
-                                    key={value?.id}
-                                    src={value?.url}
-                                    children={<small>{value?.initials}</small>}
-                                    sx={{margin: '10px 0px'}}
-                                />
-                                <Typography>{value.name}</Typography>
-                                </Stack>
-                            ))
-                        }
-                    </Grid>
-                
-                { 
-                
-                restrictionsSelected2.length  > 0 && 
-                <>                 
-                    <Grid container item xs={6} direction="column">
-                    <Typography variant='subtitle1' align="center" gutterBottom>Teams-Gp2</Typography>
-                    {
-                        restrictionsSelected2.map((value) => (
-                            <Stack direction="row" key={value.id} alignItems="center" spacing={1} justifyContent="center">
-                            <Avatar
-                                key={value?.id}
-                                src={value?.url}
-                                children={<small>{value?.initials}</small>}
-                                sx={{margin: '10px 0px'}}
-                            />
-                            <Typography align='center'>{value.name}</Typography>
-                            </Stack>
-                        ))
-                    }
-                    </Grid>
-                </>
-                }
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseGroup1}>
-                    Fechar
-                </Button>
-            </DialogActions>
-            
-        </MuiDialog>
-        </>
+    </>
 
     );
 }

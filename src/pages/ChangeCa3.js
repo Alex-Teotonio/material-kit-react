@@ -118,8 +118,6 @@ export default function ChangeCa3() {
         teamForm,
         team2Form,
         penalty,
-        teamPublicId,
-        team2PublicId,
         oldTeamsIds,
         oldTeams2Ids
       });

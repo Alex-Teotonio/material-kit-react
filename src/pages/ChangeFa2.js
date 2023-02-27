@@ -101,14 +101,12 @@ export default function ChangeFa2() {
     try
     {
       setIsLoading(true)
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
       const {intp, mode,penalty, type} = values;
     
-     await put(`/fa2/${id}`, {intp, mode, type, leagueId, teamForm,slotForm, penalty,slotPublicId,teamPublicId, oldSlotsIds,oldTeamsIds});
+     await put(`/fa2/${id}`, {intp, mode, type, leagueId, teamForm,slotForm, penalty, oldSlotsIds,oldTeamsIds});
 
      toast({
       type: 'success',

@@ -69,9 +69,7 @@ export default function Ca1() {
 
     try {
       setIsLoading(true);
-      await delay(500)
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
+      await delay(500);
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
@@ -85,8 +83,6 @@ export default function Ca1() {
         teamForm,
         slotForm,
         penalty,
-        slotPublicId,
-        teamPublicId
       });
 
       toast({

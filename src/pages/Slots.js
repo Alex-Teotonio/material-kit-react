@@ -1,3 +1,5 @@
+import 'regenerator-runtime/runtime';
+
 import { useEffect, useState, useCallback } from 'react';
 import {Button,ButtonGroup,Paper } from '@mui/material';
 import { AccessTimeTwoTone } from "@mui/icons-material";
@@ -13,6 +15,8 @@ import {get, put } from '../services/requests';
 export default function Slots() {
     
     const [slots, setSlots] = useState([]);
+    const [updatedRows, setUpdatedRows] = useState([]);
+
     const {t} = useTranslation();
     const currentLeagueString = localStorage.getItem('myLeague');
     const currentLeague = JSON.parse(currentLeagueString);
@@ -34,7 +38,6 @@ export default function Slots() {
         headerAlign:'center',
         align: 'center' 
       }
-        
     ];
     useEffect(
         () => {
@@ -56,26 +59,63 @@ export default function Slots() {
         }
       ,[])
 
-      const onHandleProcessUpdate = useCallback(
-        async (newRow) => {
-          try {
+      const handleRowEditCommit = useCallback(({ id, field, value }) => {
+        const updatedRow = { id, changes: { [field]: value } };
+        setUpdatedRows((prevRows) => {
+          const index = prevRows.findIndex((row) => row.id === updatedRow.id);
+          if (index > -1) {
+            prevRows[index] = updatedRow;
+            return [...prevRows];
+          }
+          return [...prevRows, updatedRow];
+        });
+    }, []);
+    
+      // const onHandleProcessUpdate = useCallback(
+      //   async (newRow) => {
+      //     try {
+      //       setIsLoading(true)
+      //       await delay(300)
+      //       const {id, name, league_id} = newRow
+      //       const leagueId = league_id
+      //       await put(`/slot/${id}`, {name, leagueId});
+      //       toast({
+      //         type: 'success',
+      //         text: 'Atualizado com sucesso!'
+      //       })
+      //     } catch {
+      //       setIsLoading(false)
+      //     } finally {
+      //       setIsLoading(false)
+      //     }
+      //   },
+      //   [],
+      // );
+
+      const onHandleProcessUpdate = useCallback(async () => {
+        try {
             setIsLoading(true)
             await delay(300)
-            const {id, name, league_id} = newRow
-            const leagueId = league_id
-            await put(`/slot/${id}`, {name, leagueId});
-            toast({
-              type: 'success',
-              text: 'Atualizado com sucesso!'
+            const updatePromises = updatedRows.map(async (updatedRow) => {
+                const { id, changes } = updatedRow;
+                const leagueId = currentLeague.id;
+                console.log(changes)
+                await put(`/slot/${id}`, { ...changes, leagueId });
             })
-          } catch {
+            await Promise.all(updatePromises);
+            toast({
+                type: 'success',
+                text: 'Atualizado com sucesso!'
+            })
+        } catch {
             setIsLoading(false)
-          } finally {
+        } finally {
             setIsLoading(false)
-          }
-        },
-        [],
-      );
+            setUpdatedRows([]);
+        }
+    }, [currentLeague.id, updatedRows]);
+    
+    
       
     return (
       <>
@@ -86,11 +126,12 @@ export default function Slots() {
       </ButtonGroup>
       {slots && slots.length > 0 &&
         <DataGrid
-          columns={columns}
-          rows={slots} 
-          getRowId={(row) => row.id ? row.id : ""}
-          processRowUpdate={onHandleProcessUpdate}
-          onProcessRowUpdateError={handleRowError}
+        columns={columns}
+        rows={slots}
+        getRowId={(row) => row.id ? row.id : ""}
+        processRowUpdate={onHandleProcessUpdate}
+        onProcessRowUpdateError={handleRowError}
+        onEditCellChange={handleRowEditCommit}
         />
       }
       {/* <Calendar/> */}

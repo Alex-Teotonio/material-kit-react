@@ -56,8 +56,6 @@ export default function ChangeCa4() {
           const ca4Teams2 = await get(`/ca4_teams2/${id}`);
           const newTeams2 = ca4Teams2.map((ca4) => ca4);
           const newTeams2Ids = ca4Teams2.map((ca4) => ca4.id);
-
-          console.log(newTeams)
           setValues(
             {
               typeRestriction: 'CA4',
@@ -109,12 +107,9 @@ export default function ChangeCa4() {
     try {
       setIsLoading(true);
       await delay(400)
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
       const team2Form = handleValueInArray(values.teams2Selected, 'id' );
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
       const leagueId = currentLeague.id;
       const {max, penalty, mode,mode2, type} = values;
       await put(`/ca4/${id}`, {
@@ -127,9 +122,6 @@ export default function ChangeCa4() {
         team2Form,
         slotForm,
         penalty,
-        slotPublicId,
-        teamPublicId,
-        team2PublicId,
         oldTeamsIds,
         oldTeams2Ids,
         oldSlotsIds

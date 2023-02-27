@@ -67,8 +67,6 @@ export default function Fa2() {
     try {
       setIsLoading(true);
       await delay(400)
-    const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-    const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
     const teamForm = handleValueInArray(values.teamsSelected, 'id' );
     const slotForm = handleValueInArray(values.slots, 'id' );
     const leagueId = currentLeague.id;
@@ -76,7 +74,7 @@ export default function Fa2() {
 
     console.log(penalty)
     
-    await api.post('/fa2', {intp, mode, type, leagueId, teamForm,slotForm, penalty,slotPublicId,teamPublicId});
+    await api.post('/fa2', {intp, mode, type, leagueId, teamForm,slotForm, penalty,});
     toast({
       type: 'success',
       text: 'Restrição cadastrada com sucesso'

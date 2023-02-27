@@ -69,9 +69,6 @@ export default function Ca4() {
     try {
       setIsLoading(true);
       await delay(400);
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const team2Form = handleValueInArray(values.teams2Selected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
@@ -88,10 +85,7 @@ export default function Ca4() {
         teamForm,
         team2Form,
         slotForm,
-        penalty,
-        slotPublicId,
-        teamPublicId,
-        team2PublicId
+        penalty
       });toast({
         type: 'success',
         text: 'Restrição cadastrada com sucesso'
@@ -104,22 +98,20 @@ export default function Ca4() {
       })
     } finally {
       setIsLoading(false);
-    }
-    
+    } 
   }
-
   return (
     <>
       <Loader isLoading={isLoading}/>
-      <FormRestrictions 
-        initialValues={values}
-        handleChangeValues={handleChangeInput}
-        handleChangeMultipleValues={handleChangeTeams}
-        itemsRadioType={itemsRadioType}
-        itemsRadioMode={itemsRadioMode}
-        onHandleSubmit={handleSubmitValue}
-        validationSchema={validationSchema}
-      />
+        <FormRestrictions 
+          initialValues={values}
+          handleChangeValues={handleChangeInput}
+          handleChangeMultipleValues={handleChangeTeams}
+          itemsRadioType={itemsRadioType}
+          itemsRadioMode={itemsRadioMode}
+          onHandleSubmit={handleSubmitValue}
+          validationSchema={validationSchema}
+        />
     </>
   )
 }

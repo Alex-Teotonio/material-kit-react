@@ -20,6 +20,7 @@ export function LeagueProvider({ children }) {
 
     const [authenticated, setAuthenticated] = useState(false);
     const [restrictions, setRestrictions] = useState([]);
+    const [teamColor, setTeamColors] = useLocalStorage("teamColors", {});
     
 
     useEffect(() => {
@@ -37,6 +38,17 @@ export function LeagueProvider({ children }) {
         })();
     }, []);
 
+    function setTeamColor(team) {
+      const teamId = team.id;
+      const existingColor = teamColor[teamId];
+      if (existingColor) {
+        return existingColor;
+      } 
+        const newColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+        setTeamColors({ ...teamColor, [teamId]: newColor });
+        return newColor;
+      
+    }
 
     async function handleAddLeaguesForUser(newLeague) {
       try {
@@ -129,7 +141,28 @@ export function LeagueProvider({ children }) {
   }
     return (
         <LeagueContext.Provider
-          value={{saveCurrentLeague,  currentLeague, currentLanguage, saveCurrentLanguage, handleLogin, authenticated, restrictions, handleRestrictions, loadRestrictions, deleteRestriction, dadosUser, solutionExists, setValueStatusSolution,leaguesToUser, handleAddLeaguesForUser,handleLeaguesForUser}}
+          value={
+            {
+              saveCurrentLeague, 
+              currentLeague,
+              currentLanguage,
+              saveCurrentLanguage,
+              handleLogin,
+              authenticated,
+              restrictions,
+              handleRestrictions,
+              loadRestrictions,
+              deleteRestriction,
+              dadosUser,
+              solutionExists,
+              setValueStatusSolution,
+              leaguesToUser,
+              handleAddLeaguesForUser,
+              handleLeaguesForUser,
+              setTeamColor,
+              teamColor
+            }
+          }
         >
           {children}
         </LeagueContext.Provider>
