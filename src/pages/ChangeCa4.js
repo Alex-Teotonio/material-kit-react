@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
 import { useParams, useNavigate } from 'react-router-dom';
 import {get, put} from '../services/requests'
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
@@ -99,6 +100,17 @@ export default function ChangeCa4() {
     })
   }
 
+  const validationSchema = Yup.object().shape({
+    max: Yup.number()
+    .typeError('Campo Max é obrigatório')
+    .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+    .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+    .required('O campo "Jogos consecutivos" é obrigatório'),
+    teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    slots: Yup.array().min(1, 'Defina ao menos um intervalo de tempo'),
+    teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+  });
+
 
   const handleValueInArray = (data, campo) => data.map((d) => d[campo])
 
@@ -143,7 +155,6 @@ export default function ChangeCa4() {
     
     
   }
-  console.log(oldTeams2Ids.length)
   return (
     <>
       <Loader isLoading={isLoading}/>
@@ -156,6 +167,7 @@ export default function ChangeCa4() {
             itemsRadioType={itemsRadioType}
             itemsRadioMode={itemsRadioMode}
             onHandleSubmit={handleSubmitValue}
+            validationSchema={validationSchema}
           />
         )
       }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import * as Yup from 'yup';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import {get, put} from '../services/requests';
 import toast from '../utils/toast';
@@ -79,7 +79,15 @@ export default function ChangeBr2() {
     })();
   }, []);
 
-
+  const validationSchema = Yup.object().shape({
+    intp: Yup.number()
+    .typeError('Defina a quantidade de jogos consecutivos')
+    .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+    .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+    .required('O campo "Jogos consecutivos" é obrigatório'),
+    teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    slots: Yup.array().min(1, "Selecione ao menos um intervalo de tempo")
+  });
   const handleChangeInput = (name, value) => {
     setValues({
       ...values,
@@ -146,6 +154,7 @@ export default function ChangeBr2() {
           itemsRadioType={itemsRadioType}
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
+          validationSchema={validationSchema}
         />
       }
     </>

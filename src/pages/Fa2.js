@@ -71,9 +71,6 @@ export default function Fa2() {
     const slotForm = handleValueInArray(values.slots, 'id' );
     const leagueId = currentLeague.id;
     const {intp, mode,penalty, type} = values;
-
-    console.log(penalty)
-    
     await api.post('/fa2', {intp, mode, type, leagueId, teamForm,slotForm, penalty,});
     toast({
       type: 'success',

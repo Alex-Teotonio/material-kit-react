@@ -3,26 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import {
     Avatar,
     AvatarGroup,
-    Grid,
+    Chip,
     Button,
     Dialog as MuiDialog,
-    DialogTitle,
+    Tooltip,
     Paper,
-    ButtonGroup,
-    Stack,
-    Typography,
-    DialogContent,
-    DialogActions
+    ButtonGroup
 } from '@mui/material';
 import {useTranslation} from 'react-i18next'
-import {DeleteOutline, AddCircle,NotInterested,Visibility,Help} from '@mui/icons-material';
+import {DeleteOutline, AddCircle,NotInterested} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
 
-import {loadTeams} from '../services/requests'
-
-import setRandomColor from '../components/color-utils/ColorsAleatory'
+import {get,loadTeams} from '../services/requests';
 import Dialog from '../components/Dialog';
 
 
@@ -39,31 +33,54 @@ export default function Restrictions() {
     const [openDialog, setOpenDialog] = useState(false);
     const {restrictions , loadRestrictions, deleteRestriction, teamColor, setTeamColor} = useContext(LeagueContext);
     const [teams, setTeams] =  useState([]);
+    const [slots, setSlots] =  useState([]);
     const currentLeagueString = localStorage.getItem('myLeague');
     const currentLeague = JSON.parse(currentLeagueString);
 
     const theme = useTheme()
-    useEffect(
-        () => {
-            async function loadData() {
-                await loadRestrictions();
-                const data = await loadTeams(currentLeague.id);
-                const colors = {}
-                data.forEach(team => {
-                    colors[team.id] = setTeamColor(team);
-                  });
-                setTeams(data)
-            }
-            loadData()
-        },
-        []
-    )
+    useEffect(() => {
+        const loadData = async () => {
+          try {
+            await loadRestrictions();
+            const dataTeams = await loadTeams(currentLeague.id);
+            const slots = await get(`/slot/${currentLeague.id}`);
+            const colors = dataTeams.reduce((obj, team) => {
+              obj[team.id] = setTeamColor(team);
+              return obj;
+            }, {});
+            setTeams(dataTeams);
+            setSlots(slots);
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        loadData();
+      }, []);
+      
     const handleClickButton = () => {
         setIsOpenModal(true)
     }
     const handleClick = (arrayRestrictions) => {
         setNewSelected(arrayRestrictions)
     }
+
+    const renderSlots = (params) => (
+      <div>
+        {params?.row?.slots?.map((slot, index) => (
+          <Tooltip title={slot} key={index}>
+            <Chip
+              size="small"
+              label={slot}
+              variant={slots.length === params.row.slots?.length ? 'default' : 'outlined'}
+              style={{ margin: '2px' }}
+            />
+          </Tooltip>
+        ))}
+        {slots.length === params.row.slots?.length && (
+          <Chip size="small" label="Todos" style={{ margin: '2px' }} />
+        )}
+      </div>
+    );
 
     const columns = [
         { 
@@ -80,12 +97,35 @@ export default function Restrictions() {
         { 
           field: 'teams', 
           headerName: 'Aplica a', 
-          width: 400,
+          width: 320,
+          align: 'center',
+          headerAlign: 'center',
+          renderCell: (params) => {
+            console.log(params.row)
+            return (
+            <AvatarGroup max={4}>
+              {params.row?.teams.map((t) => {
+                const team = teams.find((te) => te.id === t)
+                return(
+                <Avatar
+                    sizes="20"
+                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    src={team?.url}
+                    children={<small>{team?.initials}</small>} key={team?.id}
+                />
+              )})}
+            </AvatarGroup>
+          )}
+        },
+        { 
+          field: 'teams2', 
+          headerName: 'Adversário', 
+          width: 290,
           align: 'center',
           headerAlign: 'center',
           renderCell: (params) => (
-            <AvatarGroup max={params.row?.teams.length}>
-              {params.row?.teams.map((t) => {
+            <AvatarGroup max={4}>
+              {params.row?.teams2?.map((t) => {
                 const team = teams.find((te) => te.id === t)
                 return(
                 <Avatar
@@ -98,7 +138,8 @@ export default function Restrictions() {
             </AvatarGroup>
           )
         },
-        { field: 'criado_em', headerName: t('headTableCreated'), width: 250, headerAlign: 'center', align: 'center' }
+        { field: 'slots', headerName: 'Intervalo de tempo', width: 250, align: 'center', headerAlign: 'center', renderCell: renderSlots },
+        { field: 'criado_em', headerName: t('headTableCreated'), width: 200, headerAlign: 'center', align: 'center' }
     ];
 
     const handleClickButtonDelete = async () => {

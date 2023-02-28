@@ -86,7 +86,8 @@ export default function Ca4() {
         team2Form,
         slotForm,
         penalty
-      });toast({
+      });
+      toast({
         type: 'success',
         text: 'Restrição cadastrada com sucesso'
       })

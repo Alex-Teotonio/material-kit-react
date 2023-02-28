@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
 import {Container} from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom';
 import {get, put} from '../services/requests'
@@ -22,6 +23,15 @@ const itemsRadioMode = [
 export default function ChangeCa1() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const validationSchema = Yup.object().shape({
+    max: Yup.number()
+    .typeError('O campo "Max" é obrigatório')
+    .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
+    .min(0, 'O valor mínimo para "Max" é 0')
+    .required('O campo "Max" é obrigatório'),
+    teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo')
+  });
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA1',
@@ -142,6 +152,7 @@ export default function ChangeCa1() {
           itemsRadioType={itemsRadioType}
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
+          validationSchema={validationSchema}
         />
         </Container>
       }

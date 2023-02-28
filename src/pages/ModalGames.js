@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
+  Avatar,
   Button,
   Dialog,
   DialogActions,
@@ -10,18 +11,26 @@ import {
   FormGroup,
   FormHelperText,
   Select,
-  MenuItem
+  MenuItem,
+  Typography
 } from '@mui/material';
+
+import {Clear} from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid';
 import { makeStyles } from "@material-ui/styles";
 import * as Yup from 'yup';
+import api from '../services/api';
+import { LeagueContext } from '../hooks/useContextLeague';
 import {post,get} from '../services/requests';
+import toast from '../utils/toast'
 
 const validationSchema = Yup.object().shape({
   teamshome: Yup.string().required('Campo obrigatório'),
   teamsaway: Yup.string().required('Campo obrigatório'),
 });
 
-const useStyles = makeStyles((theme) => ({
+
+const useStyles = makeStyles(() => ({
   formControl: {
     margin: 2,
     minWidth: 220,
@@ -35,32 +44,150 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginRight: 2,
   },
+  dataGrid: {
+    height: 400,
+    width: '600px',
+  },
 }));
 
-const GameModal = ({ open, onClose, onSave }) => {
+const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
 
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
+
+  const {teamColor, setTeamColor} = useContext(LeagueContext)
+  const [games, setGames] = useState([]);
   const leagueId = currentLeague.id
   const [formValues, setFormValues] = useState({ teamshome: '', teamsaway: '', leagueId});
   const [teams, setTeams] = useState([]);
   const [formErrors, setFormErrors] = useState({});
+  const [deleteGameId, setDeleteGameId] = useState(null); // estado para armazenar o id do jogo a ser excluído
+
+
   const classes = useStyles();
 
 
   useEffect(() => {
     async function loadData() {
       const response = await get(`/team/${currentLeague.id}`);
-      setTeams(response)
+      const gamesData = await get(`/games/${currentLeague.id}`);
+      response.reduce((obj, team) => {
+        obj[team.id] = setTeamColor(team);
+        return obj;
+      }, {});
+      const gamesWithInitials = gamesData.map(game => ({
+        ...game,
+        initials: `${response.find(team => team.id === game.teamshome)?.initials} X ${response.find(team => team.id === game.teamsaway)?.initials}`
+      }))
+      setGames(gamesWithInitials);
+      setTeams(response);
+      setFormValues(prevValues => ({...prevValues, leagueId: currentLeague.id}));
     }
-    loadData()
-  }, [])
+    loadData();
+  }, []);
+
+  const handleAddGame = (game) => {
+    const teamshome = teams.find(team => team.id === game.teamshome);
+    const teamsaway = teams.find(team => team.id === game.teamsaway);
+    const newGame = {
+      id: game.id,
+      teamshome: game.teamshome,
+      teamsaway: game.teamsaway,
+    };
+    console.log(game)
+    const newGames = [...games, newGame];
+    const gamesWithInitials = newGames.map(game => ({
+      ...game,
+      initials: `${teamshome.initials} X ${teamsaway.initials}`
+    }));
+    setGames(gamesWithInitials);
+  };
+
+
+
+  const getTeamAvatarUrl = (teamId) => {
+    const team = teams.find(t => t.id === teamId);
+
+    return (
+    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
+    <Avatar
+        sizes="20"
+        style={{ backgroundColor: `${teamColor[team?.id]}` }}
+        src={team?.url}
+        children={<small>{team?.initials}</small>} key={team?.id}
+    />
+    <Typography style={{ marginLeft: 8 }}>{team?.name}</Typography>
+    </div>
+    )
+    
+  }
+
+  const deleteButton = (params) => (
+    <Button sx={{color: '#FF4842'}}startIcon={<Clear/>} onClick={() => handleDelete(params.row.id)}>Deletar</Button>
+  )
+
+  const columns = [
+    {
+      field: 'game',
+      headerName: 'Jogo',
+      width: 305,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => (
+        <div style={{ display: 'flex', alignItems: 'center', flexDirection:'row' }}>
+          {getTeamAvatarUrl(params.row.teamshome)}&nbsp;X&nbsp;{getTeamAvatarUrl(params.row.teamsaway)}
+        </div>
+      )
+    },
+    {
+      field: 'delete',
+      headerName: 'Ações',
+      width: 205,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: deleteButton
+    }
+  ];
+
+  const handleDelete = async (gameId) => {
+    setDeleteGameId(gameId); // definir o id do jogo a ser excluído
+  };
+  
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await api.delete(`/games/${deleteGameId}`); // excluir o jogo
+      const newGames = games.filter(game => game.id !== deleteGameId); // atualizar a lista de jogos
+      setGames(newGames);
+      setDeleteGameId(null); // redefinir o id do jogo a ser excluído
+      if(response.status === 204) {
+        onDelete(deleteGameId)
+      }
+      toast({
+        type: 'success',
+        text: 'Jogo deletado com sucesso!'
+      });
+      onClose();
+    } catch (error) {
+      if (error.response.status === 409){
+        toast({
+          type: 'error',
+          text: 'Não foi possível excluir o jogo. Existem restrições vinculadas ao mesmo.'
+        });
+      } else {
+        toast({
+          type: 'error',
+          text: 'Houve um erro na operação.'
+        });
+      }
+      setDeleteGameId(null); // redefinir o id do jogo a ser excluído
+    }
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormValues((prevValues) => ({
       ...prevValues,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -68,9 +195,10 @@ const GameModal = ({ open, onClose, onSave }) => {
     try {
       await validationSchema.validate(formValues, { abortEarly: false });
       const savedGame = await post('/games', formValues);
-      onSave(savedGame);
-      setFormValues({ teamshome: '', teamsaway: '' });
+      handleAddGame(savedGame.data)
+      setFormValues({ teamshome: '', teamsaway: '', leagueId });
       onClose();
+      onAddGame(savedGame.data); // chama a função para adicionar o jogo à restrição
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors = {};
@@ -81,9 +209,10 @@ const GameModal = ({ open, onClose, onSave }) => {
       }
     }
   };
-
+  
   return (
-    <Dialog open={open} onClose={onClose}>
+    <>
+    <Dialog open={open} onClose={onClose} maxWidth="xl">
       <DialogTitle>Adicionar Jogo</DialogTitle>
       <DialogContent>
         <FormGroup className={classes.formGroup}>
@@ -121,6 +250,8 @@ const GameModal = ({ open, onClose, onSave }) => {
       {formErrors.teamsaway && <FormHelperText error>{formErrors.teamsaway}</FormHelperText>}
     </FormControl>
   </FormGroup>
+
+  <DataGrid rows={games} columns={columns} className={classes.dataGrid} />
 </DialogContent>
 
       <DialogActions>
@@ -132,6 +263,21 @@ const GameModal = ({ open, onClose, onSave }) => {
         </Button>
       </DialogActions>
     </Dialog>
+
+      <Dialog
+      open={Boolean(deleteGameId)} // exibir a caixa de diálogo de confirmação somente se houver um jogo a ser excluído
+      onClose={() => setDeleteGameId(null)} // fechar a caixa de diálogo se o usuário clicar no botão de cancelar
+      >
+      <DialogTitle>Confirmar exclusão</DialogTitle>
+      <DialogContent>
+        <Typography>Deseja mesmo excluir o jogo?</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setDeleteGameId(null)}>Cancelar</Button>
+        <Button onClick={handleConfirmDelete} color="error">Excluir</Button>
+      </DialogActions>
+</Dialog>
+</>
   );
 };
 

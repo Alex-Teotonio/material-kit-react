@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import * as Yup from 'yup';
 import { useParams, useNavigate } from 'react-router-dom';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import {get, put} from '../services/requests';
+import { delay } from '../utils/formatTime';
 import toast from '../utils/toast';
 
 import Loader from '../components/Loader';
@@ -38,17 +40,28 @@ export default function ChangeFa2() {
   const currentLeague = JSON.parse(currentLeagueString);
   const [oldSlotsIds, setOldSlotsIds] = useState([]);
   const [oldTeamsIds, setOldTeamsIds] = useState([]);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+
+  const validationSchema = Yup.object().shape({
+    intp: Yup.number()
+    .typeError('Defina a quantidade de jogos consecutivos')
+    .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+    .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+    .required('O campo "Jogos consecutivos" é obrigatório'),
+    teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    slots: Yup.array().min(1, 'Defina ao menos um inervalo de tempo')
+  });
+
 
 
   useEffect(() => {
     (async () => {
       try{
         setIsLoading(true);
+        await delay(400)
         const fa2Response = await get(`/fa2/${id}`);
     
         const fa2Slots = await get(`/fa2_slots/${id}`);
-        console.log(fa2Slots)
         const newSlots = fa2Slots.map((br1) => br1);
         const newSlotsIds = fa2Slots.map((br1) => br1.id);
     
@@ -136,6 +149,7 @@ export default function ChangeFa2() {
           itemsRadioType={itemsRadioType}
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
+          validationSchema={validationSchema}
         />
       }
     </>

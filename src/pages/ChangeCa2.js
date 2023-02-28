@@ -1,4 +1,5 @@
 import { useEffect , useState, useContext } from 'react';
+import * as Yup from 'yup';
 import { useParams, useNavigate } from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import { delay } from '../utils/formatTime';
@@ -37,6 +38,22 @@ export default function ChangeCa2() {
       teams2Selected: [],
       slots: [],
       penalty: 70
+    });
+
+    const validationSchema = Yup.object().shape({
+      min: Yup.number()
+      .typeError('O campo "Min" é obrigatório')
+      .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Min" é 0')
+      .required('O campo "Min" é obrigatório'),
+      max: Yup.number()
+      .typeError('O campo "Max" é obrigatório')
+      .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Max" é 0')
+      .required('O campo "Max" é obrigatório'),
+      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo')
     });
 
     const [oldSlotsIds, setOldSlotsIds] = useState([]);
@@ -168,6 +185,7 @@ export default function ChangeCa2() {
           itemsRadioType={itemsRadioType}
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
+          validationSchema={validationSchema}
         />
       }
     </>

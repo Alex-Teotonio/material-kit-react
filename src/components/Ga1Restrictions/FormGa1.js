@@ -77,8 +77,8 @@ export default function FormRestrictions(props) {
     async function loadData() {
       try {
         const responseSlots = await get(`/slot/${currentLeague.id}`);
-        const gamesResponse = await get(`/games/${currentLeague.id}`);
         const teamsResponse = await get(`/team/${currentLeague.id}`);
+        const gamesResponse = await get(`/games/${currentLeague.id}`);
 
       // Cria um array de objetos com as informações dos jogos e times
         const gamesData = gamesResponse.map(game => {
@@ -104,7 +104,20 @@ export default function FormRestrictions(props) {
     }
     }
     loadData()
-  },[])
+  },[]);
+
+
+  const handleAddGame = (game) => {
+      const teamshome = teams.find(team => team.id === game.teamshome);
+      const teamsaway = teams.find(team => team.id === game.teamsaway);
+
+      const newGame =  {
+        id: game.id,
+        teamshome,
+        teamsaway,
+      };
+      setGames((prevGames) => [...prevGames, newGame]);
+  };
   const handleInputChange = (e) => {
 
     const {name, value } = e.target;
@@ -115,28 +128,19 @@ export default function FormRestrictions(props) {
     })
   }
   const handleInputChangeMultSelect = (e,newTeamValue , name) => {
-    console.log('FOrmGa1', e, newTeamValue, name)
     setValues({
       ...values,
       [name]: newTeamValue
     });
     handleChangeMultipleValues(e,newTeamValue, name)
   }
-  
-
-  const handleInputChangeSelect = (e,name) => {
-
-    const {value} = e.target
-    setValues({
-      ...values,
-      [name]: value
-  })
-
-  handleChangeMultipleValues(name, value)
-  }
   const handleSubmit = (e) =>  {
     e.preventDefault()
     onHandleSubmit();
+  }
+
+  const handleDeleteGame = (deletedGameId) =>  {
+    setGames((prevGames) => prevGames.filter((game) => game.id !== deletedGameId));
   }
 
   const handleClickSelectAll = (name) => {
@@ -155,23 +159,6 @@ export default function FormRestrictions(props) {
   const handleCloseModal = () => {
     setIsOpenModal(false)
   }
-
-  const handleGameSelect = event => {
-    const gameId = event.target.value;
-
-    const game = games.find(game =>  gameId.find(g => g === game.id));
-
-    setSelectedGames(prevSelectedGames => {
-      // Adiciona o jogo selecionado apenas se ele ainda não foi selecionado
-      if (!prevSelectedGames.some(selectedGame => selectedGame.id === gameId)) {
-        return [...prevSelectedGames, game];
-      }
-      return prevSelectedGames;
-    });
-
-    onHandleGames(gameId)
-  };
-
   const gameOptions = games.map((game) => {
     const optionLabel = `${game.teamshome.name} x ${game.teamsaway.name}`;
     return { id: game.id, name: optionLabel };
@@ -183,7 +170,12 @@ export default function FormRestrictions(props) {
     <Card>
     <Loader isLoading={isLoading}/>
       <AppBar titleAppBar={`Category - ${values.typeRestriction}`} sx={{textAlign: 'center'}}/>
-      <GameModal open={isOpenModal} onClose={handleCloseModal} onSave={() => {}}/>
+      <GameModal 
+        open={isOpenModal}
+        onClose={handleCloseModal}
+        onAddGame={handleAddGame}
+        onDelete={handleDeleteGame}
+      />
       <CardContent>
         <form className={classes.root} onSubmit={handleSubmit}>
         <div className={classes.column}>
@@ -313,13 +305,6 @@ export default function FormRestrictions(props) {
       >
         Slots
       </Button>
-        {/* <Select 
-        dataSelect={slots}
-        onHandleChange={handleInputChangeSelect}
-        label="Intervalo de tempo"
-        valueSelect={values.slots}
-        name="slots"
-        /> */}
 
 
 <ContainerInline onHandleClick={handleClickSelectAll} name="slots">
@@ -353,30 +338,7 @@ export default function FormRestrictions(props) {
         >
           Games
         </Button>
-        {/* <MuiSelect sx={{width: '500px'}}
-          multiple
-          value={selectedGames.map(game => game.id)}
-          onChange={handleGameSelect}
-          renderValue={selected => (
-            <div>
-              {selected.map(gameId => {
-                const game = games.find(game => game.id === gameId);
-                return (
-                  <div key={game.id}>
-                    {game.teamshome.name} x {game.teamsaway.name}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        >
-          {games.map(game => (
-            <MenuItem key={game.id} value={game.id}>
-              {game.teamshome.name} x {game.teamsaway.name}
-            </MenuItem>
-          ))}
-        </MuiSelect> */}
-
+        
 <ContainerInline onHandleClick={handleClickSelectAll} name="games">
   <MultipleSelectChip
     dataMultSelect={gameOptions}

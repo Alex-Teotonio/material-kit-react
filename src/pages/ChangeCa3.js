@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {get, put} from '../services/requests'
+import * as Yup from 'yup';
+import {get, put} from '../services/requests';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import Loader from '../components/Loader';
 import { delay } from '../utils/formatTime';
@@ -77,6 +78,16 @@ export default function ChangeCa3() {
       })();
     }, []);
 
+    const validationSchema = Yup.object().shape({
+      intp: Yup.number()
+      .typeError('Defina a quantidade de jogos consecutivos')
+      .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
+      .required('O campo "Jogos consecutivos" é obrigatório'),
+      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+      teams2Selected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+    });
+
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
 
@@ -102,8 +113,6 @@ export default function ChangeCa3() {
     try {
       setIsLoading(true);
       await delay(400)
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const team2Form = handleValueInArray(values.teams2Selected, 'id' );
       const leagueId = currentLeague.id;
@@ -151,6 +160,7 @@ export default function ChangeCa3() {
             itemsRadioMode={itemsRadioMode}
             onHandleSubmit={handleSubmitValue}
             labelButton="Salvar Alterações"
+            validationSchema={validationSchema}
           />
         )
       }
