@@ -1,6 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
 import propTypes from 'prop-types'
+import { useNavigate,useLocation } from "react-router-dom";
+import toast from '../utils/toast';
 import api from '../services/api';
+
 
 import {get, auth} from  '../services/requests'
 import { useLocalStorage } from './useLocalStorage';
@@ -16,7 +19,7 @@ export function LeagueProvider({ children }) {
     const [solutionExists, setSolutionExists] = useLocalStorage('mySolution', 'not');
     const [dadosUser, setDadosUser] = useLocalStorage('myUser', {});
     const [leaguesToUser, setLeaguesToUser] = useLocalStorage('leagueUser', {});
-    const [currentLanguage, setCurrentLanguage] = useState(LANGS[0]);
+    const [currentLanguage, setCurrentLanguage] = useLocalStorage('myLanguage',LANGS[0]);
 
     const [authenticated, setAuthenticated] = useState(false);
     const [restrictions, setRestrictions] = useState([]);
@@ -38,6 +41,11 @@ export function LeagueProvider({ children }) {
         })();
     }, []);
 
+    useEffect(() => {
+      i18n.changeLanguage(currentLanguage.value);
+    }, [currentLanguage]);
+
+
     function setTeamColor(team) {
       const teamId = team.id;
       const existingColor = teamColor[teamId];
@@ -50,13 +58,39 @@ export function LeagueProvider({ children }) {
       
     }
 
+    const navigate = useNavigate();
+
+    // function handleNavigationWithoutLeague() {
+    //   toast({
+    //     type: 'error',
+    //     text: 'Selecione uma liga'
+    //   })
+    // }
+
+// // Verifica se uma liga está selecionada antes de permitir a navegação para outras rotas
+// function handleRouteChange() {
+//   if (!currentLeague.id) {
+//     handleNavigationWithoutLeague();
+//     navigate("/dashboard/app");
+//   }
+// }
+
     async function handleAddLeaguesForUser(newLeague) {
       try {
        setLeaguesToUser([...leaguesToUser, newLeague])
+       setCurrentLeague(newLeague)
       } catch(e) {
         console.log(e)
       }
     }
+
+    async function removeCurrentLeague(id) {
+      if (currentLeague.id === id) {
+        localStorage.removeItem("myLeague");
+        setCurrentLeague({});
+      }
+    }
+    
 
     async function handleLeaguesForUser(leagues) {
       try {
@@ -118,23 +152,43 @@ export function LeagueProvider({ children }) {
         const {data} = await auth(email, password)
         localStorage.setItem('token', JSON.stringify(data.token));
         
-        setDadosUser({id: data.id,email: data.email, name: data.name})
         api.defaults.headers.authorization = `Bearer ${data.token}`;
+        const responseLeagues = await get(`/league_user/${data.id}`);
+        setLeaguesToUser(responseLeagues);
+        setDadosUser({id: data.id,email: data.email, name: data.name});
       } catch(error) {
         throw new Error(error)
       }
     }
 
+    async function handleLogout() {
+      localStorage.removeItem('myLeague');
+      localStorage.removeItem('mySolution');
+      localStorage.removeItem('myUser');
+      localStorage.removeItem('leagueUser');
+      localStorage.removeItem('teamColors');
+    
+      setCurrentLeague({});
+      setSolutionExists('not');
+      setDadosUser({});
+      setLeaguesToUser({});
+      setAuthenticated(false);
+      setTeamColors({})
+    
+      // redireciona para a página de login
+      navigate('/login');
+    }
+    
+
     async function saveCurrentLeague(league =29) {
-        localStorage.setItem('myLeague', JSON.stringify(league));
-        const leagueString = localStorage.getItem('myLeague');
-        setCurrentLeague(JSON.parse(leagueString));
+        setCurrentLeague(league);
     }
 
-  async function saveCurrentLanguage(languageSelected) {
-    setCurrentLanguage(LANGS.find((lang) => lang.value === languageSelected));
-    i18n.changeLanguage(languageSelected);
-  }
+    async function saveCurrentLanguage(languageSelected) {
+      setCurrentLanguage(LANGS.find((lang) => lang.value === languageSelected));
+      i18n.changeLanguage(languageSelected);
+    }
+    
 
   function setValueStatusSolution(value) {
     setSolutionExists(value)
@@ -160,7 +214,9 @@ export function LeagueProvider({ children }) {
               handleAddLeaguesForUser,
               handleLeaguesForUser,
               setTeamColor,
-              teamColor
+              removeCurrentLeague,
+              teamColor,
+              handleLogout
             }
           }
         >

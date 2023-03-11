@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 
@@ -10,19 +11,18 @@ import toast from '../utils/toast';
 import Loader from '../components/Loader';
 import { delay } from '../utils/formatTime';
 
-const itemsRadioType = [
-  {id: 'hard', title: 'Hard'},
-  {id: 'soft', title: 'Soft'}
-];
-
-const itemsRadioMode = [
-  {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'},
-  {id: 'HA', title: 'Home/Away'},
-];
-
-
 export default function Br2() {
+  const {t} = useTranslation();
+  const itemsRadioType = [
+    {id: 'hard', title: t('valueLabelTypeHard')},
+    {id: 'soft', title: t('valueLabelTypeSoft')}
+  ];
+  
+  const itemsRadioMode = [
+    {id: 'H', title: t('valueLabelHome')},
+    {id: 'A', title: t('valueLabelAway')},
+    {id: 'HA', title: t('valueLabelHomeAway')}
+  ];
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState(
@@ -104,6 +104,7 @@ export default function Br2() {
         itemsRadioMode={itemsRadioMode}
         onHandleSubmit={handleSubmitValue}
         validationSchema={validationSchema}
+        information={t('descriptionBR2')}
       />
     </>
   )

@@ -14,10 +14,13 @@ export const useLeagueForm = (initialValues) => {
     if (!values.short) {
       errors.short = 'A sigla é obrigatória';
     }
+
     if (!values.numberTeams) {
       errors.numberTeams = 'O número de times é obrigatório';
     } else if (values.numberTeams < 0) {
       errors.numberTeams = 'O número de times deve ser positivo';
+    } else if (values.numberTeams % 2 !== 0) {
+      errors.numberTeams = 'O número de times deve ser um número par';
     }
 
     setErrors(errors);

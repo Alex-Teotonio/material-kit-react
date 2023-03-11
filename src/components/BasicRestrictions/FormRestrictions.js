@@ -5,12 +5,13 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Divider,
+  IconButton,
   MenuItem,
   Paper,
   Select,
+  Tooltip,
   Stack,
-  Tooltip
+  Typography
 } from '@mui/material';
 import { PropTypes } from 'prop-types';
 import { 
@@ -22,13 +23,13 @@ import {
   SportsSoccer,
   WatchLater,
   HowToReg,
-  TimeLine,
-  Timeline
+  Timeline,
+  InfoOutlined
 } from '@mui/icons-material';
-import toast from '../../utils/toast';
+import {useTranslation} from 'react-i18next'
+import { t } from 'i18next';
 import SliderCustom from '../Slider';
 import { get } from '../../services/requests';
-
 import Input from '../Input';
 import MultipleSelectChip from '../MultSelect';
 
@@ -66,7 +67,9 @@ export default function FormRestrictions(props) {
     handleChangeMultipleValues,
     onHandleSubmit,
     labelButton,
-    validationSchema
+    validationSchema,
+    information
+    
   } = props;
 
   const [values, setValues] = useState(initialValues);
@@ -81,6 +84,7 @@ export default function FormRestrictions(props) {
     loadTeams()
   }, [])
 
+  const {t} = useTranslation();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     handleChangeValues(name, value)
@@ -126,279 +130,216 @@ export default function FormRestrictions(props) {
   const classes = useStyles();
   return (
     <>
+    { 
+      information &&
+      (
+        <Box sx={{ 
+          bgcolor: '#E6F3FF',
+          color: 'blue',
+          padding: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: '15px'
+          }}>
+          <IconButton sx={{ color: 'blue' }}>
+            <InfoOutlined />
+          </IconButton>
+          <Typography variant="body1" sx={{ marginLeft: '4px' }}>
+            {information}
+          </Typography>
+        </Box>
+      )
+    }
+
       <Paper elevation={3} square sx={{width: '100%', padding: '5px'}}>
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-            <Button>{`Category - ${values.typeRestriction} `}</Button>
+          <Button>{t('headTableRestriction')}</Button>
         </ButtonGroup>
-          <form className={classes.root} onSubmit={handleSubmit}>
-              <div className={classes.column}>
-
-              <Tooltip 
-                title="Nesta seção, defina as restrições que serão aplicadas às atribuições"
-                sx={{ 
-                  backgroundColor: '#ececec',
-                  color: 'white' 
-                }}
-              >
-                <ButtonGroup
-                  variant="string"
-                  sx={{
-                    color:"#2065D1",
-                  }}
-                >
-                  <Button endIcon={<NotInterested/>}>Constraints</Button>
-                </ButtonGroup>
-              </Tooltip>
-              {  
-                (
-                  values.typeRestriction === 'CA1' ||
-                  values.typeRestriction === 'CA3'||
-                  values.typeRestriction === 'CA4'
-                )  && (
-                  <Tooltip 
-                    title="Defina a quantidade de jogos ao qual a restrição será aplicada."
-                    sx={{ 
-                      backgroundColor: '#ececec',
-                      color: 'white' 
-                    }}
-                  >
-                    <Box sx={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      <Button 
-                        sx={{ 
-                          marginLeft: '8px',
-                          color:"#2065D1",
-                          width: '150px'
-                        }}
-                        variant="string"
-                        startIcon={<Sports/>}
-                      >
-                        Nº máx de jogos
-                      </Button>
-                      <Input
-                        value={values.max}
-                        onChange={handleInputChange}
-                        name="max"
-                        label="Max"
-                        type="number"
-                        error={!!errors.max }
-                        messageError={errors.max}
-                      />
-                    </Box>
-                  </Tooltip>
-                )}
-
-
-{  
-                (
-                  values.typeRestriction === 'SE1'
-                )  && (
-                  <Tooltip 
-                    title="Defina a quantidade de jogos ao qual a restrição será aplicada."
-                    sx={{ 
-                      backgroundColor: '#ececec',
-                      color: 'white' 
-                    }}
-                  >
-                    <Box sx={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      <Button 
-                        sx={{ 
-                          marginLeft: '8px',
-                          color:"#2065D1",
-                          width: '150px'
-                        }}
-                        variant="string"
-                        startIcon={<Sports/>}
-                      >
-                        Nº min de jogos
-                      </Button>
-                      <Input
-                        value={values.min}
-                        onChange={handleInputChange}
-                        name="min"
-                        label="Min"
-                        type="number"
-                        error={!!errors.min }
-                        messageError={errors.min}
-                      />
-                    </Box>
-                  </Tooltip>
-                )}
-
-              {  
-                values.typeRestriction === 'CA2' && (
-                  <Tooltip 
-                    title="Defina a quantidade de jogos ao qual a restrição será aplicada."
-                    sx={{ 
-                      backgroundColor: '#ececec',
-                      color: 'white' 
-                    }}
-                  >
-                    <Box sx={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      <Button 
-                        sx={{ 
-                          marginLeft: '8px',
-                          color:"#2065D1",
-                          width: '150px'
-                        }}
-                        variant="string"
-                        startIcon={<Sports/>}
-                      >
-                        Nº máx de jogos
-                      </Button>
-                      <Input
-                        value={values.max}
-                        onChange={handleInputChange}
-                        name="max"
-                        label="Max"
-                        type="number"
-                        error={!!errors.max }
-                        messageError={errors.max}
-                        widthProp ='250px'
-                      />
-
-                      <Input
-                        value={values.min}
-                        onChange={handleInputChange}
-                        name="min"
-                        label="Min"
-                        type="number"
-                        error={!!errors.min }
-                        messageError={errors.min}
-                        widthProp ='227px'
-                      />
-                    </Box>
-                  </Tooltip>
-                )}
-                {(values.typeRestriction === 'CA3' || values.typeRestriction === 'BR1' || values.typeRestriction === 'FA2' || values.typeRestriction === 'BR2' || values.typeRestriction === 'FA2' ) && (
-                  <Tooltip 
-                  title="Defina a quantidade de jogos ao qual a restrição será aplicada."
-                  sx={{ 
-                    backgroundColor: '#ececec',
-                    color: 'white' 
-                  }}
-                >
+        <form className={classes.root} onSubmit={handleSubmit}>
+          <div className={classes.column}>
+            <Tooltip 
+              title={t('tooltipRestriction')}
+              sx={{ 
+                backgroundColor: '#ececec',
+                color: 'white' 
+              }}
+            >
+            <ButtonGroup fullWidth variant="string" sx={{color:"#2065D1"}}>
+              <Button type="button" endIcon={<NotInterested/>}>{t('headTableRestriction')}</Button>
+            </ButtonGroup>
+            </Tooltip>
+            {(
+              values.typeRestriction === 'CA1' ||
+              values.typeRestriction === 'CA3'||
+              values.typeRestriction === 'CA4'
+              )  && (
                   <Box sx={{ 
                     display: 'flex',
                     alignItems: 'center',
                     whiteSpace: 'nowrap'
                   }}>
-                    <Button 
-                      sx={{ 
-                        marginLeft: '8px',
-                        color:"#2065D1",
-                        width: '150px'
-                      }}
-                      variant="string"
-                      startIcon={<Timeline/>}
-                      >
-                        Jogos consecutivos
-                    </Button>
-                  <Input
-                    value={values.intp}
-                    onChange={handleInputChange}
-                    name="intp"
-                    label="Jogos consecutivos"
-                    type="number"
-                    error={errors.intp}
-                  />
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', justifyContent: 'flex-end'}}>
+                      <Sports sx={{color:"#2065D1"}}/>
+                      <Typography sx={{ color:"#2065D1" }}>
+                        Nº máx de jogos
+                      </Typography>
+                    </Stack>
+
+                    <Input
+                      value={values.max}
+                      onChange={handleInputChange}
+                      name="max"
+                      label={t('labelMax')}
+                      type="number"
+                      widthProp='480px'
+                      error={!!errors.max }
+                      messageError={errors.max}
+                    />
                   </Box>
-                  </Tooltip>
                 )}
                 
-                <Tooltip 
-                title="Defina a importcia dessa restrição."
-                sx={{ 
-                  backgroundColor: 'gray',
-                  color: 'white' 
-                }}
-                >
+                {(
+                  values.typeRestriction === 'SE1'
+                )  && (
+
+                  <Box sx={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Sports sx={{color: '#2065D1'}}/>
+                      <Typography sx={{ color:"#2065D1" }}>Nº min de jogos</Typography>
+
+                    </Stack>
+                    <Input
+                      value={values.min}
+                      onChange={handleInputChange}
+                      name="min"
+                      label={t('labelMin')}
+                      type="number"
+                      error={!!errors.min }
+                      messageError={errors.min}
+                    />
+                  </Box>
+                )}
+
                 <Box 
                   sx={{ 
-                    display:'flex',
+                    display: 'flex',
                     alignItems: 'center',
-                    marginBottom: '12px'
+                    whiteSpace: 'nowrap',
+                    marginBottom: '8px'
                   }}
-                >
-                  <Button 
-                    sx={{
-                      marginLeft:'8px',
-                      color:"#2065D1" ,
-                      width: '150px'
-                    }}
-                    variant="string"
-                    startIcon={<Settings/>}
-                  >
+                >     
+                <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '12px', justifyContent: 'flex-end'}}>
+                  <Settings sx={{color: '#2065D1'}}/>
+                  <Typography sx={{ color:"#2065D1" }}>
                     Prioridade
-                  </Button>
+                  </Typography>
 
-                  <Select
-                    name="type"
-                    label="Type"
-                    value={values.type}
-                    onChange={handleInputChange}
-                    sx={{marginLeft: '14px',width: '500px'}}
-                  >
-                    {
-                      itemsRadioType.map((item) => (
-                        <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
-                      ))
-                    }
-                  </Select>
-                </Box>
-                </Tooltip>
-                { values.typeRestriction !== 'SE1' && (
-                <Tooltip 
-                title="Defina o modo de jogo."
-                sx={{ 
-                  backgroundColor: 'gray',
-                  color: 'white' 
-                }}
+                </Stack>
+                <Select
+                  name="type"
+                  label="Type"
+                  value={values.type}
+                  onChange={handleInputChange}
+                  sx={{ width: '480px' }}
                 >
+                  {
+                    itemsRadioType.map((item) => (
+                      <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
+                    ))
+                  }
+                </Select>
+                </Box>  
+                {values.typeRestriction === 'CA2' && (
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap'
+                    }}>
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px',justifyContent: 'flex-end'}}>
+                        <Sports sx={{color: '#2065D1'}} />
+                        <Typography sx={{ color:"#2065D1"}}>
+                          Nº máx de jogos
+                        </Typography>
+                      </Stack>
+                      <Input
+                        value={values.max}
+                        onChange={handleInputChange}
+                        name="max"
+                        label={t('labelMax')}
+                        type="number"
+                        error={!!errors.max }
+                        messageError={errors.max}
+                        sx={{ width: '250px' }}
+                      />
+                      <Input
+                        value={values.min}
+                        onChange={handleInputChange}
+                        name="min"
+                        label="Min"
+                        type="number"
+                        error={!!errors.min }
+                        messageError={errors.min}
+                        sx={{ width: '227px' }}
+                      />
+                    </Box>
+                  )}
+                  
+                  {(values.typeRestriction === 'CA3' || values.typeRestriction === 'BR1' || values.typeRestriction === 'FA2' || values.typeRestriction === 'BR2' || values.typeRestriction === 'FA2' ) && (
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px', justifyContent: 'flex-end'}}>
+                        <Timeline sx={{color: '#2065D1'}} />
+                        <Typography sx={{color: '#2065D1'}}>
+                          Jogos consecutivos
+                        </Typography>
+                      </Stack>
+                      <Input
+                        value={values.intp}
+                        onChange={handleInputChange}
+                        name="intp"
+                        label={t('labelRounds')}
+                        type="number"
+                        error={errors.intp}
+                        sx={{ width: '250px' }}
+                      />
+                    </Box>
+                    )}
+
+                { values.typeRestriction !== 'SE1' && (
                   <Box 
                     sx={{ 
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'flex-start',
-                        marginBottom: '12px'
+                      whiteSpace: 'nowrap'
                     }}>
-                    <Button 
-                      sx={{
-                        marginLeft:'8px',
-                        color:"#2065D1",
-                        width: '150px'
-                      }}
-                      variant="string"
-                      startIcon={<Home/>}
+
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '12px', justifyContent: 'flex-end'}}>
+                      <Home sx={{color: '#2065D1'}}/>
+                      <Typography sx={{color: '#2065D1'}}>
+                        Local
+                      </Typography>
+                    </Stack>
+                    <Select
+                      name="mode"
+                      label="Mode"
+                      value={values.mode}
+                      onChange={handleInputChange}
+                      sx={{width: '450px'}}
                     >
-                      Local
-                    </Button>
-                  <Select
-                    name="mode"
-                    label="Mode"
-                    value={values.mode}
-                    onChange={handleInputChange}
-                    sx={{marginLeft: '14px',width: '500px'}}
-                  >
-                    {
-                      itemsRadioMode.map((item) => (
-                        <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
-                      ))
-                    }
-                  </Select>
+                      {
+                        itemsRadioMode.map((item) => (
+                          <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
+                        ))
+                      }
+                    </Select>
                   </Box>
-                </Tooltip>
                 )} 
                   
                 <SliderCustom
@@ -410,7 +351,7 @@ export default function FormRestrictions(props) {
               <div className={classes.column}>
               
               <ButtonGroup fullWidth variant="string" sx={{color:"#2065D1"}}>
-                <Button type="button" endIcon={<HowToReg/>}>Aplica a</Button>
+                <Button type="button" endIcon={<HowToReg/>}>{t('headTableApply')}</Button>
               </ButtonGroup>
 
               {/* ====================================Slots======================================================= */}
@@ -419,34 +360,28 @@ export default function FormRestrictions(props) {
               <Box 
                   sx={{ 
                     display: 'flex',
-                    alignItems: 'center',
-                    whiteSpace: 'nowrap'
+                    alignItems: 'center'
                   }}
                 >
-                <Button 
-                  sx={{ 
-                    marginLeft: '8px',
-                    color:"#2065D1",
-                    width: '100px'
-                  }}
-                  variant="string"
-                  startIcon={<WatchLater/>}
-                >
-                  Slots
-                </Button>
-                <ContainerInline onHandleClick={handleClickSelectAll} name="slots">
-                  <MultipleSelectChip
-                    dataMultSelect={slots}
-                    valueMultSelect={values.slots}
-                    disabled={!values.slots}
-                    name="slots"
-                    labelMultSelect="Intervalo de tempo"
-                    placeholderMultSelect=""
-                    onHandleChange={handleInputChangeMultSelect}
-                    error={!!errors.slots}
-                    messageError={errors.slots}
-                  />
-                </ContainerInline>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12px', justifyContent: 'flex-end'}}>
+                    <WatchLater sx={{color: '#2065D1'}}/>
+                    <Typography sx={{color: '#2065D1'}}>
+                      Slots
+                    </Typography>
+                  </Stack>
+                  <ContainerInline onHandleClick={handleClickSelectAll} name="slots">
+                    <MultipleSelectChip
+                      dataMultSelect={slots}
+                      valueMultSelect={values.slots}
+                      disabled={!values.slots}
+                      name="slots"
+                      labelMultSelect={t('headTableNameSlots')}
+                      placeholderMultSelect=""
+                      onHandleChange={handleInputChangeMultSelect}
+                      error={!!errors.slots}
+                      messageError={errors.slots}
+                    />
+                  </ContainerInline>
               </Box>
               )}
             <Box 
@@ -456,31 +391,26 @@ export default function FormRestrictions(props) {
                   whiteSpace: 'nowrap'
                 }}
               >
-              <Button 
-                sx={{ 
-                  marginLeft: '8px',
-                  color:"#2065D1",
-                  width: '100px'
-                }}
-                variant="string"
-                startIcon={<SportsSoccer/>}
-              >
-                Times
-              </Button>
-                <ContainerInline onHandleClick={handleClickSelectAll} name="teamsSelected">
-                  <MultipleSelectChip
-                    dataMultSelect={teams}
-                    valueMultSelect={values.teamsSelected}
-                    disabled={!values.teamsSelected}
-                    name="teamsSelected"
-                    labelMultSelect="Teams"
-                    placeholderMultSelect=""
-                    onHandleChange={handleInputChangeMultSelect}
-                    error={!!errors.teamsSelected}
-                    messageError={errors.teamsSelected}
-                  />
-                </ContainerInline>
-              </Box>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12', justifyContent: 'flex-end'}}>
+                <SportsSoccer sx={{color: '#2065D1'}}/>
+                <Typography sx={{color: '#2065D1'}}>
+                  Times
+                </Typography>
+              </Stack>
+              <ContainerInline onHandleClick={handleClickSelectAll} name="teamsSelected">
+                <MultipleSelectChip
+                  dataMultSelect={teams}
+                  valueMultSelect={values.teamsSelected}
+                  disabled={!values.teamsSelected}
+                  name="teamsSelected"
+                  labelMultSelect={t('headTableNameTeams')}
+                  placeholderMultSelect=""
+                  onHandleChange={handleInputChangeMultSelect}
+                  error={!!errors.teamsSelected}
+                  messageError={errors.teamsSelected}
+                />
+              </ContainerInline>
+            </Box>
 {/* ==========================================Times================================================================= */}
               {(values.typeRestriction === 'CA2' || values.typeRestriction === 'CA3' || values.typeRestriction === 'CA4') && (
                   <Box 
@@ -490,27 +420,22 @@ export default function FormRestrictions(props) {
                       whiteSpace: 'nowrap'
                     }}
                   >
-                  <Button 
-                    sx={{ 
-                      marginLeft: '8px',
-                      color:"#2065D1",
-                      width: '100px'
-                    }}
-                    variant="string"
-                    startIcon={<SportsSoccer/>}
-                  >
-                    Times2
-                  </Button>
+
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px', marginRight: '15px', justifyContent: 'flex-end'}}>
+                      <SportsSoccer fontSize="small" />
+                      <Typography variant="button" sx={{minWidth: '100px'}}> {t('headTableNameTeams2')}</Typography>
+                    </Stack>
                     <ContainerInline onHandleClick={handleClickSelectAll} name="teams2Selected">
                       <MultipleSelectChip
                         dataMultSelect={teams}
                         disabled={!values.teams2Selected}
                         valueMultSelect={values.teams2Selected}
                         name="teams2Selected"
-                        labelMultSelect="Adversário"
+                        labelMultSelect={t('headTableNameTeams')}
                         placeholderMultSelect=""
                         onHandleChange={handleInputChangeMultSelect}
-                        error={errors.teams2Selected}
+                        error={!!errors.teams2Selected}
+                        messageError={errors.teams2Selected}
                       />
                     </ContainerInline>
                     </Box>
@@ -533,16 +458,6 @@ export default function FormRestrictions(props) {
 }
 
 
-FormRestrictions.propTypes = {
-  initialValues: PropTypes.object.isRequired,
-  handleChangeValues: PropTypes.func.isRequired,
-  itemsRadioType: PropTypes.array.isRequired,
-  itemsRadioMode: PropTypes.array.isRequired,
-  handleChangeMultipleValues:PropTypes.func.isRequired,
-  onHandleSubmit:PropTypes.func.isRequired,
-  labelButton: PropTypes.string,
-  validationSchema: PropTypes.object.isRequired
-} 
 FormRestrictions.defaultProps = {
-  labelButton: 'Cadastrar'
+  labelButton: t('buttonAdd'), information: ""
 }

@@ -1,5 +1,14 @@
 import { useContext } from 'react';
-import { Box, Button, Card, Container, MenuItem, Select, TextField } from '@mui/material';
+import { 
+  Box,
+  Button,
+  Card,
+  Container,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { LeagueContext } from '../hooks/useContextLeague';
 
@@ -63,8 +72,17 @@ export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) 
             error={!!errors.numberTeams}
             helperText={errors.numberTeams}
             onChange={handleChange}
+            disabled
           />
-          
+          <InputLabel 
+          id="demo-simple-select-label"
+          sx={{ 
+            fontSize: 'small',
+            marginTop: '16px',
+            marginBottom: '0px'
+          }}>
+            Mirred
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"

@@ -45,7 +45,8 @@ export default function DashboardApp() {
     handleLeaguesForUser,
     saveCurrentLeague,
     leaguesToUser,
-    currentLeague
+    currentLeague,
+    removeCurrentLeague
   } = useContext(LeagueContext)
 
   const columns = [
@@ -68,10 +69,6 @@ export default function DashboardApp() {
   useEffect(() => {
     async function loadInstances() {
       try {
-        toast({
-          type: 'success',
-          text: 'Login efetuado com sucesso'
-        })
         setIsLoading(true)
         const response = await get('/league');
         setLeagues(response);
@@ -100,7 +97,7 @@ export default function DashboardApp() {
       setIsLoading(false)
       toast({
         type: 'error',
-        text: 'Houve um erro ao copiar o arquivo'
+        text: t('toastError')
       })
     } finally {
       setIsLoading(false)
@@ -112,13 +109,13 @@ export default function DashboardApp() {
       await delay(700)
       toast({
         type: 'success',
-        text: 'Restrição cadastrada com sucesso'
+        text: t('toastSuccess')
       })
       if(newLeague) handleAddLeaguesForUser(newLeague);
     } catch(e) {
       toast({
         type: 'error',
-        text: 'Houve um erro ao cadastrar a restrição'
+        text: t('toastError')
       })
       setIsLoading(false)   
     }finally{
@@ -149,13 +146,13 @@ export default function DashboardApp() {
       handleLeaguesForUser(leagueUpdate)
       toast({
         type: 'success',
-        text: 'Restrição cadastrada com sucesso'
+        text: t('toastSuccess')
       })
     } catch(e) {
       setIsLoading(false)
       toast({
         type: 'error',
-        text: 'Houve um erro ao cadastrar a restrição'
+        text: t('toastError')
       })
     } finally {
       setIsLoading(false)
@@ -171,6 +168,7 @@ export default function DashboardApp() {
     try {
         leaguesSelected.map(async (idLeague) => {
         await api.delete(`/league/${idLeague}`);
+        removeCurrentLeague(idLeague)
       })
       const leaguesFilter = leagues.filter(object => !leaguesSelected.some(toDelete => toDelete === object.id));
       setOpenDialog(false);
@@ -180,13 +178,13 @@ export default function DashboardApp() {
       setLeagues(leaguesFilter);
       toast({
         type: 'success',
-        text: 'Restrição excluída com sucesso'
+        text: t('toastSuccess')
       })
     } catch(error) {
       setIsLoading(false)
       toast({
         type: 'error',
-        text: 'Houve um erro ao deletar a restrição'
+        text: t('toasError')
       })
     } finally{
       setIsLoading(false)
@@ -202,14 +200,14 @@ export default function DashboardApp() {
         <Loader isLoading={isLoading}/>
         <Dialog 
           open={openDialog}
-          title="Alerta"
-          contentMessage=' A instância será excluída permanentemente.Deseja continuar?'
+          title={t('alertTitle')}
+          contentMessage={t('alertDeleteInstance')}
           onClickAgree={handleDeleteLeague}
           onClickDisagree={() => setOpenDialog(false)}
         />
         <Modal 
-          titleModal="Edit League"
-          descriptionModal="Edit your League"
+          titleModal={t('editLeagueTitle')}
+          descriptionModal={t('descriptionEditLeague')}
           isOpen={isOpenChangeModal}
           onRequestClose={handleCloseChangeModal}
         >
@@ -233,7 +231,7 @@ export default function DashboardApp() {
 
         <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
           <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-            <Button>Instâncias</Button>
+            <Button>{t('instance')}</Button>
           </ButtonGroup>
           <DataGrid 
             columnData={columns}
@@ -270,8 +268,9 @@ export default function DashboardApp() {
           startIcon={<FileCopyOutlined />}
           sx={{marginTop:'20px', height: '30px', float: 'right',marginRight: '4px'}}
           onClick={handleCopy}
+          disabled={leaguesSelected.length > 1}
         >
-          Copiar
+          {t('copy')}
         </Button>
         
         </>

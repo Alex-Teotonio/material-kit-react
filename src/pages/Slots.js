@@ -1,10 +1,11 @@
 import 'regenerator-runtime/runtime';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import {Button,ButtonGroup,Paper } from '@mui/material';
 import { AccessTimeTwoTone } from "@mui/icons-material";
 import {useTranslation} from 'react-i18next';
 import { DataGrid } from '@mui/x-data-grid';
+import { LeagueContext } from "../hooks/useContextLeague";
 import { delay } from '../utils/formatTime';
 import toast from '../utils/toast';
 
@@ -18,10 +19,25 @@ export default function Slots() {
     const [updatedRows, setUpdatedRows] = useState([]);
 
     const {t} = useTranslation();
-    const currentLeagueString = localStorage.getItem('myLeague');
-    const currentLeague = JSON.parse(currentLeagueString);
+
+    const {currentLeague} = useContext(LeagueContext);
     const [isLoading, setIsLoading] = useState(false)
 
+
+    const handleRowEditCommit = useCallback(({ id, field: col, value }) => {
+      setUpdatedRows(prevRows => {
+        const index = prevRows.findIndex(row => row.id === id);
+        if (index > -1) {
+          const updatedRow = { ...prevRows[index], changes: { [col]: value } };
+          return [...prevRows.slice(0, index), updatedRow, ...prevRows.slice(index + 1)];
+        } 
+          const newRow = { id: id || prevRows.length + 1, changes: { [col]: value } };
+          return [...prevRows, newRow];
+        
+      });
+    }, []);
+    
+    
     const columns  =  [
       { 
         field: 'name',
@@ -30,10 +46,11 @@ export default function Slots() {
         headerAlign: 'center',
         align: 'center',
         editable: true,
+        onEditCellChange: handleRowEditCommit,
       },
       { 
         field: 'criado_em',
-        headerName: 'Atualizado em',
+        headerName: 'Update at',
         width: 500, 
         headerAlign:'center',
         align: 'center' 
@@ -58,62 +75,37 @@ export default function Slots() {
           })
         }
       ,[])
-
-      const handleRowEditCommit = useCallback(({ id, field, value }) => {
-        const updatedRow = { id, changes: { [field]: value } };
-        setUpdatedRows((prevRows) => {
-          const index = prevRows.findIndex((row) => row.id === updatedRow.id);
-          if (index > -1) {
-            prevRows[index] = updatedRow;
-            return [...prevRows];
-          }
-          return [...prevRows, updatedRow];
+      
+      
+    const onProcessRowUpdate = async () => {
+      setIsLoading(true);
+      try {
+        await delay(300);
+        console.log(updatedRows)
+        const updatePromises = updatedRows.map(async (updatedRow) => {
+          const { id, changes } = updatedRow;
+          const leagueId = currentLeague.id;
+          console.log(changes);
+          await put(`/slot/${id}`, { ...changes, leagueId });
         });
-    }, []);
+        await Promise.all(updatePromises);
+        toast({
+          type: 'success',
+          text: 'Atualizado com sucesso!'
+        });
+      } catch (error) {
+        console.error(error);
+        toast({
+          type: 'error',
+          text: 'Houve um erro ao atualizar!'
+        });
+      } finally {
+        setIsLoading(false);
+        setUpdatedRows([]);
+      }
+    };
     
-      // const onHandleProcessUpdate = useCallback(
-      //   async (newRow) => {
-      //     try {
-      //       setIsLoading(true)
-      //       await delay(300)
-      //       const {id, name, league_id} = newRow
-      //       const leagueId = league_id
-      //       await put(`/slot/${id}`, {name, leagueId});
-      //       toast({
-      //         type: 'success',
-      //         text: 'Atualizado com sucesso!'
-      //       })
-      //     } catch {
-      //       setIsLoading(false)
-      //     } finally {
-      //       setIsLoading(false)
-      //     }
-      //   },
-      //   [],
-      // );
-
-      const onHandleProcessUpdate = useCallback(async () => {
-        try {
-            setIsLoading(true)
-            await delay(300)
-            const updatePromises = updatedRows.map(async (updatedRow) => {
-                const { id, changes } = updatedRow;
-                const leagueId = currentLeague.id;
-                console.log(changes)
-                await put(`/slot/${id}`, { ...changes, leagueId });
-            })
-            await Promise.all(updatePromises);
-            toast({
-                type: 'success',
-                text: 'Atualizado com sucesso!'
-            })
-        } catch {
-            setIsLoading(false)
-        } finally {
-            setIsLoading(false)
-            setUpdatedRows([]);
-        }
-    }, [currentLeague.id, updatedRows]);
+    
     
     
       
@@ -129,10 +121,11 @@ export default function Slots() {
         columns={columns}
         rows={slots}
         getRowId={(row) => row.id ? row.id : ""}
-        processRowUpdate={onHandleProcessUpdate}
-        onProcessRowUpdateError={handleRowError}
-        onEditCellChange={handleRowEditCommit}
-        />
+        onCellEditCommit={onProcessRowUpdate}
+        onCellEditCommitError={handleRowError}
+        onEditCellChangeCommitted={handleRowEditCommit}
+      />
+      
       }
       {/* <Calendar/> */}
     </Paper>

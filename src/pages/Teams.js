@@ -37,15 +37,17 @@ export default function Teams() {
         api.defaults.headers.authorization = `Bearer ${JSON.parse(token)}`;
       }
       const data = await loadTeams(currentLeague.id);
+
       const colors = {};
       data.forEach(team => {
         colors[team.id] = setTeamColor(team);
+        console.log(colors[team.id])
       });
       setTeamColors(colors);
       setTeams(data)
     }
     loadData();
-  },[]);
+  },[currentLeague.id, loadTeams, setTeamColor]);
 
   
   const columns = [

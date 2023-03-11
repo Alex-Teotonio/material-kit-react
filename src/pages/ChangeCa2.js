@@ -130,9 +130,6 @@ export default function ChangeCa2() {
     try {
       setIsLoading(true);
       await delay(400)
-      const slotPublicId = handleValueInArray(values.slots, 'publicid' );
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
-      const team2PublicId = handleValueInArray(values.teams2Selected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const teamForm2 = handleValueInArray(values.teams2Selected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
@@ -149,9 +146,6 @@ export default function ChangeCa2() {
         teamForm2,
         slotForm,
         penalty,
-        slotPublicId,
-        teamPublicId,
-        team2PublicId,
         oldTeamsIds,
         oldTeams2Ids,
         oldSlotsIds

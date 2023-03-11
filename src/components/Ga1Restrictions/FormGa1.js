@@ -1,22 +1,26 @@
 
 import {useState, useEffect} from 'react'
 import { makeStyles } from "@material-ui/styles";
+import { useTranslation } from 'react-i18next';
+import * as Yup from 'yup';
 import {
   Box,
   Button,
   Card,
   CardContent,
   Divider,
+  IconButton,
   Grid,
   Stack,
   FormControl,
   InputLabel,
   MenuItem,
   Select as MuiSelect,
+  Typography,
   Tooltip
 } from '@mui/material';
 
-import { Sports , Send,DoubleArrow, Settings, WatchLater} from '@mui/icons-material';
+import { Sports , Send,DoubleArrow, Settings, WatchLater, InfoOutlined} from '@mui/icons-material';
 
 import { PropTypes } from 'prop-types';
   import Loader from '../Loader'
@@ -50,12 +54,15 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function FormRestrictions(props) {
+
+  const {t} = useTranslation();
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
   const [games, setGames] = useState([]);
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true)
   const [selectedGames, setSelectedGames] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const [slots, setSlots] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -67,7 +74,9 @@ export default function FormRestrictions(props) {
     handleChangeMultipleValues,
     onHandleSubmit,
     labelButton,
-    onHandleGames
+    onHandleGames,
+    validationSchema,
+    information
   } = props;
 
 
@@ -134,9 +143,20 @@ export default function FormRestrictions(props) {
     });
     handleChangeMultipleValues(e,newTeamValue, name)
   }
-  const handleSubmit = (e) =>  {
-    e.preventDefault()
-    onHandleSubmit();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await validationSchema.validate(values, { abortEarly: false });
+      onHandleSubmit();
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errors = {};
+        error.inner.forEach((err) => {
+          errors[err.path] = err.message;
+        });
+        setErrors(errors);
+      }
+    }
   }
 
   const handleDeleteGame = (deletedGameId) =>  {
@@ -167,6 +187,24 @@ export default function FormRestrictions(props) {
   const classes = useStyles();
   return (
     <>
+
+{ information && (
+      <Box sx={{ 
+        bgcolor: '#E6F3FF',
+        color: 'blue',
+        padding: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '15px'
+        }}>
+        <IconButton sx={{ color: 'blue' }}>
+          <InfoOutlined />
+        </IconButton>
+        <Typography variant="body1" sx={{ marginLeft: '4px' }}>
+          {information}
+        </Typography>
+      </Box>
+    )}
     <Card>
     <Loader isLoading={isLoading}/>
       <AppBar titleAppBar={`Category - ${values.typeRestriction}`} sx={{textAlign: 'center'}}/>
@@ -180,7 +218,7 @@ export default function FormRestrictions(props) {
         <form className={classes.root} onSubmit={handleSubmit}>
         <div className={classes.column}>
         <Tooltip 
-          title="Defina a quantidade de jogos ao qual a restrição será aplicada."
+          title={t('tooltipGamesMin')}
           sx={{ 
             backgroundColor: '#ececec',
             color: 'white' 
@@ -200,28 +238,30 @@ export default function FormRestrictions(props) {
               variant="string"
               startIcon={<Sports/>}
             >
-              Nº min de jogos
+              {t('labelMin')}
             </Button>
+          <Input value={values.min}
+            onChange={handleInputChange}
+            name="min"
+            label={t('labelMin')}
+            type="number"
+            widthProp ='250px'
+            error={!!errors.min }
+            messageError={errors.min}
+          />
           <Input value={values.max}
             onChange={handleInputChange}
             name="max"
-            disabled={!values.max && values.max !== 0}
-            label="Max"
+            label={t('labelMax')}
             type="number"
             widthProp ='250px'
-          />
-          <Input value={values.min}
-            onChange={handleInputChange}
-            disabled={!values.min && values.min !== 0}
-            name="min"
-            label="Min"
-            type="number"
-            widthProp ='250px'
+            error={!!errors.max }
+            messageError={errors.max}
           />
         </Box>
         </Tooltip>
 <Tooltip 
-  title="Defina a importcia dessa restrição."
+  title={t('tooltipPriority')}
   sx={{ 
     backgroundColor: 'gray',
     color: 'white' 
@@ -243,7 +283,7 @@ export default function FormRestrictions(props) {
       variant="string"
       startIcon={<Settings/>}
     >
-      Prioridade
+      {t('labelPriority')}
     </Button>
 
     <MuiSelect
@@ -282,7 +322,7 @@ export default function FormRestrictions(props) {
           sx={{height: '25px'}}
           startIcon={<DoubleArrow/>}
         >
-          Add Game
+          {t('buttonAddGame')}
         </Button>
       </Box>
 
@@ -303,7 +343,7 @@ export default function FormRestrictions(props) {
         variant="string"
         startIcon={<WatchLater/>}
       >
-        Slots
+        {t('headTableNameSlots')}
       </Button>
 
 
@@ -313,9 +353,11 @@ export default function FormRestrictions(props) {
     valueMultSelect={values.slots}
     disabled={!values.slots}
     name="slots"
-    labelMultSelect="Intervalo de tempo"
+    labelMultSelect={t('headTableNameSlots')}
     placeholderMultSelect=""
     onHandleChange={handleInputChangeMultSelect}
+    error={!!errors.slots}
+    messageError={errors.slots}
   />
 </ContainerInline>
         </Box>
@@ -336,7 +378,7 @@ export default function FormRestrictions(props) {
           variant="string"
           startIcon={<WatchLater/>}
         >
-          Games
+          {t('labelGames')}
         </Button>
         
 <ContainerInline onHandleClick={handleClickSelectAll} name="games">
@@ -344,9 +386,11 @@ export default function FormRestrictions(props) {
     dataMultSelect={gameOptions}
     valueMultSelect={values.games}
     name="games"
-    labelMultSelect="Games"
+    labelMultSelect={t('labelGames')}
     placeholderMultSelect=""
     onHandleChange={handleInputChangeMultSelect}
+    error={!!errors.games}
+    messageError={errors.games}
   />
 </ContainerInline>
         </Box>
@@ -374,7 +418,8 @@ FormRestrictions.propTypes = {
     itemsRadioType: PropTypes.array,
     onHandleSubmit:PropTypes.func.isRequired,
     labelButton: PropTypes.string,
-    onHandleGames: PropTypes.func.isRequired
+    onHandleGames: PropTypes.func.isRequired,
+    validationSchema: PropTypes.func.isRequired
 }
 
 FormRestrictions.defaultProps = {

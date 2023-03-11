@@ -4,6 +4,7 @@ import {Button,ButtonGroup, Paper } from '@mui/material';
 import {DeleteOutline, Event} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useTranslation } from 'react-i18next';
 import { delay } from "../utils/formatTime";
 import DataGrid from '../components/DataGrid';
 import Chip from '../components/Chip';
@@ -15,6 +16,7 @@ import {get} from '../services/requests';
 import api from '../services/api';
 
 export default function DashboardSolution() {
+  const {t} = useTranslation()
   const [listSolutions, setListSolutions] = useState([]);
   const [isLoading, setIsLoading] = useState([])
   const navigate = useNavigate();
@@ -45,14 +47,28 @@ export default function DashboardSolution() {
     },
   [currentLeague]);
 
-  const [arrayIds, setArrayIds] = useState([])
+  const [arrayIds, setArrayIds] = useState([]);
+
   const columns =   [
     {
-      field:'name', headerName: 'Solutions', width: 500,  headerAlign: 'center', align: 'center'
+      field: 'name',
+      headerName: t('labelSolutions'),
+      width: 680, 
+      headerAlign: 'center',
+      align: 'center',
+      valueFormatter: (params) => {
+        const { value: name } = params;
+        return name.slice(0, -4);
+      }
     },
+
     {
 
-      field: 'status', renderCell: () => (<div><Chip color={COLORS[solutionExists]}  label={solutionExists}/></div>),  width: 450,  headerAlign: 'center', align: 'center'
+      field: 'criado_em',
+      headerName:t('headTableCreated'),
+      width: 600,
+      headerAlign: 'center',
+      align: 'center'
     }
   ]
 
@@ -67,10 +83,8 @@ export default function DashboardSolution() {
       return[]
     })
   }
-
   const handleResult = async () => {
     try{
-      // if(solutionExists !== 'active'){
         setIsLoading(true)
         await delay(300);
         setValueStatusSolution('...processing');
@@ -78,10 +92,8 @@ export default function DashboardSolution() {
         setValueStatusSolution('active');
         await delay(50);
         navigate('/dashboard/result')
-      // }
     } catch(e) {
       setIsLoading(false)
-      console.log(e)
     } finally {
       setIsLoading(false)
     }
@@ -93,7 +105,7 @@ export default function DashboardSolution() {
     <> 
     <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-          <Button>Soluções</Button>
+          <Button>{t('labelSolutions')}</Button>
         </ButtonGroup>
         <DataGrid columnData={columns} rowsData={listSolutions} onHandleRowClick={handleRowClick} onHandleCheckbox={handleClickCheckbox}/>
       { arrayIds.length > 0 && (
@@ -110,12 +122,9 @@ export default function DashboardSolution() {
           }}
           onClick={handleDelete}
         >
-          Delete
+          {t('buttonDelete')}
         </Button>
       )}
-
-
-
         <LoadingButton
           size="large"
           color="secondary"
@@ -133,7 +142,7 @@ export default function DashboardSolution() {
             backgroundColor: theme.palette.primary.main
           }}
         >
-          <span>Gerar</span>
+          <span>{t('buttonGenerate')}</span>
         </LoadingButton>
       </Paper>
     </>

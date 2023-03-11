@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   Avatar,
   Button,
+  ButtonGroup,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,13 +10,15 @@ import {
   FormControl,
   InputLabel,
   FormGroup,
+  IconButton,
   FormHelperText,
   Select,
   MenuItem,
+  Paper,
   Typography
 } from '@mui/material';
 
-import {Clear} from '@mui/icons-material';
+import {Clear, Close} from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import { makeStyles } from "@material-ui/styles";
 import * as Yup from 'yup';
@@ -48,6 +51,18 @@ const useStyles = makeStyles(() => ({
     height: 400,
     width: '600px',
   },
+  dialogPaper: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: '1024px',
+    margin: 0,
+    height: '100%',
+    maxHeight: 'calc(100vh - 64px)',
+    borderRadius: 0,
+  }
 }));
 
 const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
@@ -94,7 +109,6 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
       teamshome: game.teamshome,
       teamsaway: game.teamsaway,
     };
-    console.log(game)
     const newGames = [...games, newGame];
     const gamesWithInitials = newGames.map(game => ({
       ...game,
@@ -133,6 +147,7 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
       width: 305,
       align: 'center',
       headerAlign: 'center',
+      flex: 1,
       renderCell: (params) => (
         <div style={{ display: 'flex', alignItems: 'center', flexDirection:'row' }}>
           {getTeamAvatarUrl(params.row.teamshome)}&nbsp;X&nbsp;{getTeamAvatarUrl(params.row.teamsaway)}
@@ -145,10 +160,11 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
       width: 205,
       align: 'center',
       headerAlign: 'center',
+      flex: 0.5,
       renderCell: deleteButton
     }
   ];
-
+  
   const handleDelete = async (gameId) => {
     setDeleteGameId(gameId); // definir o id do jogo a ser excluído
   };
@@ -212,9 +228,19 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
   
   return (
     <>
-    <Dialog open={open} onClose={onClose} maxWidth="xl">
-      <DialogTitle>Adicionar Jogo</DialogTitle>
+    <Dialog open={open} onClose={onClose} fullwidth maxWidth={false}>
+
+    <IconButton sx={{ position: 'absolute', top: 0, right: 0 }} onClick={onClose}>
+    <Close />
+  </IconButton>
+      <DialogTitle>Gerencie seus jogos</DialogTitle>
+
+      <Paper elevation={3} square sx={{width: '100%', padding: '15px', maxWidth: '1024px'}} >
+
       <DialogContent>
+      <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+        <Button>Novo jogo</Button>
+      </ButtonGroup>
         <FormGroup className={classes.formGroup}>
           <FormControl className={classes.formControl}>
             <InputLabel id="teamshome-label">Time da casa</InputLabel>
@@ -250,18 +276,22 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
       {formErrors.teamsaway && <FormHelperText error>{formErrors.teamsaway}</FormHelperText>}
     </FormControl>
   </FormGroup>
-
-  <DataGrid rows={games} columns={columns} className={classes.dataGrid} />
 </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancelar
-        </Button>
-        <Button onClick={handleSave} color="primary">
-          Salvar
-        </Button>
-      </DialogActions>
+<DialogActions>
+  <Button onClick={handleSave} color="primary">
+    Salvar
+  </Button>
+</DialogActions>
+</Paper>
+    <Paper elevation={3} square sx={{width: '100%', padding: '25px', marginBottom: '30px'}} >
+      <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+        <Button>Jogos cadastrados</Button>
+      </ButtonGroup>
+      <DataGrid rows={games} columns={columns} className={classes.dataGrid} autoHeight
+rowHeight={60}
+ />
+    </Paper>
     </Dialog>
 
       <Dialog
@@ -277,6 +307,7 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
         <Button onClick={handleConfirmDelete} color="error">Excluir</Button>
       </DialogActions>
 </Dialog>
+
 </>
   );
 };

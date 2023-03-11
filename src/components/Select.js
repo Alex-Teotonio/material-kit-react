@@ -1,4 +1,5 @@
-import { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState, useCallback } from 'react';
+import {useTranslation} from 'react-i18next'
 import { makeStyles, useTheme } from "@material-ui/styles";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -24,10 +25,16 @@ const useStyles = makeStyles(() => ({
 }))
 
 export default function SelectSmall() {
+
+  const {t} = useTranslation();
   const { leaguesToUser, saveCurrentLeague, currentLeague } = useContext(LeagueContext)
-  const [age, setAge] = useState('');
   const classes = useStyles();
-  const theme = useTheme();
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), [])
+
+  useEffect(() => {
+    forceUpdate();
+  }, [currentLeague.id]);
 
   const handleChange = (event) => {
     const { value } = event.target;
@@ -35,24 +42,31 @@ export default function SelectSmall() {
     saveCurrentLeague(league);
   };
 
+  useEffect(() => {
+    forceUpdate();
+  }, [currentLeague?.id]);
+
+  console.log(currentLeague);
+
   return (
-    <FormControl sx={{ m: 1, minWidth: 260, margin: 0 }} size="small" className={classes.root} style={{ backgroundColor: 'transparent' }}>
-      <InputLabel id="demo-select-small" style={{ color: '#fff' }}>League</InputLabel>
+    <FormControl sx={{ m: 1, minWidth: 260, margin: 0, padding: 0 }} size="small" className={classes.root} style={{ backgroundColor: 'transparent' }}>
+      <InputLabel id="demo-select-small" style={{ margin: 0, padding: 0, color: '#fff' , fontSize: '18px', fontWeight: 'bold'}}>{t('instance')}</InputLabel>
       <Select
-        labelId="demo-select-small"
-        id="demo-select-small"
-        value={currentLeague.id}
-        label="League"
-        onChange={handleChange}
-        variant="outlined"
-        style={{ backgroundColor: 'transparent', color: '#fff' }}
-      >
-        {
-          leaguesToUser.length > 0 && leaguesToUser.map((l) => (
-            <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>
-          ))
-        }
-      </Select>
+      labelId="demo-select-small"
+      id="demo-select-small"
+      value={currentLeague.id || ""}
+      label="League"
+      onChange={handleChange}
+      variant="standard"
+      style={{ backgroundColor: 'transparent', color: '#fff', width: '100%' }}
+    >
+      {
+        leaguesToUser.length > 0 && leaguesToUser.map((l) => (
+          <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>
+        ))
+      }
+    </Select>
+
     </FormControl>
   );
 }

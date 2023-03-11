@@ -1,11 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Slider, { SliderThumb } from '@mui/material/Slider';
+import { useTranslation } from 'react-i18next';
 import { styled } from '@mui/material/styles';
-import { Button} from '@mui/material';
-import {Sports, Warning} from '@mui/icons-material'
+import { Button,Box, Stack, Typography} from '@mui/material';
+import {Sports, Warning, Home} from '@mui/icons-material'
 import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
 
 function ValueLabelComponent(props) {
   const { children, value } = props;
@@ -107,9 +107,10 @@ AirbnbThumbComponent.propTypes = {
 };
 
 export default function CustomizedSlider({value, onChange, name}) {
+  const {t} = useTranslation()
   return (
     <Tooltip 
-      title="Caso a restrição não seja atendida, defina o peso da penalidade."
+      title="Defina o peso da penalidade."
       sx={{ 
         backgroundColor: 'gray',
         color: 'white' 
@@ -119,21 +120,14 @@ export default function CustomizedSlider({value, onChange, name}) {
         sx={{ 
           display:'flex',
           alignItems: 'center',
-          marginTop: '32px',
+          marginTop: '24px',
           marginBottom: '10px'
         }}
       >
-        <Button 
-          sx={{ 
-            marginLeft: '8px',
-            color:"#2065D1",
-            width: '150px'
-          }}
-          variant="string"
-          startIcon={<Warning/>}
-        >
-          Penalidade
-        </Button>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', justifyContent: 'flex-end', marginRight: '12px'}}>
+          <Warning sx={{color: '#2065D1'}} />
+          <Typography sx={{color: '#2065D1'}}> Penalidade</Typography>
+        </Stack>
         <IOSSlider
           name={name}
           value={value}

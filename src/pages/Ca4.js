@@ -1,24 +1,25 @@
 import { useState } from 'react';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import toast from '../utils/toast';
 import Loader from '../components/Loader';
 import { delay } from '../utils/formatTime';
 
-const itemsRadioType = [
-  {id: 'hard', title: 'Hard'},
-  {id: 'soft', title: 'Soft'}
-];
-
-const itemsRadioMode = [
-  {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
-];
-
-
 export default function Ca4() {
+  const {t} = useTranslation();
+
+  const itemsRadioType = [
+    {id: 'hard', title: t('valueLabelTypeHard')},
+    {id: 'soft', title: t('valueLabelTypeSoft')}
+  ];
+
+  const itemsRadioMode = [
+    {id: 'H', title: t('valueLabelHome')},
+    {id: 'A', title: t('valueLabelAway')}
+  ];
   const navigate = useNavigate();
   const [values, setValues] = useState(
     {
@@ -112,6 +113,7 @@ export default function Ca4() {
           itemsRadioMode={itemsRadioMode}
           onHandleSubmit={handleSubmitValue}
           validationSchema={validationSchema}
+          information={t('descriptionCA4')}
         />
     </>
   )

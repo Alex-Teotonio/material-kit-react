@@ -56,6 +56,8 @@ export default function Restrictions() {
         };
         loadData();
       }, []);
+
+      console.log(restrictions)
       
     const handleClickButton = () => {
         setIsOpenModal(true)
@@ -81,30 +83,27 @@ export default function Restrictions() {
         )}
       </div>
     );
-
     const columns = [
         { 
             field: 'type_constraint',
             headerName: t('headTableCategory'),
-            width: 100,
+            width: 80,
             align: 'center',
             headerAlign: 'center',
             disableClickEventBubbling: true
         },
-        { field: 'type', headerName: t('headTableType'), width: 90, align: 'center',headerAlign: 'center' },
+        { field: 'type', headerName: t('headTableType'), width: 70, align: 'center',headerAlign: 'center' },
         { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
-        { field: 'max', headerName: 'Nº Max De Jogos', width: 150 , align: 'center',headerAlign: 'center'},
+        { field: 'max', headerName: t('labelMax'), width: 100 , align: 'center',headerAlign: 'center'},
         { 
           field: 'teams', 
-          headerName: 'Aplica a', 
-          width: 320,
+          headerName: t('headTableApply'), 
+          width: 290,
           align: 'center',
           headerAlign: 'center',
-          renderCell: (params) => {
-            console.log(params.row)
-            return (
+          renderCell: (params) => (
             <AvatarGroup max={4}>
-              {params.row?.teams.map((t) => {
+              {params.row?.teams?.map((t) => {
                 const team = teams.find((te) => te.id === t)
                 return(
                 <Avatar
@@ -115,12 +114,12 @@ export default function Restrictions() {
                 />
               )})}
             </AvatarGroup>
-          )}
+          )
         },
         { 
           field: 'teams2', 
-          headerName: 'Adversário', 
-          width: 290,
+          headerName: t('headTableNameTeams2'),
+          width: 280,
           align: 'center',
           headerAlign: 'center',
           renderCell: (params) => (
@@ -138,8 +137,22 @@ export default function Restrictions() {
             </AvatarGroup>
           )
         },
-        { field: 'slots', headerName: 'Intervalo de tempo', width: 250, align: 'center', headerAlign: 'center', renderCell: renderSlots },
-        { field: 'criado_em', headerName: t('headTableCreated'), width: 200, headerAlign: 'center', align: 'center' }
+        {
+          field: 'meetings',
+          headerName: t('headTableMeetings'),
+          width: 200,
+          align: 'center',
+          headerAlign: 'center',
+          renderCell: (params) => (
+              <div>
+                {params.row.meetings?.map((meeting) => (
+                  <Chip key={params.row?.id} label={meeting} color="primary" />
+                ))}
+              </div>
+            ),
+        },
+        { field: 'slots', headerName: t('headTableNameSlots'), width: 230, align: 'center', headerAlign: 'center', renderCell: renderSlots },
+        { field: 'criado_em', headerName: t('headTableCreated'), width: 180, headerAlign: 'center', align: 'center' }
     ];
 
     const handleClickButtonDelete = async () => {
@@ -171,7 +184,7 @@ export default function Restrictions() {
         <>
         <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
           <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-            <Button startIcon={<NotInterested/>}>Restrições</Button>
+            <Button startIcon={<NotInterested/>}>{t('headTableRestriction')}</Button>
           </ButtonGroup>
         <Modal isOpen={isOpenModal} onRequestClose={handleClose}/>
         <Dialog 

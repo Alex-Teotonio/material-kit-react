@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import {post} from '../services/requests'
 import FormGa1 from '../components/Ga1Restrictions/FormGa1';
@@ -11,6 +13,7 @@ const itemsRadioType = [
   {id: 'soft', title: 'Soft'}
 ];
 export default function Ga1() {
+  const {t} = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState(
@@ -72,21 +75,39 @@ export default function Ga1() {
       });
       toast({
         type: 'success',
-        text: 'Restrição cadastrada com sucesso'
+        text: t('toastSuccess')
       })
       navigate(`/dashboard/restrictions`)
     } catch(e) {
       toast({
         type: 'error',
-        text: 'Houve um erro durante a operação'
+        text: t('toastError')
       })
     } finally {
       setIsLoading(false);
-    }
-    
+    }    
   }
 
-  return (
+  const validationSchema = Yup.object().shape({
+    min: Yup.number()
+      .typeError('O campo "Min" é obrigatório')
+      .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Min" é 0')
+      .required('O campo "Min" é obrigatório'),
+    max: Yup.number()
+      .typeError('O campo "Max" é obrigatório')
+      .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
+      .min(0, 'O valor mínimo para "Max" é 0')
+      .when('min', (min, schema) => schema.test({
+          test: (value) => value >= min,
+          message: 'O campo "Max" deve ser maior ou igual ao campo "Min"',
+        }))
+      .required('O campo "Max" é obrigatório'),
+    games: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Games"'),
+    slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo'),
+  });
+  
+    return (
     <>
     <Loader isLoading={isLoading}/>
       <FormGa1 
@@ -96,6 +117,8 @@ export default function Ga1() {
         handleChangeMultipleValues={handleChangeTeams}
         onHandleSubmit={handleSubmitValue}
         onHandleGames={handleGames}
+        validationSchema={validationSchema}
+        information={t('descriptionGA1')}
       />
     </>
   )

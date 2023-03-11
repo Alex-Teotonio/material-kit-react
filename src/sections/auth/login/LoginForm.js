@@ -1,12 +1,14 @@
 import * as Yup from 'yup';
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 // form Login
 import {Login} from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
+import { AppBar, Toolbar,Link, Stack, IconButton, InputAdornment, Typography } from '@mui/material';
+
 import { LoadingButton } from '@mui/lab';
 // components
 import { delay } from '../../../utils/formatTime';
@@ -54,14 +56,10 @@ export default function LoginForm() {
 
     try{
         await handleLogin(methods.getValues('email'),methods.getValues('password'))
-        setObjectMessage('Login Efetuado com sucesso!');
-        setSeverity('success');
         await delay(500)
         navigate('/dashboard/app', { replace: true });
       } catch(error) {
         console.log(error)
-        setObjectMessage('Ocorreu um erro !')
-        setSeverity('error');
         delay(500)
         navigate('/login')
     }

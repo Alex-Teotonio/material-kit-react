@@ -40,9 +40,14 @@ export default function AccountPopover() {
     setOpen(event.currentTarget);
   };
 
-  const {dadosUser} = useContext(LeagueContext)
+  const {dadosUser, handleLogout} = useContext(LeagueContext)
 
   const handleClose = () => {
+    setOpen(null);
+  };
+
+  const logout = () => {
+    handleLogout();
     setOpen(null);
   };
 
@@ -66,7 +71,8 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar alt="photoURL" children={<small>{dadosUser.name.charAt(0)}</small>} />
+
       </IconButton>
 
       <MenuPopover
@@ -104,7 +110,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}  to='/' component={RouterLink}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}  to='/' component={RouterLink}>
           Logout
         </MenuItem>
       </MenuPopover>

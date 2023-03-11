@@ -114,12 +114,11 @@ export default function ChangeBr1() {
     {
       setIsLoading(true);
       await delay(400)
-      const teamPublicId = handleValueInArray(values.teamsSelected, 'publicid' );
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const leagueId = currentLeague.id;
       const {min, mode,penalty, type} = values;
     
-     await put(`/se1/${id}`, {min, mode, type, leagueId,penalty, teamForm,teamPublicId,oldTeamsIds});
+     await put(`/se1/${id}`, {min, mode, type, leagueId,penalty, teamForm,oldTeamsIds});
 
      toast({
       type: 'success',

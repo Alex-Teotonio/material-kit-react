@@ -4,24 +4,26 @@ import {
 } from '@mui/material';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { delay } from '../utils/formatTime';
 import toast from '../utils/toast';
 import api from '../services/api';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
-import Loader from '../components/Loader'
-
-const itemsRadioType = [
-  {id: 'hard', title: 'Hard'},
-  {id: 'soft', title: 'Soft'}
-];
-
-const itemsRadioMode = [
-  {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
-];
+import Loader from '../components/Loader';
 
 
 export default function Ca1() {
+  const {t} = useTranslation();
+
+const itemsRadioType = [
+  {id: 'hard', title: t('valueLabelTypeHard')},
+  {id: 'soft', title: t('valueLabelTypeSoft')}
+];
+
+const itemsRadioMode = [
+  {id: 'H', title: t('valueLabelHome')},
+  {id: 'A', title: t('valueLabelAway')}
+];
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA1',
@@ -87,14 +89,14 @@ export default function Ca1() {
 
       toast({
         type: 'success',
-        text: 'Restrição adicionada com sucesso'
+        text: t('toastSuccess')
       })
       navigate(`/dashboard/restrictions`)
     } catch(e) {
       setIsLoading(false)
       toast({
         type: 'error',
-        text: 'Houve um erro durante a operação'
+        text: t('toastError')
       });
     }finally {
       setIsLoading(false)
@@ -114,6 +116,7 @@ export default function Ca1() {
         itemsRadioMode={itemsRadioMode}
         onHandleSubmit={handleSubmitValue}
         validationSchema={validationSchema}
+        information={t('descriptionCA1')}
       />
     </Container>
     </>

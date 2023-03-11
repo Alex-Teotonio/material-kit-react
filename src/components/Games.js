@@ -1,22 +1,47 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import * as XLSX from 'xlsx';
 import {
   Avatar,
   Button,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TablePagination,
-  TableRow,
-  TableHead,
-  Typography
+  TextField,
+  Typography,
 } from '@mui/material';
+import { Search } from '@mui/icons-material';
 
-import {SaveAlt as SaveAltIcon } from '@mui/icons-material'
+
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/styles";
+import { 
+  DataGrid,
+  GridToolbar,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarDensitySelector,
+  ptBR
+} from '@mui/x-data-grid';
+import { LeagueContext } from '../hooks/useContextLeague';
 
+function CustomToolbar() {
+  return (
+    <GridToolbar>
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <TextField
+          variant="standard"
+          placeholder="Pesquisar"
+          fullWidth
+          InputProps={{
+            startAdornment: <Search />,
+          }}
+        />
+      </GridToolbarContainer>
+    </GridToolbar>
+  );
+}
 const useStyles = makeStyles(() => ({
   tableContainer: {
     maxWidth: "100vh",
@@ -30,7 +55,7 @@ const useStyles = makeStyles(() => ({
     borderCollapse: 'separate'
   },
   table: {
-    height: "50vh"
+    height: "70vh"
   },
   center: {
     textAlign: 'center'
@@ -43,24 +68,66 @@ const useStyles = makeStyles(() => ({
   },
   tableCell: {
     border: "5px solid rgba(241,243,244,1)",
-  },
-
-  exportButton: {
-    float: 'right',
-    marginTop: '16px'
   }
 }));
 
 export default function Games({data, slots, teams}) {
 
+  const {teamColor, currentLanguage} = useContext(LeagueContext);
+  console.log(currentLanguage)
+  const [sortModel, setSortModel] = useState([
+    { field: 'slot', sort: 'asc' },
+  ]);
   const columns = [
-    {id: 'sl', name: 'Slot', align: 'right'},
-    {id: 'vs', name: 'Casa', align: 'right'},
-    {id: '', name: ' ', align: 'center', display: 'none'},
-    {id: 'vt', name: 'Fora', align: 'left'},
-    {id: 'lo', name: 'Local', align: 'left'},
-
-  ]
+    { field: 'slot', headerName: 'Slot', align: 'right', width: 280,headerAlign: 'right' },
+    {
+      field: 'home',
+      headerName: 'Casa',
+      align: 'right',
+      headerAlign: 'right',
+      width: 300,
+      renderCell: (params) => {
+        console.log(params)
+        return (
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
+            <Typography>{findTeams(params.row.home).name}</Typography>
+            <Avatar 
+            style={{ backgroundColor: `${teamColor[findTeams(params.row.home).id]}` }}
+            src={findTeams(params.row.home).url}
+            children={<small>{findTeams(params.row.home).initials}</small>} 
+            key={findTeams(params.row.home).id}
+          />
+        </Stack>
+        )
+        }
+    },
+    {
+      field: 'vs',
+      headerName: '',
+      align: 'center',
+      width: 90,
+      renderCell: () => <Typography>vs</Typography>
+    },
+    {
+      field: 'away',
+      headerName: 'Fora',
+      align: 'left',
+      width: 300,
+      renderCell: (params) => (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Avatar 
+            src={findTeams(params.row.away).url}
+            style={{ backgroundColor: `${teamColor[findTeams(params.row.away).id]}` }}
+            children={<small>{findTeams(params.row.away).initials}</small>} 
+            key={findTeams(params.row.away).id}
+          />
+          <Typography>{findTeams(params.row.away).name}</Typography>
+        </Stack>
+      )
+    },
+    { field: 'venue', headerName: 'Local', align: 'left', width: 250 }
+  ];
+  
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(8);
@@ -74,6 +141,26 @@ export default function Games({data, slots, teams}) {
     setPage(0);
   };
 
+
+  const findTeams = (publicid) => {
+    const team = teams.find((t) => t.publicid === (+publicid));
+
+    return team
+  }
+
+  const findSlots = (publicid) => {
+    const slot = slots.find((t) => t.publicid === (+publicid));
+
+    return slot.name
+  }
+  const rows = data.map(d => ({
+    id: d.id,
+    slot: findSlots(d.slot),
+    home: d.home,
+    vs: 'vs',
+    away: d.away,
+    venue: findTeams(d.home).venue
+  }));
   const exportToExcel = (data, slots, teams) => {
     const worksheet = buildWorksheet(data, slots, teams);
     const workbook = XLSX.utils.book_new();
@@ -95,12 +182,12 @@ const buildWorksheet = (data) => {
   ], {cellDates: false, sheetFormat: {baseColWidth: 20}});
 
   // Definir a altura da primeira linha do cabeçalho e deixar o texto em negrito
-  const headerRow = 1;
-  const headerStyle = { font: { bold: true } };
-  worksheet['!rows'] = [{ hpt: 40, hpx: 40 }];
-  worksheet[`A${headerRow}:E${headerRow}`].forEach((cell) => {
-    cell.s = headerStyle;
-  });
+  // const headerRow = 1;
+  // const headerStyle = { font: { bold: true } };
+  // worksheet['!rows'] = [{ hpt: 40, hpx: 40 }];
+  // worksheet[`A${headerRow}:E${headerRow}`].forEach((cell) => {
+  //   cell.s = headerStyle;
+  // });
 
   // Inserir as imagens na planilha
   data.forEach((d, rowIndex) => {
@@ -135,79 +222,22 @@ const buildWorksheet = (data) => {
   const handleExport = () => {
     exportToExcel(data)
   }
-
-  const classes = useStyles();
-  const findTeams = (publicid) => {
-    const team = teams.find((t) => t.publicid === (+publicid));
-
-    return team
-  }
-
-  const findSlots = (publicid) => {
-    const slot = slots.find((t) => t.publicid === (+publicid));
-
-    return slot.name
-  }
   return (
-    <>
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          {
-            columns.map((c) => <TableCell className={classes.tableCell} sx={{textAlign: c.align}} key={c.id}>{c.name}</TableCell>)
-          }
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {
-          data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((d) => (
-            <TableRow key={d.id}>
-              <TableCell className={classes.tableCell} sx={{textAlign: 'right'}}>
-                <Typography>{findSlots(d.slot)}</Typography>
-              </TableCell>
-              <TableCell className={classes.tableCell} sx={{textAlign: 'right'}}>
-                <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
-                  <Avatar src={findTeams(d.home).url} />
-                  <Typography>{findTeams(d.home).name}</Typography>
-                </Stack>
-              </TableCell>
-              <TableCell className={classes.tableCell} sx={{textAlign: 'center'}}>
-                <Typography>vs</Typography>
-              </TableCell>
-              <TableCell className={classes.tableCell} sx={{textAlign: 'left'}}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Avatar src={findTeams(d.away).url} />
-                  <Typography>{findTeams(d.away).name}</Typography>
-                </Stack>
-              </TableCell>
-                
-              <TableCell className={classes.tableCell} sx={{textAlign: 'left'}} >
-                <Typography>{findTeams(d.home).venue}</Typography>
-              </TableCell>
-            </TableRow>
-          ))
-        }
-      </TableBody>
-    </Table>
-    <TablePagination
-    rowsPerPageOptions={[5, 10, 25]}
-    component="div"
-    count={data.length}
-    rowsPerPage={rowsPerPage}
-    page={page}
-    onPageChange={handleChangePage}
-    onRowsPerPageChange={handleChangeRowsPerPage}
-  />
-   <Button
-    variant="contained"
-    startIcon={<SaveAltIcon />}
-    onClick={handleExport}
-    className={classes.exportButton}
-  >
-    Exportar para Excel
-  </Button>
-  </>
+    <div style={{height: '650px'}}>
+    <DataGrid
+      rows={rows}
+      columns={columns}
+      pageSize={10}
+      rowsPerPageOptions={[10]}
+      autoPageSize
+      autoHeight
+      disable
+      sortModel={sortModel}
+      localeText={currentLanguage.value === 'ptBR' ? ptBR.components.MuiDataGrid.defaultProps.localeText : undefined}
+      onSortModelChange={(model) => setSortModel(model)}
+    />
+   <Button variant="contained" onClick={handleExport} sx={{position: 'fixed',right: '20px', bottom: '120px'}}>Exportar para Excel</Button>
+  </div>
     
   )
 }

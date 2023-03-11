@@ -1,37 +1,79 @@
 import { Link as RouterLink } from 'react-router-dom';
+import {
+  AppBar as MuiAppBar,
+  Box,
+  MenuItem,
+  IconButton,
+  Drawer as MuiDrawer,
+  Toolbar,
+  Card,
+  Link,
+  Container,
+  Paper,
+  Stack,
+  Typography 
+} from '@mui/material';
+
+import { useContext, useRef, useState } from 'react';
+
+import {PersonAdd, Home, Event} from '@mui/icons-material'
 // @mui
-import { styled } from '@mui/material/styles';
-import { Card, Link, Container,Paper, Typography } from '@mui/material';
+import { styled, alpha } from '@mui/material/styles';
+import { LeagueContext } from '../hooks/useContextLeague';
+import MenuPopover from '../components/MenuPopover';
 // hooks
-import useResponsive from '../hooks/useResponsive';
 // components
 import Page from '../components/Page';
-import Logo from '../components/Logo';
+import { LANGS } from '../utils/dataComponents';
 // sections
 import { LoginForm } from '../sections/auth/login';
 import AuthSocial from '../sections/auth/AuthSocial';
 
 // ----------------------------------------------------------------------
+const DRAWER_WIDTH = 280;
 
+
+const openedMixin = (theme) => ({
+  width: DRAWER_WIDTH,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: DRAWER_WIDTH,
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
-  },
-}));
-
-const HeaderStyle = styled('header')(({ theme }) => ({
-  top: 0,
-  zIndex: 9,
-  lineHeight: 0,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  position: 'absolute',
-  padding: theme.spacing(3),
-  justifyContent: 'space-between',
-  [theme.breakpoints.up('md')]: {
-    alignItems: 'flex-start',
-    padding: theme.spacing(7, 5, 0, 7),
   },
 }));
 
@@ -45,7 +87,7 @@ const SectionStyle = styled(Card)(({ theme }) => ({
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: 680,
   margin: 'auto',
   minHeight: '100vh',
   display: 'flex',
@@ -57,56 +99,101 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const smUp = useResponsive('up', 'sm');
+  const anchorRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  
+  const { currentLanguage, saveCurrentLanguage } = useContext(LeagueContext);
+  const handleLanguage = (languageSelected) => {
+    setOpen(false)
+    saveCurrentLanguage(languageSelected);
+  };
 
-  const mdUp = useResponsive('up', 'md');
-
+  const handleOpen = () => {
+    setOpen(true)
+  }
   return (
     <Page title="Login">
     <Paper square>
       <RootStyle>
-        <HeaderStyle>
-          <Logo />
 
-          {smUp && (
-            <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              Don’t have an account? {''}
-              <Link variant="subtitle2" component={RouterLink} to="/register">
-                Get started
-              </Link>
-            </Typography>
-          )}
-        </HeaderStyle>
+      <MenuPopover
+        open={open}
+        onClose={handleLanguage}
+        anchorEl={anchorRef.current}
+        sx={{
+          mt: 1.5,
+          ml: 0.75,
+          width: 180,
+          '& .MuiMenuItem-root': { px: 1, typography: 'body2', borderRadius: 0.75 },
+        }}
+      >
+        <Stack spacing={0.75}>
+          {LANGS.map((option) => (
+            <MenuItem key={option.value} selected={option.value === currentLanguage.value} onClick={() => handleLanguage(option.value)}>
+              <Box component="img" alt={option.label} src={option.icon} sx={{ width: 28, mr: 2 }} />
 
-        {mdUp && (
-          <SectionStyle>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
-            </Typography>
-            <img src="/static/illustrations/illustration_login.png" alt="login" />
-          </SectionStyle>
-        )}
+              {option.label}
+            </MenuItem>
+          ))}
+        </Stack>
+      </MenuPopover>
+      <AppBar position="fixed">
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Event sx={{ color: '#FFF', mr: 0.5 }} />
+                <Typography variant="h6" noWrap>
+                  GamePlanner
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                <Link component={RouterLink} to="/register" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <PersonAdd sx={{ mr: 1, color: '#FFF' }} />
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', color: "#FFF" }}>
+                    Create Account
+                  </Typography>
+                </Link>
 
+                <IconButton
+                  ref={anchorRef}
+                  onClick={handleOpen}
+                  sx={{
+                    padding: 0,
+                    width: 44,
+                    height: 44,
+                    ml: 3,
+                    ...(open && {
+                      bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
+                    }),
+                  }}
+                >
+                  <img src={currentLanguage.icon} alt={currentLanguage.label} />
+                </IconButton>
+              </Box>
+        </Toolbar>
+      </AppBar>
+
+
+        <SectionStyle>
+          <img src="/static/illustrations/timetable-software.png" alt="login" />
+        </SectionStyle>
         <Container maxWidth="sm">
           <ContentStyle>
-            <Typography variant="h4" gutterBottom align='center'>
-              Entrar
+
+          <Paper elevation={2} square>
+          <Typography variant="h2" gutterBottom align='left' sx={{padding: '5px'}}>
+            The Perfect solution for sports competitions.
+          </Typography>
+
+            <Typography sx={{ color: 'text.secondary', mb:1, padding: '5px' }} align="left">
+              Welcome to our web interface for competition programming problems. Our goal is to simplify the complexity of managing sports competitions by providing an intuitive and user-friendly interface. 
             </Typography>
 
-            <Typography sx={{ color: 'text.secondary', mb: 5 }} align='center'>Enter your details below.</Typography>
-
-            <AuthSocial />
-
-            <LoginForm />
-
-            {!smUp && (
-              <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                Don’t have an account?{' '}
-                <Link variant="subtitle2" component={RouterLink} to="/register">
-                  Get started
-                </Link>
-              </Typography>
-            )}
+            <Typography sx={{ color: 'text.secondary', mb: 2, padding: '5px'}} align="left">
+              Get started by logging in below:
+            </Typography>
+              <LoginForm />
+              <AuthSocial />
+            </Paper>
           </ContentStyle>
         </Container>
       </RootStyle>

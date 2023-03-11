@@ -1,10 +1,23 @@
-import { Box, Button, Card, Container, MenuItem, Select, TextField } from '@mui/material';
+
+import { useTranslation } from 'react-i18next'; 
+import { 
+  Box,
+  Button,
+  Card,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
+} from '@mui/material';
 import PropTypes from 'prop-types';
+import {Warning} from '@mui/icons-material'
 
 import api from '../services/api';
 import { useLeagueForm } from '../hooks/useLeagueForm';
 
 export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
+  const {t} = useTranslation()
   const initialValues = {
     name: '',
     short: '',
@@ -28,8 +41,14 @@ export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
   };
 
   return (
-    <Container sx={{ display: 'flex' }}>
-      <Card sx={{ padding: '25px 25px', width: '1024px' }}>
+    <>
+    <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px', backgroundColor: '#FFF7CD', }}>
+      <Warning sx={{ color: '#F6C244', margin: '5px 5px' }} />
+      <Typography variant="body2" sx={{color: '#FFC107', padding: '5px'}}>
+        {t('informationLeague')}
+      </Typography>
+      </Box>
+      <Card sx={{ padding: '25px 25px', width: '100%' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }} component="form" onSubmit={handleSubmit}>
           <TextField
             id="outlined-basic"
@@ -41,7 +60,7 @@ export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
             onChange={handleChange}
           />
           <TextField
-            label="Short"
+            label={t('headTableShort')}
             name="short"
             sx={{ marginTop: '10px' }}
             value={values.short}
@@ -50,7 +69,7 @@ export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
             onChange={handleChange}
           />
           <TextField
-            label="NºTeams"
+            label={t('headTableNumberTeams')}
             type="number"
             name="numberTeams"
             sx={{ marginTop: '10px' }}
@@ -59,33 +78,40 @@ export default function AddLeagueForm({ onRequestClose, onHandleLeague }) {
             helperText={errors.numberTeams}
             onChange={handleChange}
           />
-          
+        <InputLabel 
+          id="demo-simple-select-label"
+          sx={{ 
+            fontSize: 'small',
+            marginTop: '16px',
+            marginBottom: '0px'
+          }}>
+            {t('labelMirred')}
+        </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            label="Mirred"
-            name="Mirred"
-            placeholder="Mirred"
+            name="mirred"
+            placeholder={t('labelMirred')}
             defaultValue={10}
             onChange={handleChange}
-            sx={{marginTop: '15px', marginBottom: '20px'}}
+            sx={{ marginTop: '2px', marginBottom: '20px' }}
             value={values.mirred}
             error={!!errors.mirred}
             helperText={errors.mirred}
           >
-            <MenuItem value={10}>Yes</MenuItem>
-            <MenuItem value={20}>No</MenuItem>
+            <MenuItem value={10}>{t('valueYes')}</MenuItem>
+            <MenuItem value={20}>{t('valueNo')}</MenuItem>
           </Select>
           <Button 
             variant="contained"
             sx={{padding:'4px', height: '40px', marginTop: '20px'}}
             type="submit"
           >
-            Cadastrar Liga
+            {t('buttonAdd')}
           </Button>
         </Box>
       </Card>
-    </Container>
+    </>
   )
   }
 
