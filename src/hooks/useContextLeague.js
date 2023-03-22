@@ -15,6 +15,8 @@ import {LANGS} from '../utils/dataComponents'
 export const LeagueContext = createContext({});
 
 export function LeagueProvider({ children }) {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [currentLeague, setCurrentLeague] = useLocalStorage('myLeague',{});
     const [solutionExists, setSolutionExists] = useLocalStorage('mySolution', 'not');
     const [dadosUser, setDadosUser] = useLocalStorage('myUser', {});
@@ -45,6 +47,15 @@ export function LeagueProvider({ children }) {
       i18n.changeLanguage(currentLanguage.value);
     }, [currentLanguage]);
 
+    useEffect(() => {
+      if (location.pathname.match(/\/teams|\/slots|\/restrictions|\/listSolutions/) && !currentLeague.id) {
+        toast({
+          type: 'error',
+          text: 'Selecione uma liga'
+        });
+        navigate('/dashboard/app');
+      }
+    }, [currentLeague, location.pathname, navigate]);
 
     function setTeamColor(team) {
       const teamId = team.id;
@@ -57,23 +68,6 @@ export function LeagueProvider({ children }) {
         return newColor;
       
     }
-
-    const navigate = useNavigate();
-
-    // function handleNavigationWithoutLeague() {
-    //   toast({
-    //     type: 'error',
-    //     text: 'Selecione uma liga'
-    //   })
-    // }
-
-// // Verifica se uma liga está selecionada antes de permitir a navegação para outras rotas
-// function handleRouteChange() {
-//   if (!currentLeague.id) {
-//     handleNavigationWithoutLeague();
-//     navigate("/dashboard/app");
-//   }
-// }
 
     async function handleAddLeaguesForUser(newLeague) {
       try {

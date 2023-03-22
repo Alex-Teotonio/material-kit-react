@@ -7,7 +7,6 @@ import { delay } from '../utils/formatTime';
 import {put,get} from '../services/requests';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import {LeagueContext} from '../hooks/useContextLeague';
-import api from '../services/api';
 
 import toast from '../utils/toast'
 import Loader from '../components/Loader';
@@ -26,6 +25,7 @@ export default function ChangeCa2() {
 
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA1',
@@ -150,6 +150,7 @@ export default function ChangeCa2() {
         oldTeams2Ids,
         oldSlotsIds
       });
+      setValueStatusSolution('outdated');
       toast({
         type: 'success',
         text: 'Restrição atualizada com sucesso'

@@ -19,7 +19,9 @@ export async function get(path) {
 }
 
 export async function put(path, payload) {
+    console.log(path, payload)
     const response = await api.put(path, payload);
+
     if(response.status === 200) return response
     throw new Error(`${response.status} - ${response.statusText}`)
 }

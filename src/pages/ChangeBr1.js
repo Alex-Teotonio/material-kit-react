@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import * as Yup from 'yup';
 import { useParams, useNavigate } from 'react-router-dom';
 import { delay } from '../utils/formatTime';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import {get, put} from '../services/requests';
 import toast from '../utils/toast';
+import {LeagueContext} from '../hooks/useContextLeague';
 
 import Loader from '../components/Loader';
 
@@ -24,6 +25,7 @@ const itemsRadioMode = [
 export default function ChangeBr1() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'Br1',
@@ -120,7 +122,7 @@ export default function ChangeBr1() {
       const {intp, mode,penalty, type} = values;
     
      await put(`/br1/${id}`, {intp, mode, type, leagueId, teamForm,slotForm, penalty, oldSlotsIds,oldTeamsIds});
-
+     setValueStatusSolution('outdated')
      toast({
       type: 'success',
       text: 'Restrição atualizada com sucesso'

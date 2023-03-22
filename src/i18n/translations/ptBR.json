@@ -9,11 +9,12 @@
     "titleModalLeague": "Nova Liga",
     "descriptionModalLeague": "Crie uma nova liga de turno e returno",
     "descriptionEditLeague": "Editar instância",
+    "fieldRequired": "Campo obrigatório",
 
 
 
     "headTableNameTeams": "Times",
-    "headTableNameTeams2": "Times 2",
+    "headTableNameTeams2": "Contra",
     "headTableInitialsTeams": "Iniciais",
     "headTableVenueTeams": "Local",
     "actions": "Ações",
@@ -67,11 +68,13 @@
     "descriptionBR2": "Limita o número total de pausas para um conjunto de equipes",
     "descriptionFA2": "Definir diferença mínima de jogos em casa entre duas equipes",
     "headTableNameSlots": "Rodadas",
-
-
+    "messageSlots": "Edite os slots disponíveis para a reserva de horários dos jogos na liga selecionada.",
+    "tutorialTitle": "Tutorial",
+    "tutorialStep1Title": "Clique no botão Adicionar para criar uma liga",
+    "tutorialStep1Description": "Preencha os campos corretamente",
     "tooltipRestriction": "Nesta seção, defina as restrições que serão aplicadas às atribuições",
     "tooltipGamesMax": "Defina a quantidade máxima de jogos.",
-    "tooltipGamesMin": "Set the minimum number of games.",
+    "tooltipGamesMin": "Defina a quantidade mínima de jogos.",
     "tooltipIntp": "Defina a quantidade de jogos consecutivos.",
     "tooltipPriority": "Defina a relevância dessa restrição.",
     "informationLeague": "Ao cadastrar uma liga, os times e slots serão cadastrados automaticamente e esses dados não poderão ser deletados. Certifique-se de inserir todas as informações corretamente antes de cadastrar a liga.",

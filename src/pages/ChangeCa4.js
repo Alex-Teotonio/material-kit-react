@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import * as Yup from 'yup';
 import { useParams, useNavigate } from 'react-router-dom';
 import {get, put} from '../services/requests'
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
+import {LeagueContext}  from '../hooks/useContextLeague';
 import Loader from '../components/Loader';
 import { delay } from '../utils/formatTime';
 import toast from '../utils/toast'
@@ -22,6 +23,7 @@ const itemsRadioMode = [
 export default function ChangeCa4() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA4',
@@ -138,6 +140,7 @@ export default function ChangeCa4() {
         oldTeams2Ids,
         oldSlotsIds
       });
+      setValueStatusSolution('outdated');
       toast({
         type: 'success',
         text: 'Restrição atualizada com sucesso'

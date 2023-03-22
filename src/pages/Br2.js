@@ -19,8 +19,6 @@ export default function Br2() {
   ];
   
   const itemsRadioMode = [
-    {id: 'H', title: t('valueLabelHome')},
-    {id: 'A', title: t('valueLabelAway')},
     {id: 'HA', title: t('valueLabelHomeAway')}
   ];
   const navigate = useNavigate();
@@ -32,7 +30,7 @@ export default function Br2() {
       teamsSelected: [],
       slots: [],  
       intp: 0,
-      mode: 'H',
+      mode: 'HA',
       penalty: 70
     })
 

@@ -56,8 +56,6 @@ export default function Restrictions() {
         };
         loadData();
       }, []);
-
-      console.log(restrictions)
       
     const handleClickButton = () => {
         setIsOpenModal(true)

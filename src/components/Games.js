@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
+import { FileCopyOutlined, InsertDriveFile, Search } from '@mui/icons-material';
 
 
 import PropTypes from 'prop-types';
@@ -86,9 +86,7 @@ export default function Games({data, slots, teams}) {
       align: 'right',
       headerAlign: 'right',
       width: 300,
-      renderCell: (params) => {
-        console.log(params)
-        return (
+      renderCell: (params) => (
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
             <Typography>{findTeams(params.row.home).name}</Typography>
             <Avatar 
@@ -99,7 +97,6 @@ export default function Games({data, slots, teams}) {
           />
         </Stack>
         )
-        }
     },
     {
       field: 'vs',
@@ -236,7 +233,7 @@ const buildWorksheet = (data) => {
       localeText={currentLanguage.value === 'ptBR' ? ptBR.components.MuiDataGrid.defaultProps.localeText : undefined}
       onSortModelChange={(model) => setSortModel(model)}
     />
-   <Button variant="contained" onClick={handleExport} sx={{position: 'fixed',right: '20px', bottom: '120px'}}>Exportar para Excel</Button>
+   <Button variant="contained"  startIcon={<InsertDriveFile/>} onClick={handleExport} sx={{position: 'fixed',right: '20px', bottom: '220px'}}>Exportar para Excel</Button>
   </div>
     
   )

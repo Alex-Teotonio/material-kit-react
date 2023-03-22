@@ -46,8 +46,6 @@ export default function SelectSmall() {
     forceUpdate();
   }, [currentLeague?.id]);
 
-  console.log(currentLeague);
-
   return (
     <FormControl sx={{ m: 1, minWidth: 260, margin: 0, padding: 0 }} size="small" className={classes.root} style={{ backgroundColor: 'transparent' }}>
       <InputLabel id="demo-select-small" style={{ margin: 0, padding: 0, color: '#fff' , fontSize: '18px', fontWeight: 'bold'}}>{t('instance')}</InputLabel>

@@ -1,13 +1,13 @@
 import { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import {Button,ButtonGroup, Paper } from '@mui/material';
-import {DeleteOutline, Event} from '@mui/icons-material'
+import {Button,ButtonGroup, Paper, Box, IconButton, Typography} from '@mui/material';
+import {DeleteOutline, Event,InfoOutlined} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
 import { delay } from "../utils/formatTime";
 import DataGrid from '../components/DataGrid';
-import Chip from '../components/Chip';
+// import Chip from '../components/Chip';
 import { LeagueContext } from '../hooks/useContextLeague';
 import {get} from '../services/requests';
 
@@ -24,11 +24,25 @@ export default function DashboardSolution() {
   const {currentLeague, solutionExists, setValueStatusSolution} = useContext(LeagueContext);
 
   const COLORS = {
-    'not': "error",
-    'active' : 'success',
-    'outdated' : 'warning',
-    '...processing' : 'warning'
+    'not': "#ECECEC",
+    'active' : '#E9FCD4',
+    'outdated' : '#FFF7CD',
+    '...processing' : '#D6E4FF'
   }
+
+  const COLORS_TEXT = {
+    'not': "#ECECEC",
+    'active' : '#54D62C',
+    'outdated' : '#FFC107',
+    '...processing' : '#3366FF'
+  }
+
+  const STATUS_MESSAGES = {
+    "active": "Solução atualizada - A última solução que você gerou está consistente com os dados apresentados no sistema. Clique na linha correspondente a atualização que você deseja ver o resultado.",
+  "outdated": "Solução desatualizada - clique no botão abaixo para gerar uma nova solução consistente com os dados atuais da liga",
+  "...processing": "Processando"
+  }
+  
 
   useEffect(() => {
     async function loadSolutions() {
@@ -72,7 +86,7 @@ export default function DashboardSolution() {
     }
   ]
 
-  const handleRowClick = async (params) => {
+  const handleRowClick = async () => {
     navigate(`/dashboard/result`)
   }
 
@@ -103,6 +117,26 @@ export default function DashboardSolution() {
   }
   return (
     <> 
+    {
+      listSolutions.length > 0 && (
+        <Box sx={{ 
+          bgcolor: `${COLORS[solutionExists]}`,
+          color: 'blue',
+          padding: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: '15px'
+          }}>
+          <IconButton sx={{ color: `${COLORS_TEXT[solutionExists]}` }}>
+            <InfoOutlined />
+          </IconButton>
+          <Typography variant="body1" sx={{ marginLeft: '4px', color: `${COLORS_TEXT[solutionExists]}` }}>
+            {STATUS_MESSAGES[solutionExists]}
+          </Typography>
+        </Box>
+      
+    )}
+
     <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
           <Button>{t('labelSolutions')}</Button>

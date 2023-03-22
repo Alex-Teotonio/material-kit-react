@@ -12,7 +12,7 @@ import {
   DeleteOutlineOutlined,
   EditOutlined, AddOutlined,FileCopyOutlined } from '@mui/icons-material';
 import {post,get} from '../services/requests'
-
+import Carousel from '../components/Carousel';
 import { delay } from '../utils/formatTime';
  import Loader from '../components/Loader'
 
@@ -50,9 +50,9 @@ export default function DashboardApp() {
   } = useContext(LeagueContext)
 
   const columns = [
-    { field: 'name', headerName: t('headTableName'), width: 300, headerAlign: 'center', align: 'center' },
-    { field: 'short', headerName: t('headTableShort'), width: 230, headerAlign: 'center', align: 'center' },
-    { field: 'number_teams', headerName: t('headTableNumberTeams'), width: 230, headerAlign: 'center', align: 'center' },
+    { field: 'name', headerName: t('headTableName'), width: 400, headerAlign: 'center', align: 'center' },
+    { field: 'short', headerName: t('headTableShort'), width: 330, headerAlign: 'center', align: 'center' },
+    { field: 'number_teams', headerName: t('headTableNumberTeams'), width: 330, headerAlign: 'center', align: 'center' },
     { field: 'Actions', 
     renderCell: (cellValues) => (
       <Stack direction="row" alignItems="center" spacing={2}>
@@ -197,6 +197,7 @@ export default function DashboardApp() {
   }
   return (
     <Page title="Dashboard">
+      <Carousel/>
         <Loader isLoading={isLoading}/>
         <Dialog 
           open={openDialog}

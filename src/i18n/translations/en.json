@@ -9,10 +9,11 @@
     "titleModalLeague": "Create League",
     "descriptionModalLeague": "Create a new league with both home and away matches",
     "descriptionEditLeague": "Edit your instance",
+    "fieldRequired": "Field Required",
 
 
     "headTableNameTeams": "Teams",
-    "headTableNameTeams2": "Teams 2",
+    "headTableNameTeams2": "Against",
     "headTableInitialsTeams": "Initials",
     "headTableVenueTeams": "Venue",
     "actions": "Actions",
@@ -68,6 +69,13 @@
     "buttonGenerate": "Generate",
     "headTableMeetings": "Games",
     "headTableNameSlots": "Slots",
+    "messageSlots": "Edit the available slots for scheduling games in the selected league.",
+    "tutorialTitle": "Tutorial",
+    "tutorialStep1Title": "Create your instance",
+    "tutorialStep1Description": "Click on the Add button to create a league",
+    "tutorialStep2Description": "Please complete the fields correctly",
+
+
 
     "tooltipRestriction": "In this section, define the restrictions that will be applied to assignments",
     "tooltipGamesMax": "Set the maximum number of games.",

@@ -185,11 +185,11 @@ export default function Login() {
           </Typography>
 
             <Typography sx={{ color: 'text.secondary', mb:1, padding: '5px' }} align="left">
-              Welcome to our web interface for competition programming problems. Our goal is to simplify the complexity of managing sports competitions by providing an intuitive and user-friendly interface. 
+              Welcome to our web interface for competition programming problems.
             </Typography>
 
             <Typography sx={{ color: 'text.secondary', mb: 2, padding: '5px'}} align="left">
-              Get started by logging in below:
+              Create Account to proceed:
             </Typography>
               <RegisterForm />
               <AuthSocial />

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import  {LeagueContext}  from '../hooks/useContextLeague';
 import {get, put} from '../services/requests';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import Loader from '../components/Loader';
@@ -22,6 +23,7 @@ const itemsRadioMode = [
 export default function ChangeCa3() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA3',
@@ -130,6 +132,7 @@ export default function ChangeCa3() {
         oldTeamsIds,
         oldTeams2Ids
       });
+      setValueStatusSolution('outdated');
       toast({
         type: 'success',
         text: 'Restrição atualizada com sucesso'

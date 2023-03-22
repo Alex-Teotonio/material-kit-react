@@ -84,10 +84,10 @@ export default function BasicModal({isOpen, onRequestClose}) {
               <Button 
                 sx={{textTransform: 'none'}}
                 onClick={() => handleAdvance('ca1')}
-                >`CA{capacityConstraintsDesc.CA1}`</Button>
-              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca2')} >{capacityConstraintsDesc.CA2}</Button>
-              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca3')} >{capacityConstraintsDesc.CA3}</Button>
-              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca4')} >{capacityConstraintsDesc.CA4}</Button>
+                >{`CA1 - ${capacityConstraintsDesc.CA1}`}</Button>
+              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca2')} >{`CA2 - ${capacityConstraintsDesc.CA2}`}</Button>
+              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca3')} >{`CA3 - ${capacityConstraintsDesc.CA3}`}</Button>
+              <Button sx={{textTransform: 'none'}} onClick={() => handleAdvance('ca4')} >{`CA4 - ${capacityConstraintsDesc.CA4}`}</Button>
             </ButtonGroup>
           </Paper>
 
@@ -96,7 +96,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
               <Button >Game Restricition</Button>
           </ButtonGroup>
           <ButtonGroup fullWidth orientation="vertical">
-            <Button onClick={() => handleAdvance('ga1')} >{gameConstraintsDesc.GA1}</Button>
+            <Button onClick={() => handleAdvance('ga1')} >{`GA1 - ${gameConstraintsDesc.GA1}`}</Button>
           </ButtonGroup>
         </Paper>
 
@@ -105,8 +105,8 @@ export default function BasicModal({isOpen, onRequestClose}) {
               <Button>Break Restricitions</Button>
           </ButtonGroup>
           <ButtonGroup fullWidth orientation="vertical">
-            <Button onClick={() => handleAdvance('br1')} >{breakConstraintsDesc.BR1}</Button>
-            <Button onClick={() => handleAdvance('br2')} >{breakConstraintsDesc.BR2}</Button>
+            <Button onClick={() => handleAdvance('br1')} >{`BR1 - ${breakConstraintsDesc.BR1}`}</Button>
+            <Button onClick={() => handleAdvance('br2')} >{`BR2 - ${breakConstraintsDesc.BR2}`}</Button>
           </ButtonGroup>
         </Paper>
 
@@ -115,7 +115,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
               <Button>Fairness Restricition</Button>
           </ButtonGroup>
           <ButtonGroup fullWidth orientation="vertical">
-            <Button onClick={() => handleAdvance('fa2')} >{fairnessConstraintsDesc.FA2}</Button>
+            <Button onClick={() => handleAdvance('fa2')} >{`FA2 - ${fairnessConstraintsDesc.FA2}`}</Button>
           </ButtonGroup>
         </Paper>
 
@@ -124,7 +124,7 @@ export default function BasicModal({isOpen, onRequestClose}) {
                 <Button>Separation Restricition</Button>
             </ButtonGroup>
           <ButtonGroup fullWidth orientation="vertical">
-            <Button onClick={() => handleAdvance('se1')} >{separationConstraintsDesc.SE1}</Button>
+            <Button onClick={() => handleAdvance('se1')} >{`SE1 - ${separationConstraintsDesc.SE1}`}</Button>
           </ButtonGroup>
         </Paper>
 

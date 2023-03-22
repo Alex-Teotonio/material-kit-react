@@ -45,12 +45,15 @@ export default function Ca2() {
         .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
         .min(0, 'O valor mínimo para "Min" é 0')
         .required('O campo "Min" é obrigatório'),
-      max: Yup.number()
+        max: Yup.number()
         .typeError('O campo "Max" é obrigatório')
         .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
         .min(0, 'O valor mínimo para "Max" é 0')
-        .required('O campo "Max" é obrigatório')
-        .test('max-greater-than-min', 'O campo "Max" deve ser maior ou igual ao campo "Min"', ({ min }, value) => value >= min),
+        .when('min', (min, schema) => schema.test({
+            test: (value) => value >= min,
+            message: 'O campo "Max" deve ser maior ou igual ao campo "Min"',
+          }))
+        .required('O campo "Max" é obrigatório'),
       teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
       teams2Selected: Yup.array()
         .min(1, 'Selecione pelo menos uma equipe para "Teams"')

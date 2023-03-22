@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import * as Yup from 'yup';
 import { makeStyles } from '@material-ui/styles';
 import {
@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import {useTranslation} from 'react-i18next'
 import { t } from 'i18next';
+import { LeagueContext } from '../../hooks/useContextLeague';
 import SliderCustom from '../Slider';
 import { get } from '../../services/requests';
 import Input from '../Input';
@@ -73,6 +74,7 @@ export default function FormRestrictions(props) {
   } = props;
 
   const [values, setValues] = useState(initialValues);
+  const {setValueStatusSolution} = useContext(LeagueContext);
   
   useEffect(() => {
     async function loadTeams() {
@@ -222,7 +224,41 @@ export default function FormRestrictions(props) {
                       messageError={errors.min}
                     />
                   </Box>
-                )}
+                )}  
+                {values.typeRestriction === 'CA2' && (
+                    <Box sx={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      whiteSpace: 'nowrap'
+                    }}>
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '8px', justifyContent: 'flex-end'}}>
+                        <Sports sx={{color: '#2065D1'}} />
+                        <Typography sx={{ color:"#2065D1"}}>
+                          Nº de jogos
+                        </Typography>
+                      </Stack>
+                      <Input
+                        value={values.max}
+                        onChange={handleInputChange}
+                        name="max"
+                        label={t('labelMax')}
+                        type="number"
+                        error={!!errors.max }
+                        messageError={errors.max}
+                        widthProp='227px'
+                      />
+                      <Input
+                        value={values.min}
+                        onChange={handleInputChange}
+                        name="min"
+                        label="Min"
+                        type="number"
+                        error={!!errors.min }
+                        messageError={errors.min}
+                        widthProp='227px'
+                      />
+                    </Box>
+                  )}
 
                 <Box 
                   sx={{ 
@@ -244,7 +280,7 @@ export default function FormRestrictions(props) {
                   label="Type"
                   value={values.type}
                   onChange={handleInputChange}
-                  sx={{ width: '480px' }}
+                  sx={{ width: '470px' }}
                 >
                   {
                     itemsRadioType.map((item) => (
@@ -252,51 +288,21 @@ export default function FormRestrictions(props) {
                     ))
                   }
                 </Select>
-                </Box>  
-                {values.typeRestriction === 'CA2' && (
-                    <Box sx={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      whiteSpace: 'nowrap'
-                    }}>
-                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px',justifyContent: 'flex-end'}}>
-                        <Sports sx={{color: '#2065D1'}} />
-                        <Typography sx={{ color:"#2065D1"}}>
-                          Nº máx de jogos
-                        </Typography>
-                      </Stack>
-                      <Input
-                        value={values.max}
-                        onChange={handleInputChange}
-                        name="max"
-                        label={t('labelMax')}
-                        type="number"
-                        error={!!errors.max }
-                        messageError={errors.max}
-                        sx={{ width: '250px' }}
-                      />
-                      <Input
-                        value={values.min}
-                        onChange={handleInputChange}
-                        name="min"
-                        label="Min"
-                        type="number"
-                        error={!!errors.min }
-                        messageError={errors.min}
-                        sx={{ width: '227px' }}
-                      />
-                    </Box>
-                  )}
+                </Box>
                   
                   {(values.typeRestriction === 'CA3' || values.typeRestriction === 'BR1' || values.typeRestriction === 'FA2' || values.typeRestriction === 'BR2' || values.typeRestriction === 'FA2' ) && (
                     <Box sx={{ 
                       display: 'flex',
                       alignItems: 'center',
-                      whiteSpace: 'nowrap'
+                      justifyContent: 'flex-start'
                     }}>
-                      <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px', justifyContent: 'flex-end'}}>
+                      <Stack direction="row" alignItems="center" spacing={1} sx={{
+                        width: '116px',
+                        justifyContent: 'flex-end',
+                        marginLeft: '32px'
+                        }}>
                         <Timeline sx={{color: '#2065D1'}} />
-                        <Typography sx={{color: '#2065D1'}}>
+                        <Typography sx={{color: '#2065D1', textAlign: 'center', marginRight: '8px'}}>
                           Jogos consecutivos
                         </Typography>
                       </Stack>
@@ -307,7 +313,7 @@ export default function FormRestrictions(props) {
                         label={t('labelRounds')}
                         type="number"
                         error={errors.intp}
-                        sx={{ width: '250px' }}
+                        sx={{ width: '250px,', marginLeft: '16px' }}
                       />
                     </Box>
                     )}
@@ -331,7 +337,7 @@ export default function FormRestrictions(props) {
                       label="Mode"
                       value={values.mode}
                       onChange={handleInputChange}
-                      sx={{width: '450px'}}
+                      sx={{width: '470px'}}
                     >
                       {
                         itemsRadioMode.map((item) => (
@@ -391,7 +397,7 @@ export default function FormRestrictions(props) {
                   whiteSpace: 'nowrap'
                 }}
               >
-              <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12', justifyContent: 'flex-end'}}>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12px', justifyContent: 'flex-end'}}>
                 <SportsSoccer sx={{color: '#2065D1'}}/>
                 <Typography sx={{color: '#2065D1'}}>
                   Times
@@ -421,9 +427,9 @@ export default function FormRestrictions(props) {
                     }}
                   >
 
-                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '160px', marginRight: '15px', justifyContent: 'flex-end'}}>
-                      <SportsSoccer fontSize="small" />
-                      <Typography variant="button" sx={{minWidth: '100px'}}> {t('headTableNameTeams2')}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12px', justifyContent: 'flex-end'}}>
+                      <SportsSoccer sx={{color: '#2065D1'}}/>
+                      <Typography sx={{color: '#2065D1'}}> {t('headTableNameTeams2')}</Typography>
                     </Stack>
                     <ContainerInline onHandleClick={handleClickSelectAll} name="teams2Selected">
                       <MultipleSelectChip
@@ -441,7 +447,7 @@ export default function FormRestrictions(props) {
                     </Box>
 
                 )}
-                <Box sx={{ marginTop: '50px', right: '15px', float: 'right', bottom: '25px', position: 'relative' }}>
+                <Box sx={{ marginTop: '70px', right: '45px', float: 'right', bottom: '25px', position: 'relative' }}>
                   <Button 
                     endIcon={<Send />}
                     variant="contained"

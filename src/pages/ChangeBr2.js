@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import {get, put} from '../services/requests';
 import toast from '../utils/toast';
-
+import {LeagueContext} from '../hooks/useContextLeague';
 import Loader from '../components/Loader';
 
 
@@ -23,6 +23,7 @@ const itemsRadioMode = [
 export default function ChangeBr2() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'Br1',
@@ -125,6 +126,7 @@ export default function ChangeBr2() {
       penalty,
       oldSlotsIds,
       oldTeamsIds});
+      setValueStatusSolution('outdated')
 
      toast({
       type: 'success',

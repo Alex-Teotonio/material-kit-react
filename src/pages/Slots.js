@@ -1,13 +1,16 @@
 import 'regenerator-runtime/runtime';
 
-import { useEffect, useState, useCallback, useContext } from 'react';
-import {Button,ButtonGroup,Paper } from '@mui/material';
-import { AccessTimeTwoTone } from "@mui/icons-material";
+import { useEffect, useState,Fragment, useContext } from 'react';
+
+import {Box,Button,ButtonGroup,IconButton,Modal,Paper,Stack, TextField, Typography } from '@mui/material';
+import { AccessTimeTwoTone, Edit } from "@mui/icons-material";
 import {useTranslation} from 'react-i18next';
 import { DataGrid } from '@mui/x-data-grid';
 import { LeagueContext } from "../hooks/useContextLeague";
-import { delay } from '../utils/formatTime';
+import {fDate, delay } from '../utils/formatTime'
 import toast from '../utils/toast';
+import TutorialCarousel from '../components/Carousel';
+
 
 import Loader from '../components/Loader'
 import {get, put } from '../services/requests';
@@ -16,37 +19,38 @@ import {get, put } from '../services/requests';
 export default function Slots() {
     
     const [slots, setSlots] = useState([]);
-    const [updatedRows, setUpdatedRows] = useState([]);
 
     const {t} = useTranslation();
 
     const {currentLeague} = useContext(LeagueContext);
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    const [editedSlot, setEditedSlot] = useState(null);
 
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
-    const handleRowEditCommit = useCallback(({ id, field: col, value }) => {
-      setUpdatedRows(prevRows => {
-        const index = prevRows.findIndex(row => row.id === id);
-        if (index > -1) {
-          const updatedRow = { ...prevRows[index], changes: { [col]: value } };
-          return [...prevRows.slice(0, index), updatedRow, ...prevRows.slice(index + 1)];
-        } 
-          const newRow = { id: id || prevRows.length + 1, changes: { [col]: value } };
-          return [...prevRows, newRow];
-        
-      });
-    }, []);
+    const style = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: 650,
+      bgcolor: 'background.paper',
+      border: '2px solid #000',
+      boxShadow: 24,
+      p: 4,
+    };
     
+
     
     const columns  =  [
       { 
         field: 'name',
         headerName: t('headTableNameSlots'),
-        width: 500, 
+        width: 600, 
         headerAlign: 'center',
         align: 'center',
-        editable: true,
-        onEditCellChange: handleRowEditCommit,
+        editable: true
       },
       { 
         field: 'criado_em',
@@ -54,81 +58,150 @@ export default function Slots() {
         width: 500, 
         headerAlign:'center',
         align: 'center' 
+      },
+      {
+        field: 'action',
+        headerName: 'Action',
+        width: 300,
+        align: 'center',
+        headerAlign: 'center',
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        renderCell: (params) => (
+          <IconButton
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => handleEdit(params.row)}
+          >
+            <Edit/>
+          </IconButton>
+        )
       }
     ];
-    useEffect(
-        () => {
-          async function fetchData() {
-            const data = await get(`/slot/${currentLeague.id}`);
-            setSlots(data)
-          }
-  
-          fetchData();
-        }
-      ,[currentLeague.id]);
 
-      const handleRowError = useCallback((error) => {
-        console.log(error)
-          toast({
-            type: 'error',
-            text: 'Houve um erro ao atualizar '
-          })
-        }
-      ,[])
-      
-      
-    const onProcessRowUpdate = async () => {
-      setIsLoading(true);
+    useEffect(() => {
+      async function fetchData() {
+        const data = await get(`/slot/${currentLeague.id}`);
+        setSlots(data)
+      }
+  
+      fetchData();
+    }, [currentLeague.id]);
+    const saveChanges = async (slot) => {
       try {
-        await delay(300);
-        console.log(updatedRows)
-        const updatePromises = updatedRows.map(async (updatedRow) => {
-          const { id, changes } = updatedRow;
-          const leagueId = currentLeague.id;
-          console.log(changes);
-          await put(`/slot/${id}`, { ...changes, leagueId });
-        });
-        await Promise.all(updatePromises);
+        setIsLoading(true);
+        await delay(300)
+        const data = {
+          name: slot.name,
+          leagueId: currentLeague.id
+        }
+        const response = await put(`/slot/${slot.id}`, data);
+        const updatedSlot = response.data
+
+        setSlots((prevSlots) =>
+          prevSlots.map((s) => (s.id === updatedSlot.id ? updatedSlot : s))
+        );
+        setOpenModal(false);
         toast({
-          type: 'success',
-          text: 'Atualizado com sucesso!'
+          text: "Slot atualizado com sucesso!",
+          type: 'success'
         });
       } catch (error) {
-        console.error(error);
         toast({
-          type: 'error',
-          text: 'Houve um erro ao atualizar!'
+          text: "Erro ao atualizar o slot!",
+          type: 'error'
         });
-      } finally {
-        setIsLoading(false);
-        setUpdatedRows([]);
+        setIsLoading(false)
+      } finally{
+        setIsLoading(false)
       }
+    };
+
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      setEditedSlot((prevSlot) => ({ ...prevSlot, [name]: value }));
+    };
+    
+    
+    const handleEdit = (row) => {
+      console.log(row)
+      console.log(`Editar ${row}`);
+      setSelectedSlot(row);
+      setEditedSlot(row);
+      setOpenModal(true);
     };
     
     
     
-    
-      
     return (
       <>
-    <Paper square sx={{width: '100%', padding: '5px', height:'400px'}} >
-      <Loader isLoading={isLoading} />
-      <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-        <Button startIcon={<AccessTimeTwoTone/>}>Slots</Button>
-      </ButtonGroup>
-      {slots && slots.length > 0 &&
-        <DataGrid
-        columns={columns}
-        rows={slots}
-        getRowId={(row) => row.id ? row.id : ""}
-        onCellEditCommit={onProcessRowUpdate}
-        onCellEditCommitError={handleRowError}
-        onEditCellChangeCommitted={handleRowEditCommit}
-      />
-      
-      }
-      {/* <Calendar/> */}
-    </Paper>
-  </>
-    )
+        <Paper square sx={{width: '100%', padding: '5px', height:'400px'}} >
+          <Loader isLoading={isLoading} />
+          
+          <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+            <Button startIcon={<AccessTimeTwoTone/>}>{t('headTableNameSlots')}</Button>
+          </ButtonGroup>
+          {slots && slots.length > 0 &&
+            <DataGrid
+              columns={columns}
+              rows={slots}
+              getRowId={(row) => row.id ? row.id : ""}
+            />
+          }
+        </Paper>
+
+        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+          <Box sx={style}>
+          <Stack direction='row' alignItems='center' justifyContent='center' mb={1} >
+              <Typography
+                 variant='h4'
+                 justifyContent='center'
+                 alignItems='center'
+                 mr={1}
+                 color='primary'
+              >
+                {t('headTableNameSlots')}
+              </Typography>
+              <AccessTimeTwoTone color='primary' style={{ fontSize: 24 }} />
+          </Stack>
+          <Box sx={{ marginTop: "8px", marginBottom: '8px' }}>
+            <Typography
+              variant='body1'
+              justifyContent='center'
+              alignItems='center'
+              sx={{backgroundColor:'#D1E9FC', color:'#2065D1' }}
+              p={1}
+              fontWeight='bold'
+            >
+              {
+                t('messageSlots')
+              }
+            </Typography>
+          </Box>
+            <Box sx={{ marginBottom: "16px" }}>
+              <TextField
+                fullWidth
+                required
+                type="text"
+                name="name"
+                value={editedSlot?.name || ""}
+                onChange={handleInputChange}
+                error={!editedSlot?.name}
+                helperText={!editedSlot?.name && t("fieldRequired")}
+              />
+            </Box>
+            <Stack direction="row" justifyContent="flex-end">
+          <Button onClick={() => setOpenModal(false)}>{(t('buttonCancel'))}</Button>
+          <Button onClick={() => saveChanges(editedSlot)} variant="contained" color="primary">
+          Salvar
+          </Button>
+          </Stack>
+
+          </Box>
+        </Modal>
+      </>
+    );
+    
 }

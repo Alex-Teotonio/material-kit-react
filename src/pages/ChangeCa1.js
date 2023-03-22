@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import * as Yup from 'yup';
 import {Container} from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import FormRestrictions from '../components/BasicRestrictions/FormRestrictions';
 import Loader from '../components/Loader';
 import { delay } from '../utils/formatTime';
 import toast from '../utils/toast'
-
+import {LeagueContext} from '../hooks/useContextLeague';
 
 const itemsRadioType = [
   {id: 'hard', title: 'Hard'},
@@ -23,6 +23,7 @@ const itemsRadioMode = [
 export default function ChangeCa1() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {setValueStatusSolution} = useContext(LeagueContext);
   const validationSchema = Yup.object().shape({
     max: Yup.number()
     .typeError('O campo "Max" é obrigatório')
@@ -109,6 +110,7 @@ export default function ChangeCa1() {
       await delay(400)
       const teamForm = handleValueInArray(values.teamsSelected, 'id' );
       const slotForm = handleValueInArray(values.slots, 'id' );
+      
       const leagueId = currentLeague.id;
       const {max, penalty, mode, type} = values;
       await put(`/ca1/${id}`, {
@@ -122,6 +124,7 @@ export default function ChangeCa1() {
         oldTeamsIds,
         oldSlotsIds
       });
+      setValueStatusSolution('outdated');
       toast({
         type: 'success',
         text: 'Restrição atualizada com sucesso'
