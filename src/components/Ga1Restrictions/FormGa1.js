@@ -8,12 +8,7 @@ import {
   Button,
   Card,
   CardContent,
-  Divider,
   IconButton,
-  Grid,
-  Stack,
-  FormControl,
-  InputLabel,
   MenuItem,
   Select as MuiSelect,
   Typography,
@@ -33,8 +28,6 @@ import AppBar from '../AppBar';
 import MultipleSelectChip from '../MultSelect';
 
 import GameModal from '../../pages/ModalGames'
-
-import Select from '../SelectDefault'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -61,7 +54,6 @@ export default function FormRestrictions(props) {
   const [games, setGames] = useState([]);
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedGames, setSelectedGames] = useState([]);
   const [errors, setErrors] = useState({});
 
   const [slots, setSlots] = useState([]);
@@ -82,6 +74,11 @@ export default function FormRestrictions(props) {
 
   const [values, setValues] = useState(initialValues);
 
+  useEffect(() => {
+    setValues(initialValues);
+  }, [initialValues]);
+
+  
   useEffect(() => {
     async function loadData() {
       try {
@@ -114,7 +111,6 @@ export default function FormRestrictions(props) {
     }
     loadData()
   },[]);
-
 
   const handleAddGame = (game) => {
       const teamshome = teams.find(team => team.id === game.teamshome);

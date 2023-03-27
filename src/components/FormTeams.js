@@ -9,7 +9,6 @@ export default function FormTeams({data, onRequestCloseModal, onHandleTeams}) {
     const [name, setName] = useState(data.name);
     const [initials, setInitials] = useState(data.initials);
     const [venue, setVenue] = useState(data.venue);
-    const [file, setFile] = useState(data.url);
     const [image, setImage] = useState(data.url);
 
     const {setValueStatusSolution} = useContext(LeagueContext)

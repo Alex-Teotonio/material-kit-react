@@ -22,6 +22,7 @@ import ChangeBr1 from './pages/ChangeBr1';
 import ChangeBr2 from './pages/ChangeBr2';
 import ChangeFa2 from './pages/ChangeFa2';
 import ChangeSe1 from './pages/ChangeSe1';
+import ChangeGa1 from './pages/ChangeGa1';
 import Ca2 from './pages/Ca2';
 import Ca3 from './pages/Ca3';
 import Ca4 from './pages/Ca4';
@@ -58,6 +59,7 @@ export default function Router() {
         { path: 'br2/:id', element: <ChangeBr2/>},
         { path: 'fa2/:id', element: <ChangeFa2/>},
         { path: 'se1/:id', element: <ChangeSe1/>},
+        { path: 'ga1/:id', element: <ChangeGa1/>},
         { path: 'ca1', element: <Ca1/>},
         { path: 'ca2', element: <Ca2/>},
         { path: 'ca3', element: <Ca3/>},

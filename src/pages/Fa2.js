@@ -19,8 +19,6 @@ export default function Fa2() {
   
   const itemsRadioMode = [
     {id: 'H', title: t('valueLabelHome')},
-    {id: 'A', title: t('valueLabelAway')},
-    {id: 'HA', title: t('valueLabelHomeAway')}
   ];
   const [values, setValues] = useState(
     {

@@ -5,9 +5,10 @@ import {DeleteOutline, Event,InfoOutlined} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
+import toast from '../utils/toast';
 import { delay } from "../utils/formatTime";
 import DataGrid from '../components/DataGrid';
-// import Chip from '../components/Chip';
+import Dialog from '../components/Dialog';
 import { LeagueContext } from '../hooks/useContextLeague';
 import {get} from '../services/requests';
 
@@ -22,6 +23,7 @@ export default function DashboardSolution() {
   const navigate = useNavigate();
   const theme = useTheme();
   const {currentLeague, solutionExists, setValueStatusSolution} = useContext(LeagueContext);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const COLORS = {
     'not': "#ECECEC",
@@ -91,11 +93,28 @@ export default function DashboardSolution() {
   }
 
   const handleDelete = async () => {
-    arrayIds.map(async (a) => {
-      await api.delete(`solution/${a}`)
-      setValueStatusSolution('not')
-      return[]
-    })
+    try{
+      arrayIds.map(async (a) => {
+        await api.delete(`solution/${a}`)
+        setValueStatusSolution('not')
+        
+      })
+      setOpenDialog(false);
+      setIsLoading(true)
+      await delay(700)
+      toast({
+        type: 'success',
+        text: t('toastSuccess'),
+      })
+    } catch(e) {
+      setIsLoading(false)
+      toast({
+        type: 'error',
+        text: t('toastError')
+      })
+    } finally{
+      setIsLoading(false)
+    }
   }
   const handleResult = async () => {
     try{
@@ -116,7 +135,14 @@ export default function DashboardSolution() {
     setArrayIds(id)
   }
   return (
-    <> 
+    <>
+      <Dialog 
+          open={openDialog}
+          title={t('alertTitle')}
+          contentMessage={t('alertDeleteInstance')}
+          onClickAgree={handleDelete}
+          onClickDisagree={() => setOpenDialog(false)}
+        />
     {
       listSolutions.length > 0 && (
         <Box sx={{ 
@@ -154,7 +180,7 @@ export default function DashboardSolution() {
             marginRight: '4px',
             backgroundColor: theme.palette.error.main
           }}
-          onClick={handleDelete}
+          onClick={() => setOpenDialog(true)}
         >
           {t('buttonDelete')}
         </Button>

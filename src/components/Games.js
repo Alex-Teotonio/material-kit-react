@@ -4,77 +4,21 @@ import {
   Avatar,
   Button,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
-import { FileCopyOutlined, InsertDriveFile, Search } from '@mui/icons-material';
+import { FileCopyOutlined } from '@mui/icons-material';
 
 
 import PropTypes from 'prop-types';
-import { makeStyles } from "@material-ui/styles";
 import { 
   DataGrid,
-  GridToolbar,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarDensitySelector,
   ptBR
 } from '@mui/x-data-grid';
 import { LeagueContext } from '../hooks/useContextLeague';
 
-function CustomToolbar() {
-  return (
-    <GridToolbar>
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <TextField
-          variant="standard"
-          placeholder="Pesquisar"
-          fullWidth
-          InputProps={{
-            startAdornment: <Search />,
-          }}
-        />
-      </GridToolbarContainer>
-    </GridToolbar>
-  );
-}
-const useStyles = makeStyles(() => ({
-  tableContainer: {
-    maxWidth: "100vh",
-    margin: "auto",
-    marginTop: "15vh",
-    height: "70vh",
-    background: "#ccffff",
-    borderWidth: 2,
-    borderColor: "black",
-    borderStyle: "solid",
-    borderCollapse: 'separate'
-  },
-  table: {
-    height: "70vh"
-  },
-  center: {
-    textAlign: 'center'
-  },
-  left: {
-    textAlign: 'left'
-  },
-  right: {
-    textAlign: 'right'
-  },
-  tableCell: {
-    border: "5px solid rgba(241,243,244,1)",
-  }
-}));
-
 export default function Games({data, slots, teams}) {
 
   const {teamColor, currentLanguage} = useContext(LeagueContext);
-  console.log(currentLanguage)
   const [sortModel, setSortModel] = useState([
     { field: 'slot', sort: 'asc' },
   ]);
@@ -85,7 +29,7 @@ export default function Games({data, slots, teams}) {
       headerName: 'Casa',
       align: 'right',
       headerAlign: 'right',
-      width: 300,
+      width: 450,
       renderCell: (params) => (
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
             <Typography>{findTeams(params.row.home).name}</Typography>
@@ -109,7 +53,7 @@ export default function Games({data, slots, teams}) {
       field: 'away',
       headerName: 'Fora',
       align: 'left',
-      width: 300,
+      width: 450,
       renderCell: (params) => (
         <Stack direction="row" spacing={1} alignItems="center">
           <Avatar 
@@ -124,19 +68,6 @@ export default function Games({data, slots, teams}) {
     },
     { field: 'venue', headerName: 'Local', align: 'left', width: 250 }
   ];
-  
-  
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
 
   const findTeams = (publicid) => {
@@ -233,7 +164,12 @@ const buildWorksheet = (data) => {
       localeText={currentLanguage.value === 'ptBR' ? ptBR.components.MuiDataGrid.defaultProps.localeText : undefined}
       onSortModelChange={(model) => setSortModel(model)}
     />
-   <Button variant="contained"  startIcon={<InsertDriveFile/>} onClick={handleExport} sx={{position: 'fixed',right: '20px', bottom: '220px'}}>Exportar para Excel</Button>
+    <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 6 }}>
+      <Button variant="contained" startIcon={<FileCopyOutlined />} onClick={handleExport}>
+        Exportar para Excel
+      </Button>
+    </Stack>
+
   </div>
     
   )

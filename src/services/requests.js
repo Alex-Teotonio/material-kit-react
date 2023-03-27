@@ -13,20 +13,20 @@ export async function loadSlots(id = 39) {
 
 export async function get(path) {
     await delay(700)
+    
     const response = await api.get(path);
     if(response.status === 200) return response.data
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 
 export async function put(path, payload) {
-    console.log(path, payload)
     const response = await api.put(path, payload);
 
     if(response.status === 200) return response
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 
-export async function deleteRegistry(path, payload) {
+export async function deleteRegistry(path) {
     const response = await api.delete(path);
     if(response.status === 200) return response
     throw new Error(`${response.status} - ${response.statusText}`)

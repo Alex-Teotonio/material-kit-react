@@ -464,6 +464,18 @@ export default function FormRestrictions(props) {
 }
 
 
+FormRestrictions.propsTypes = {
+    initialValues: PropTypes.obj,
+    handleChangeValues: PropTypes.func,
+    itemsRadioType: PropTypes.array,
+    itemsRadioMode: PropTypes.array,
+    handleChangeMultipleValues: PropTypes.func,
+    onHandleSubmit: PropTypes.func,
+    labelButton: PropTypes.string,
+    validationSchema: PropTypes.func,
+    information: PropTypes.string
+}
 FormRestrictions.defaultProps = {
-  labelButton: t('buttonAdd'), information: ""
+  labelButton: t('buttonAdd'), information: "",
+  
 }

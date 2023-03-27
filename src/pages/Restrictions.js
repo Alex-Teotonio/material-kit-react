@@ -92,6 +92,7 @@ export default function Restrictions() {
         },
         { field: 'type', headerName: t('headTableType'), width: 70, align: 'center',headerAlign: 'center' },
         { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
+        { field: 'min', headerName: t('labelMin'), width: 100 , align: 'center',headerAlign: 'center'},
         { field: 'max', headerName: t('labelMax'), width: 100 , align: 'center',headerAlign: 'center'},
         { 
           field: 'teams', 

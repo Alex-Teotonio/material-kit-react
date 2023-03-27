@@ -1,21 +1,27 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect,useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
-import {post} from '../services/requests'
+import {get, put} from '../services/requests'
 import FormGa1 from '../components/Ga1Restrictions/FormGa1';
 import {delay} from '../utils/formatTime'
-import toast from '../utils/toast'
+import toast from '../utils/toast';
 
 const itemsRadioType = [
   {id: 'hard', title: 'Hard'},
   {id: 'soft', title: 'Soft'}
 ];
-export default function Ga1() {
+export default function ChangeGa1() {
+
+  const currentLeagueString = localStorage.getItem('myLeague');
+  const currentLeague = JSON.parse(currentLeagueString);
+  const [oldSlotsIds, setOldSlotsIds] = useState([])
+  const {id} = useParams();
   const {t} = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [gameId, setGameId] = useState([])
   const [values, setValues] = useState(
     {
       typeRestriction: 'GA1',
@@ -28,9 +34,42 @@ export default function Ga1() {
       penalty: 70,
       games: []
     })
+    useEffect(() => {
+      (async () => {
+        try{
+          setIsLoading(true);
+          const ga1Response = await get(`/ga1/${id}`);
+          const ga1Slots = await get(`ga1_slots/${id}`);
+          const newSlotsIds = ga1Slots.map((ga1) => ga1.id);
+          const ga1Games = await get(`games_rounds/${id}`);
 
-  const currentLeagueString = localStorage.getItem('myLeague');
-  const currentLeague = JSON.parse(currentLeagueString);
+          const gameOptions = ga1Games.map((game) => {
+            const optionLabel = `${game.name} x ${game.name2}`;
+            setGameId((gameId) => [...gameId, game.id]);
+            return { id: game.id, name: optionLabel };
+          });
+          const newSlots = ga1Slots.map((ga1) => ga1);
+          setValues(
+            {
+              typeRestriction: 'GA1',
+              min: ga1Response.min,
+              max: ga1Response.max,
+              type: ga1Response.type,
+              slots: newSlots,
+              penalty: ga1Response.penalty,
+              games: gameOptions
+              
+            }
+          )
+          setOldSlotsIds(newSlotsIds)
+        }catch {
+          setIsLoading(false)
+        }
+        finally {
+          setIsLoading(false)
+        }
+      })();
+    }, []);
 
   const handleChangeInput = (name, value) => {
     setValues({
@@ -52,7 +91,6 @@ export default function Ga1() {
       [name]: value
     })
   }
-  
   const handleValueInArray = (data, campo) => data.map((d) => d[campo]);
   const handleSubmitValue = async () =>{
     try{
@@ -61,19 +99,20 @@ export default function Ga1() {
       const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
       const {games,min,max, penalty, type} = values;
-      
-
+      console.log(slotForm)
+      const gamesIds = games.map(game => game.id);
 
       const game_id = games
-      console.log(game_id)
-      await post('/ga1', {
+      await put(`/ga1/${id}`,{
         min,
         max,
         type,
         slotForm,
         leagueId,
         penalty,
-        game_id
+        gameId,
+        games:gamesIds,
+        oldSlotsIds
       });
       toast({
         type: 'success',

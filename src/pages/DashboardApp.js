@@ -11,7 +11,7 @@ import {
 import {
   DeleteOutlineOutlined,
   EditOutlined, AddOutlined,FileCopyOutlined } from '@mui/icons-material';
-import {post,get} from '../services/requests'
+import {get} from '../services/requests'
 import Carousel from '../components/Carousel';
 import { delay } from '../utils/formatTime';
  import Loader from '../components/Loader'
