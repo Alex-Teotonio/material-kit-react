@@ -34,12 +34,12 @@ export default function Fa2() {
     const [isLoading, setIsLoading] = useState(false);
     const validationSchema = Yup.object().shape({
       intp: Yup.number()
-      .typeError('Defina a quantidade de jogos consecutivos')
-      .test('is-number', 'O campo "Jogos consecutivos" deve ser um número', (value) => !value || !isNaN(value))
-      .min(0, 'O valor mínimo para "Jogos consecutivos" é 0')
-      .required('O campo "Jogos consecutivos" é obrigatório'),
-      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
-      slots: Yup.array().min(1, 'Defina ao menos um inervalo de tempo')
+      .typeError(t('fieldRequired'))
+      .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+      .min(0, t('fieldMinValue'))
+      .required(t('fieldRequired')),
+      teamsSelected: Yup.array().min(1, t('fieldRequired')),
+      slots: Yup.array().min(1, t('fieldRequired'))
     });
 
 
@@ -74,13 +74,13 @@ export default function Fa2() {
     await api.post('/fa2', {intp, mode, type, leagueId, teamForm,slotForm, penalty,});
     toast({
       type: 'success',
-      text: 'Restrição cadastrada com sucesso'
+      text: t('toastSuccess')
     })
     navigate(`/dashboard/restrictions`);
   } catch(e) {
     toast({
       type: 'error',
-      text: 'Houve um erro durante a operação'
+      text: t('toastError')
     })
   } finally {
     setIsLoading(false);

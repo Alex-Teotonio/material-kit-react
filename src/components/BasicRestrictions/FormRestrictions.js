@@ -41,6 +41,7 @@ const useStyles = makeStyles(() => ({
   root: {
     "& .MuiTextField-root": {
       margin: '12px',
+      position: 'relative'
     },
   },
   column: {
@@ -50,8 +51,10 @@ const useStyles = makeStyles(() => ({
     marginTop: '8px'
   },
   button: {
-    margin: '12 px',
-  },
+  position: 'absolute;',
+  bottom: '25px;',
+  right: '45px;'
+}
 }));
 export default function FormRestrictions(props) {
   const currentLeagueString = localStorage.getItem('myLeague');
@@ -183,7 +186,7 @@ export default function FormRestrictions(props) {
                     <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', justifyContent: 'flex-end'}}>
                       <Sports sx={{color:"#2065D1"}}/>
                       <Typography sx={{ color:"#2065D1" }}>
-                        Nº máx de jogos
+                        {t('labelMax')}
                       </Typography>
                     </Stack>
 
@@ -211,7 +214,7 @@ export default function FormRestrictions(props) {
                   }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <Sports sx={{color: '#2065D1'}}/>
-                      <Typography sx={{ color:"#2065D1" }}>Nº min de jogos</Typography>
+                      <Typography sx={{ color:"#2065D1" }}>{t('labelMin')}</Typography>
 
                     </Stack>
                     <Input
@@ -234,7 +237,7 @@ export default function FormRestrictions(props) {
                     <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '8px', justifyContent: 'flex-end'}}>
                         <Sports sx={{color: '#2065D1'}} />
                         <Typography sx={{ color:"#2065D1"}}>
-                          Nº de jogos
+                          {t('labelGames')}
                         </Typography>
                       </Stack>
                       <Input
@@ -271,7 +274,7 @@ export default function FormRestrictions(props) {
                 <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '12px', justifyContent: 'flex-end'}}>
                   <Settings sx={{color: '#2065D1'}}/>
                   <Typography sx={{ color:"#2065D1" }}>
-                    Prioridade
+                    {t('labelPriority')}
                   </Typography>
 
                 </Stack>
@@ -303,14 +306,14 @@ export default function FormRestrictions(props) {
                         }}>
                         <Timeline sx={{color: '#2065D1'}} />
                         <Typography sx={{color: '#2065D1', textAlign: 'center', marginRight: '8px'}}>
-                          Jogos consecutivos
+                          {values.typeRestriction === 'BR1' || values.typeRestriction === 'BR2' ? t('labelBreaks') : t('labelRounds')}
                         </Typography>
                       </Stack>
                       <Input
                         value={values.intp}
                         onChange={handleInputChange}
                         name="intp"
-                        label={t('labelRounds')}
+                        label={values.typeRestriction === 'BR1' || values.typeRestriction === 'BR2' ? t('labelBreaks') : t('labelRounds')}
                         type="number"
                         error={errors.intp}
                         sx={{ width: '250px,', marginLeft: '16px' }}
@@ -329,7 +332,7 @@ export default function FormRestrictions(props) {
                     <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px',marginRight: '12px', justifyContent: 'flex-end'}}>
                       <Home sx={{color: '#2065D1'}}/>
                       <Typography sx={{color: '#2065D1'}}>
-                        Local
+                        {t('headTableVenueTeams')}
                       </Typography>
                     </Stack>
                     <Select
@@ -372,7 +375,7 @@ export default function FormRestrictions(props) {
                   <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12px', justifyContent: 'flex-end'}}>
                     <WatchLater sx={{color: '#2065D1'}}/>
                     <Typography sx={{color: '#2065D1'}}>
-                      Slots
+                      {t('headTableNameSlots')}
                     </Typography>
                   </Stack>
                   <ContainerInline onHandleClick={handleClickSelectAll} name="slots">
@@ -400,7 +403,7 @@ export default function FormRestrictions(props) {
               <Stack direction="row" alignItems="center" spacing={1} sx={{width: '150px', marginRight: '12px', justifyContent: 'flex-end'}}>
                 <SportsSoccer sx={{color: '#2065D1'}}/>
                 <Typography sx={{color: '#2065D1'}}>
-                  Times
+                  {t('headTableNameTeams')}
                 </Typography>
               </Stack>
               <ContainerInline onHandleClick={handleClickSelectAll} name="teamsSelected">

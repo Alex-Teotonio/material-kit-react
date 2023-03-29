@@ -40,6 +40,8 @@ export default function Ga1() {
   }
 
   const handleGames = (game) => {
+
+    console.log(game)
     setValues({
       ...values,
       gameId: game
@@ -47,6 +49,7 @@ export default function Ga1() {
   }
 
   const handleChangeTeams = (e, value, name) => {
+    console.log(values, value, name)
     setValues({
       ...values,
       [name]: value
@@ -61,11 +64,8 @@ export default function Ga1() {
       const slotForm = handleValueInArray(values.slots, 'id' );
       const leagueId = currentLeague.id;
       const {games,min,max, penalty, type} = values;
-      
-
 
       const game_id = games
-      console.log(game_id)
       await post('/ga1', {
         min,
         max,
@@ -92,21 +92,21 @@ export default function Ga1() {
 
   const validationSchema = Yup.object().shape({
     min: Yup.number()
-      .typeError('O campo "Min" é obrigatório')
-      .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
-      .min(0, 'O valor mínimo para "Min" é 0')
-      .required('O campo "Min" é obrigatório'),
+      .typeError(t('fieldRequired'))
+      .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+      .min(0, t('fieldMinValue'))
+      .required(t('fieldRequired')),
     max: Yup.number()
-      .typeError('O campo "Max" é obrigatório')
-      .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
-      .min(0, 'O valor mínimo para "Max" é 0')
+      .typeError(t('fieldRequired'))
+      .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+      .min(0, t('fieldMinValue'))
       .when('min', (min, schema) => schema.test({
           test: (value) => value >= min,
-          message: 'O campo "Max" deve ser maior ou igual ao campo "Min"',
+          message: t('maxGreatherMin')
         }))
-      .required('O campo "Max" é obrigatório'),
-    games: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Games"'),
-    slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo'),
+      .required(t('fieldRequired')),
+    games: Yup.array().min(1, t('fieldRequired')),
+    slots: Yup.array().min(1, t('fieldRequired')),
   });
   
     return (

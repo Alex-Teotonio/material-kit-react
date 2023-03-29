@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/styles";
+import { useParams, useNavigate } from 'react-router-dom';
 import {useTranslation} from 'react-i18next'
 import {Button,ButtonGroup,Paper } from '@mui/material';
 import AppBar from '../components/AppBar';
@@ -34,11 +35,11 @@ export default function Result() {
 
   const [file, setFile] = useState([]);
   const [teams, setTeams] = useState([])
-  const [slots, setSlots] = useState([])
+  const [slots, setSlots] = useState([]);
+
+  const {id} = useParams();
   
   const [isLoading, setIsLoading] = useState(false);
-  const classes = useStyles();
-
   const {t} = useTranslation(); 
 
   useEffect(() => {
@@ -46,7 +47,9 @@ export default function Result() {
       try{
         setIsLoading(true);
         await delay(700)
-        const solutions = await get(`/findSolution/${currentLeague.id}`);
+
+        const path = id? `/findSolutionById/${id}`: `findSolution/${currentLeague.id}`
+        const solutions = await get(path);
         const dataTeams = await get(`/team/${currentLeague.id}`);
         const dataSlots = await get(`/slot/${currentLeague.id}`);
         setTeams(dataTeams);

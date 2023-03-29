@@ -9,7 +9,6 @@
     "titleModalLeague": "Nova Liga",
     "descriptionModalLeague": "Crie uma nova liga de turno e returno",
     "descriptionEditLeague": "Editar instância",
-    "fieldRequired": "Campo obrigatório",
 
 
 
@@ -43,8 +42,10 @@
     "labelGameMode": "Modo de jogo",
     "valueLabelGameModeHome": "Casa",
     "valueLabelGameModeHomeAway": "Casa/Fora",
+    "labelNewGame": "Novo Jogo",
     "valueLabelGameModeAway": "Fora",
     "labelRounds": " Nº Rodadas consecutivas",
+    "labelBreaks": "Pausas",
     "labelPriority": "Prioridade",
     "labelGames": "Jogos",
     "labelMode": "Local",
@@ -85,8 +86,25 @@
     "toastSuccess": "Operação Realizada com sucesso",
     "valueYes": "Sim",
     "valueNo": "Não",
+    "alertDeleteGame": "Deseja mesmo excluir o jogo?",
+    "deleteConfirm": "Confirmar exclusão",
     "alertDeleteInstance": "A instância será excluída permanentemente.Deseja continuar?",
     "alertTitle": "Alerta",
-    "editLeagueTitle": "Editar Instância"
+    "editLeagueTitle": "Editar Instância",
+    "buttonExportXls": "Exportar para o excel",
+
+    "nameRequired": "O nome é obrigatório",
+    "InitialsRequired": "Initials é obrigatório",
+    "positiveNUmber": "O número de times deve ser positivo",
+    "teamsRequired": "Times é obrigatório.",
+    "evenNumber": "O número de times deve ser um número par.",
+    "manageGames": "Gerencie seus jogos",
+    
+    "fieldRequired": "Campo obrigatório",
+    "fieldisNumber": "O campo deve ser um número",
+    "fieldMinValue": "O valor mínimo é zero.",
+    "maxGreatherMin": "O campo 'Max' deve ser maior ou igual ao campo 'Min'",
+    "notEqualsTeams": "Não se pode aplicar uma restrição para o mesmo time.",
+    "gameApllyRestriction": "Não foi possível excluir o jogo. Existem restrições vinculadas ao mesmo."
   }
 }

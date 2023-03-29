@@ -7,10 +7,8 @@ import { AccessTimeTwoTone, Edit } from "@mui/icons-material";
 import {useTranslation} from 'react-i18next';
 import { DataGrid } from '@mui/x-data-grid';
 import { LeagueContext } from "../hooks/useContextLeague";
-import {fDate, delay } from '../utils/formatTime'
+import {fDateTimeSuffix, delay } from '../utils/formatTime'
 import toast from '../utils/toast';
-import TutorialCarousel from '../components/Carousel';
-
 
 import Loader from '../components/Loader'
 import {get, put } from '../services/requests';
@@ -54,6 +52,7 @@ export default function Slots() {
       },
       { 
         field: 'criado_em',
+        valueFormatter: (params) => fDateTimeSuffix(params.value),
         headerName: 'Update at',
         width: 500, 
         headerAlign:'center',
@@ -126,8 +125,6 @@ export default function Slots() {
     
     
     const handleEdit = (row) => {
-      console.log(row)
-      console.log(`Editar ${row}`);
       setSelectedSlot(row);
       setEditedSlot(row);
       setOpenModal(true);
@@ -137,18 +134,25 @@ export default function Slots() {
     
     return (
       <>
-        <Paper square sx={{width: '100%', padding: '5px', height:'400px'}} >
+        <Paper square sx={{width: '100%', padding: '5px', height:'700'}} >
           <Loader isLoading={isLoading} />
           
           <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
             <Button startIcon={<AccessTimeTwoTone/>}>{t('headTableNameSlots')}</Button>
           </ButtonGroup>
           {slots && slots.length > 0 &&
+          <div style={{height: '650px'}}>
             <DataGrid
               columns={columns}
               rows={slots}
               getRowId={(row) => row.id ? row.id : ""}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+              autoHeight
+              autoPageSize
+              disable
             />
+            </div>
           }
         </Paper>
 

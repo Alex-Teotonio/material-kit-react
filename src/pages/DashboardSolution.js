@@ -5,19 +5,19 @@ import {DeleteOutline, Event,InfoOutlined} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
+import Loader from '../components/Loader';
 import toast from '../utils/toast';
-import { delay } from "../utils/formatTime";
+import { delay ,fDateTimeSuffix} from "../utils/formatTime";
 import DataGrid from '../components/DataGrid';
 import Dialog from '../components/Dialog';
 import { LeagueContext } from '../hooks/useContextLeague';
 import {get} from '../services/requests';
 
 
-
 import api from '../services/api';
 
 export default function DashboardSolution() {
-  const {t} = useTranslation()
+  const {t} = useTranslation();
   const [listSolutions, setListSolutions] = useState([]);
   const [isLoading, setIsLoading] = useState([])
   const navigate = useNavigate();
@@ -81,6 +81,7 @@ export default function DashboardSolution() {
     {
 
       field: 'criado_em',
+      valueFormatter: (params) => fDateTimeSuffix(params.value),
       headerName:t('headTableCreated'),
       width: 600,
       headerAlign: 'center',
@@ -88,8 +89,9 @@ export default function DashboardSolution() {
     }
   ]
 
-  const handleRowClick = async () => {
-    navigate(`/dashboard/result`)
+  const handleRowClick = async (params) => {
+    const {id} = params;
+    navigate(`/dashboard/result/${id}`)
   }
 
   const handleDelete = async () => {
@@ -100,6 +102,7 @@ export default function DashboardSolution() {
         
       })
       setOpenDialog(false);
+      setListSolutions(prevSolutions => prevSolutions.filter(solution => !arrayIds.includes(solution.id)));
       setIsLoading(true)
       await delay(700)
       toast({
@@ -136,6 +139,8 @@ export default function DashboardSolution() {
   }
   return (
     <>
+
+      <Loader isLoading={isLoading}/>
       <Dialog 
           open={openDialog}
           title={t('alertTitle')}

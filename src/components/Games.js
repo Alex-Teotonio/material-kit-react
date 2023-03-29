@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import {
   Avatar,
@@ -7,6 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FileCopyOutlined } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 
 import PropTypes from 'prop-types';
@@ -17,16 +19,16 @@ import {
 import { LeagueContext } from '../hooks/useContextLeague';
 
 export default function Games({data, slots, teams}) {
-
+  const {t} = useTranslation()
   const {teamColor, currentLanguage} = useContext(LeagueContext);
   const [sortModel, setSortModel] = useState([
     { field: 'slot', sort: 'asc' },
   ]);
   const columns = [
-    { field: 'slot', headerName: 'Slot', align: 'right', width: 280,headerAlign: 'right' },
+    { field: 'slot', headerName: t('headTableNameSlots'), align: 'right', width: 280,headerAlign: 'right' },
     {
       field: 'home',
-      headerName: 'Casa',
+      headerName: t('valueLabelHome'),
       align: 'right',
       headerAlign: 'right',
       width: 450,
@@ -34,7 +36,7 @@ export default function Games({data, slots, teams}) {
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
             <Typography>{findTeams(params.row.home).name}</Typography>
             <Avatar 
-            style={{ backgroundColor: `${teamColor[findTeams(params.row.home).id]}` }}
+            // style={{ backgroundColor: `${teamColor[findTeams(params.row.home).id]}` }}
             src={findTeams(params.row.home).url}
             children={<small>{findTeams(params.row.home).initials}</small>} 
             key={findTeams(params.row.home).id}
@@ -51,14 +53,14 @@ export default function Games({data, slots, teams}) {
     },
     {
       field: 'away',
-      headerName: 'Fora',
+      headerName: t('valueLabelAway'),
       align: 'left',
       width: 450,
       renderCell: (params) => (
         <Stack direction="row" spacing={1} alignItems="center">
           <Avatar 
             src={findTeams(params.row.away).url}
-            style={{ backgroundColor: `${teamColor[findTeams(params.row.away).id]}` }}
+            // style={findTeams(params.row.away).url ? {} : { backgroundColor: `${teamColor[findTeams(params.row.away).id]}` }}
             children={<small>{findTeams(params.row.away).initials}</small>} 
             key={findTeams(params.row.away).id}
           />
@@ -66,23 +68,19 @@ export default function Games({data, slots, teams}) {
         </Stack>
       )
     },
-    { field: 'venue', headerName: 'Local', align: 'left', width: 250 }
+    { field: 'venue', headerName: t('headTableVenueTeams'), align: 'left', width: 250 }
   ];
-
-
   const findTeams = (publicid) => {
     const team = teams.find((t) => t.publicid === (+publicid));
-
     return team
   }
 
   const findSlots = (publicid) => {
     const slot = slots.find((t) => t.publicid === (+publicid));
-
     return slot.name
   }
   const rows = data.map(d => ({
-    id: d.id,
+    id: `${d.id}-${uuidv4()}-${d.home}-${d.away}`,
     slot: findSlots(d.slot),
     home: d.home,
     vs: 'vs',
@@ -166,7 +164,7 @@ const buildWorksheet = (data) => {
     />
     <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 6 }}>
       <Button variant="contained" startIcon={<FileCopyOutlined />} onClick={handleExport}>
-        Exportar para Excel
+        {t('buttonExportXls')}
       </Button>
     </Stack>
 

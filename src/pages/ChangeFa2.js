@@ -16,8 +16,6 @@ const itemsRadioType = [
 
 const itemsRadioMode = [
   {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'},
-  {id: 'HA', title: 'Home/Away'},
 ];
 
 

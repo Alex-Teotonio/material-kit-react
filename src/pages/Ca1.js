@@ -37,12 +37,12 @@ const itemsRadioMode = [
     const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
     max: Yup.number()
-    .typeError('O campo "Max" é obrigatório')
-    .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
-    .min(0, 'O valor mínimo para "Max" é 0')
-    .required('O campo "Max" é obrigatório'),
-    teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
-    slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo')
+    .typeError(t('fieldRequired'))
+    .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+    .min(0, t('fieldMinValue'))
+    .required(t('fieldRequired')),
+    teamsSelected: Yup.array().min(1, t('fieldRequired')),
+    slots: Yup.array().min(1, t('fieldRequired'))
   });
 
 
@@ -59,6 +59,7 @@ const itemsRadioMode = [
   }
 
   const handleChangeTeams = (e, newTeamValues, name) => {
+    console.log(values, newTeamValues)
     setValues({
       ...values,
       [name]: newTeamValues

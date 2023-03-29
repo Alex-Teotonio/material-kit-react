@@ -14,8 +14,6 @@ const itemsRadioType = [
 ];
 
 const itemsRadioMode = [
-  {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'},
   {id: 'HA', title: 'Home/Away'},
 ];
 
@@ -117,7 +115,7 @@ export default function ChangeBr2() {
       const homeMode = mode;
      await put(`/br2/${id}`, {
       intp,
-      mode,
+      mode: 'LEQ',
       homeMode,
       type,
       leagueId,

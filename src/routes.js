@@ -69,7 +69,7 @@ export default function Router() {
         { path: 'fa2', element: <Fa2/>},
         { path: 'se1', element: <Se1/>},
         { path: 'ga1', element: <Ga1/>},
-        { path: 'result', element: <ResultsLeague/>},
+        { path: 'result/:id?', element: <ResultsLeague/>},
         { path: 'listSolutions', element: <DashboardSolutions/>},
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Button,
@@ -42,7 +43,8 @@ const useStyles = makeStyles(() => ({
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gridGap: '16px',
-    alignItems: 'center',
+    alignItems: 'center',marginTop: '16px'
+
   },
   textField: {
     marginRight: 2,
@@ -67,6 +69,7 @@ const useStyles = makeStyles(() => ({
 
 const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
 
+  const {t} = useTranslation();
   const currentLeagueString = localStorage.getItem('myLeague');
   const currentLeague = JSON.parse(currentLeagueString);
 
@@ -124,13 +127,14 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
 
     return (
     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
-    <Avatar
+      
+    <Typography style={{ marginLeft: 8 }}>{team?.name}</Typography>
+      <Avatar
         sizes="20"
-        style={{ backgroundColor: `${teamColor[team?.id]}` }}
+        // style={{ backgroundColor: `${teamColor[team?.id]}` }}
         src={team?.url}
         children={<small>{team?.initials}</small>} key={team?.id}
     />
-    <Typography style={{ marginLeft: 8 }}>{team?.name}</Typography>
     </div>
     )
     
@@ -143,7 +147,7 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
   const columns = [
     {
       field: 'game',
-      headerName: 'Jogo',
+      headerName: t('labelGames'),
       width: 305,
       align: 'center',
       headerAlign: 'center',
@@ -156,7 +160,7 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
     },
     {
       field: 'delete',
-      headerName: 'Ações',
+      headerName: t('actions'),
       width: 205,
       align: 'center',
       headerAlign: 'center',
@@ -180,19 +184,19 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
       }
       toast({
         type: 'success',
-        text: 'Jogo deletado com sucesso!'
+        text: t('toastSuccess')
       });
       onClose();
     } catch (error) {
       if (error.response.status === 409){
         toast({
           type: 'error',
-          text: 'Não foi possível excluir o jogo. Existem restrições vinculadas ao mesmo.'
+          text: t('gameApllyRestriction')
         });
       } else {
         toast({
           type: 'error',
-          text: 'Houve um erro na operação.'
+          text: t('toastError')
         });
       }
       setDeleteGameId(null); // redefinir o id do jogo a ser excluído
@@ -233,17 +237,16 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
     <IconButton sx={{ position: 'absolute', top: 0, right: 0 }} onClick={onClose}>
     <Close />
   </IconButton>
-      <DialogTitle>Gerencie seus jogos</DialogTitle>
+      <DialogTitle sx={{textAlign: 'center'}}>{t('manageGames')}</DialogTitle>
 
       <Paper elevation={3} square sx={{width: '100%', padding: '15px', maxWidth: '1024px'}} >
-
       <DialogContent>
       <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-        <Button>Novo jogo</Button>
+        <Button>{t('labelNewGame')}</Button>
       </ButtonGroup>
         <FormGroup className={classes.formGroup}>
           <FormControl className={classes.formControl}>
-            <InputLabel id="teamshome-label">Time da casa</InputLabel>
+            <InputLabel id="teamshome-label">{t('valueLabelHome')}</InputLabel>
             <Select
               labelId="teamshome-label"
               id="teamshome"
@@ -259,7 +262,7 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
             {formErrors.teamshome && <FormHelperText error>{formErrors.teamshome}</FormHelperText>}
           </FormControl>
           <FormControl className={classes.formControl}>
-            <InputLabel id="teamsaway-label">Time de fora</InputLabel>
+            <InputLabel id="teamsaway-label">{t('valueLabelAway')}</InputLabel>
             <Select
               labelId="teamsaway-label"
               id="teamsaway"
@@ -280,13 +283,13 @@ const GameModal = ({ open, onClose, onSave,onAddGame, onDelete }) => {
 
 <DialogActions>
   <Button onClick={handleSave} color="primary">
-    Salvar
+    {t('buttonSave')}
   </Button>
 </DialogActions>
 </Paper>
     <Paper elevation={3} square sx={{width: '100%', padding: '25px', marginBottom: '30px'}} >
       <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-        <Button>Jogos cadastrados</Button>
+        <Button>{t('labelGames')}</Button>
       </ButtonGroup>
       <DataGrid rows={games} columns={columns} className={classes.dataGrid} autoHeight
 rowHeight={60}
@@ -298,13 +301,13 @@ rowHeight={60}
       open={Boolean(deleteGameId)} // exibir a caixa de diálogo de confirmação somente se houver um jogo a ser excluído
       onClose={() => setDeleteGameId(null)} // fechar a caixa de diálogo se o usuário clicar no botão de cancelar
       >
-      <DialogTitle>Confirmar exclusão</DialogTitle>
+      <DialogTitle>{t('deleteConfirm')}</DialogTitle>
       <DialogContent>
-        <Typography>Deseja mesmo excluir o jogo?</Typography>
+        <Typography>{t('alertDeleteGame')}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setDeleteGameId(null)}>Cancelar</Button>
-        <Button onClick={handleConfirmDelete} color="error">Excluir</Button>
+        <Button onClick={() => setDeleteGameId(null)}>{t('buttonCancel')}</Button>
+        <Button onClick={handleConfirmDelete} color="error">{t('buttonDelete')}</Button>
       </DialogActions>
 </Dialog>
 

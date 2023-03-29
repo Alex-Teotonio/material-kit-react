@@ -197,7 +197,6 @@ export default function DashboardApp() {
   }
   return (
     <Page title="Dashboard">
-      <Carousel/>
         <Loader isLoading={isLoading}/>
         <Dialog 
           open={openDialog}

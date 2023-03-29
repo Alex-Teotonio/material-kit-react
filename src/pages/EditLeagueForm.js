@@ -10,13 +10,14 @@ import {
   TextField
 } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { LeagueContext } from '../hooks/useContextLeague';
 
 import api from '../services/api';
 import { useLeagueForm } from '../hooks/useLeagueForm';
 
 export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) {
-  const { valueStatusSolution, setValueStatusSolution, currentLeague } = useContext(LeagueContext);
+  const { setValueStatusSolution, currentLeague } = useContext(LeagueContext);
   const initialValues = {
     name: data.name,
     short: data.short,
@@ -24,6 +25,7 @@ export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) 
     mirred: data.mirred
   };
   const { values, errors, handleChange, validate } = useLeagueForm(initialValues);
+  const {t} = useTranslation()
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -104,7 +106,7 @@ export default function EditLeagueForm({ onRequestClose, onHandleLeague,data }) 
             sx={{padding:'4px', height: '40px', marginTop: '20px'}}
             type="submit"
           >
-            Cadastrar Liga
+            {t('buttonSave')}
           </Button>
         </Box>
       </Card>

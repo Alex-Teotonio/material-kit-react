@@ -9,8 +9,6 @@
     "titleModalLeague": "Create League",
     "descriptionModalLeague": "Create a new league with both home and away matches",
     "descriptionEditLeague": "Edit your instance",
-    "fieldRequired": "Field Required",
-
 
     "headTableNameTeams": "Teams",
     "headTableNameTeams2": "Against",
@@ -46,17 +44,19 @@
     "valueLabelTypeHard": "Hard",
     "valueLabelTypeSoft": "Soft", 
     "valueLabelHome": "Home",
-    "valueLabelAway": "Away", 
+    "valueLabelAway": "Away",
+    "labelNewGame": "New Game",
     "valueLabelHomeAway": "Home/Away", 
-    "labelMin": "Min Nº Games",
-    "labelMax": "Max Nº Games",
+    "labelMin": "Min Games",
+    "labelMax": "Max Games",
     "labelGameMode": "Game Mode",
     "labelMode": "Place",
     "labelSolutions": "Solutions",
     "valueLabelGameModeHome": "Home",
     "valueLabelGameModeHomeAway": "Home/Away",
     "valueLabelGameModeAway": "Away",
-    "labelRounds": "Nº Consecutives Rounds",
+    "labelRounds": "Consecutives Rounds",
+    "labelBreaks": "Breaks",
     "labelPriority": "Priority",
     "labelGames": "Games",
     "buttonAllSelect": "All",
@@ -88,8 +88,25 @@
     "valueYes": "Yes",
     "valueNo": "No",
     "alertDeleteInstance": "The instance will be permanently deleted. Do you want to continue?",
+    "alertDeleteGame": "Do you really want to delete the game?",
     "alertTitle": "Alert",
-    "editLeagueTitle": "Edit Instance"
+    "editLeagueTitle": "Edit Instance",
+    "buttonExportXls": "Export to Excel",
+    "deleteConfirm": "Confirm deletion",
+
+    "nameRequired": "Name is Required",
+    "InitialsRequired": "Initials is Required.",
+    "teamsRequired": "Teams is Required.",
+    "positiveNUmber": "The number of teams must be positive.",
+    "evenNumber": "The number of teams must be an even number.",
+    "manageGames": "Manage your games",
+    "fieldRequired": "Field is Required.",
+    "fieldisNumber": "The field must be a number.",
+    "fieldMinValue": "The minimum value is 0",
+    "maxGreatherMin": "The 'Max' field must be greater than or equal to the 'Min' field.",
+    "notEqualsTeams": "It's not possible to apply a constraint for the same team",
+    "gameApllyRestriction": "t was not possible to delete the game. There are restrictions linked to it."
+
 
   }
 }

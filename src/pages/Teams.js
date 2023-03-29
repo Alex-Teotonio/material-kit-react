@@ -12,23 +12,18 @@ import { delay } from '../utils/formatTime'
 import api from '../services/api';
 import Loader from '../components/Loader';
 import { LeagueContext } from "../hooks/useContextLeague";
-import Snackbar from '../components/SnackBar';
+import toast from "../utils/toast";
 
 // import EditTable from '../components/Table';
 
 
 export default function Teams() {
-
-
   const {t} = useTranslation();
   const [isOpenModal, setIsOpenModal] = useState();
   const [teamSelected, setTeamSelected] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [teamColors, setTeamColors] = useState({});
+  const [, setTeamColors] = useState({});
   const {currentLeague, teamColor, setTeamColor} = useContext(LeagueContext)
-
-  const [message, setMessage] = useState(0);
-  const [severity, setSeverity] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -41,7 +36,6 @@ export default function Teams() {
       const colors = {};
       data.forEach(team => {
         colors[team.id] = setTeamColor(team);
-        console.log(colors[team.id])
       });
       setTeamColors(colors);
       setTeams(data)
@@ -55,13 +49,14 @@ export default function Teams() {
       field: '',
       renderCell: (cellValues) => (
         <Stack>
-          <Avatar 
+           <Avatar 
             key={cellValues.row.id}
-            style={{ backgroundColor: `${teamColor[cellValues.row?.id]}` }}
-            sizes="20"
+            sx={{ width: 40, height: 40 }} // define um tamanho de 40x40 para o Avatar
+            // style={cellValues.row?.url ? {} : { backgroundColor: `${teamColor[cellValues.row?.id]}` }}
             src={cellValues.row?.url}
-            children={<small>{cellValues.row?.initials}</small>}
+            children={!cellValues.row?.url ? <small>{cellValues.row?.initials}</small> : null}
           />
+
           
         </Stack>
       ), 
@@ -85,7 +80,6 @@ export default function Teams() {
              headerAlign: 'center', align: 'center' 
         },
   ];
-
   const [teams, setTeams] = useState([]);
 
   useEffect(
@@ -122,12 +116,16 @@ export default function Teams() {
       await delay(700)
       const response = await loadTeams(currentLeague.id);
       setTeams(response);
-      setMessage('Operação efetuada com sucesso!');
-      setSeverity('success')
+      toast({
+        type: 'success',
+        text: t('toastSuccess')
+      })
     } catch(e) {
       setIsLoading(false)
-      setMessage('Não foi possível realizar a operação');
-      setSeverity('error')
+      toast({
+        type: 'error',
+        text: t('toastError')
+      })
       console.log(e)
     } finally {
       setIsLoading(false)
@@ -140,8 +138,7 @@ export default function Teams() {
         <Page >
           <Container maxWidth='xl'>
             <Loader isLoading={isLoading}/>
-            <Snackbar open={Boolean(message)} message={message} severity={severity} onHandleClose={() => setMessage(0)}/>
-          <Modal titleModal="Teams" descriptionModal="Edit Team" isOpen={isOpenModal} onRequestClose={handleClose}>
+          <Modal titleModal={t('headTableNameTeams')} descriptionModal="" isOpen={isOpenModal} onRequestClose={handleClose}>
             <FormTeams data={teamSelected} onRequestCloseModal={handleClose} onHandleTeams={updatedTeams}/>
           </Modal>
           <Card>

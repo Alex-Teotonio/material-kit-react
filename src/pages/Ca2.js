@@ -41,27 +41,27 @@ export default function Ca2() {
 
     const validationSchema = Yup.object().shape({
       min: Yup.number()
-        .typeError('O campo "Min" é obrigatório')
-        .test('is-number', 'O campo "Min" deve ser um número', (value) => !value || !isNaN(value))
-        .min(0, 'O valor mínimo para "Min" é 0')
-        .required('O campo "Min" é obrigatório'),
+        .typeError(t('fieldRequired'))
+        .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+        .min(0, t('fieldMinValue'))
+        .required(t('fieldRequired')),
         max: Yup.number()
-        .typeError('O campo "Max" é obrigatório')
-        .test('is-number', 'O campo "Max" deve ser um número', (value) => !value || !isNaN(value))
-        .min(0, 'O valor mínimo para "Max" é 0')
+        .typeError(t('fieldRequired'))
+        .test('is-number', t('fieldisNumber'), (value) => !value || !isNaN(value))
+        .min(0, t('fieldMinValue'))
         .when('min', (min, schema) => schema.test({
             test: (value) => value >= min,
-            message: 'O campo "Max" deve ser maior ou igual ao campo "Min"',
+            message: t('maxGreatherMin'),
           }))
-        .required('O campo "Max" é obrigatório'),
-      teamsSelected: Yup.array().min(1, 'Selecione pelo menos uma equipe para "Teams"'),
+        .required(t('fieldRequired')),
+      teamsSelected: Yup.array().min(1, t('fieldRequired')),
       teams2Selected: Yup.array()
-        .min(1, 'Selecione pelo menos uma equipe para "Teams"')
-        .test('not-equal-teams', 'Não se pode aplicar uma restrição para entre o mesmo time', (value, { parent }) => {
+        .min(1, t('fieldRequired'))
+        .test('not-equal-teams', t('notEqualsTeams'), (value, { parent }) => {
           const {teamsSelected} = parent;
           return !value.some((team) => teamsSelected.some((selected) => team.id === selected.id));
         }),
-      slots: Yup.array().min(1, 'Selecione pelo menos um intervalo de tempo'),
+      slots: Yup.array().min(1, t('fieldRequired')),
     });
 
 
@@ -110,13 +110,13 @@ export default function Ca2() {
     });
     toast({
       type: 'success',
-      text: 'Restrição cadastrada com sucesso'
+      text: t('toastSuccess')
     })
     navigate(`/dashboard/restrictions`);
   } catch(e) {
     toast({
       type: 'error',
-      text: 'Houve um erro durante a operação'
+      text: t('toastError')
     })
   } finally {
     setIsLoading(false);

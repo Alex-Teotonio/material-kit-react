@@ -133,6 +133,7 @@ export default function FormRestrictions(props) {
     })
   }
   const handleInputChangeMultSelect = (e,newTeamValue , name) => {
+
     setValues({
       ...values,
       [name]: newTeamValue
@@ -160,8 +161,9 @@ export default function FormRestrictions(props) {
   }
 
   const handleClickSelectAll = (name) => {
-    const renderValues = {'teamsSelected': teams,'teams2Selected': teams, 'slots':slots}
-    const selectAll = renderValues[name]
+    const renderValues = {'teamsSelected': teams,'teams2Selected': teams, 'slots':slots, 'games': games}
+    const selectAll = name === 'games'? gameOptions: renderValues[name];
+    
     setValues({
       ...values,
       [name]: selectAll

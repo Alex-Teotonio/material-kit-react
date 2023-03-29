@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const useLeagueForm = (initialValues) => {
+  const {t} = useTranslation();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
 
@@ -8,19 +10,19 @@ export const useLeagueForm = (initialValues) => {
     const errors = {};
 
     if (!values.name) {
-      errors.name = 'O nome é obrigatório';
+      errors.name = t('nameRequired')
     }
 
     if (!values.short) {
-      errors.short = 'A sigla é obrigatória';
+      errors.short = t('initialsRequired')
     }
 
     if (!values.numberTeams) {
-      errors.numberTeams = 'O número de times é obrigatório';
+      errors.numberTeams = t('teamsRequired')
     } else if (values.numberTeams < 0) {
-      errors.numberTeams = 'O número de times deve ser positivo';
+      errors.numberTeams = t('positiveNUmber');
     } else if (values.numberTeams % 2 !== 0) {
-      errors.numberTeams = 'O número de times deve ser um número par';
+      errors.numberTeams = t('evenNumber');
     }
 
     setErrors(errors);

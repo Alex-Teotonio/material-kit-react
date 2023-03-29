@@ -157,13 +157,11 @@ export function LeagueProvider({ children }) {
 
     async function handleLogout() {
       localStorage.removeItem('myLeague');
-      localStorage.removeItem('mySolution');
       localStorage.removeItem('myUser');
       localStorage.removeItem('leagueUser');
       localStorage.removeItem('teamColors');
     
       setCurrentLeague({});
-      setSolutionExists('not');
       setDadosUser({});
       setLeaguesToUser({});
       setAuthenticated(false);

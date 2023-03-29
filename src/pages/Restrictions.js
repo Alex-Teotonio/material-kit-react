@@ -15,6 +15,7 @@ import {DeleteOutline, AddCircle,NotInterested} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import toast from '../utils/toast';
 import DataGrid from '../components/DataGrid';
+import {fDateTimeSuffix} from '../utils/formatTime'
 
 import {get,loadTeams} from '../services/requests';
 import Dialog from '../components/Dialog';
@@ -81,6 +82,9 @@ export default function Restrictions() {
         )}
       </div>
     );
+
+
+    
     const columns = [
         { 
             field: 'type_constraint',
@@ -94,6 +98,7 @@ export default function Restrictions() {
         { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
         { field: 'min', headerName: t('labelMin'), width: 100 , align: 'center',headerAlign: 'center'},
         { field: 'max', headerName: t('labelMax'), width: 100 , align: 'center',headerAlign: 'center'},
+        { field: 'breaks', headerName: t('Max Breaks'), width: 100 , align: 'center',headerAlign: 'center'},
         { 
           field: 'teams', 
           headerName: t('headTableApply'), 
@@ -139,7 +144,7 @@ export default function Restrictions() {
         {
           field: 'meetings',
           headerName: t('headTableMeetings'),
-          width: 200,
+          width: 300,
           align: 'center',
           headerAlign: 'center',
           renderCell: (params) => (
@@ -150,8 +155,8 @@ export default function Restrictions() {
               </div>
             ),
         },
-        { field: 'slots', headerName: t('headTableNameSlots'), width: 230, align: 'center', headerAlign: 'center', renderCell: renderSlots },
-        { field: 'criado_em', headerName: t('headTableCreated'), width: 180, headerAlign: 'center', align: 'center' }
+        { field: 'slots', headerName: t('headTableNameSlots'), width: 460, align: 'center', headerAlign: 'center', renderCell: renderSlots },
+        // { field: 'criado_em',valueFormatter: (params) => fDateTimeSuffix(params.value), headerName: t('headTableCreated'), width: 180, headerAlign: 'center', align: 'center' }
     ];
 
     const handleClickButtonDelete = async () => {
