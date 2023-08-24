@@ -122,7 +122,7 @@ export default function Login() {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Event sx={{ color: '#FFF', mr: 0.5 }} />
                 <Typography variant="h6" noWrap>
-                  MatchMate
+                  MatchMate -- Beta Version 1.0
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>

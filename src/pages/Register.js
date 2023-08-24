@@ -16,7 +16,7 @@ import {
 
 import { useContext, useRef, useState } from 'react';
 
-import {PersonAdd, LockOutlined, Event} from '@mui/icons-material'
+import { LockOutlined, Event} from '@mui/icons-material'
 // @mui
 import { styled, alpha } from '@mui/material/styles';
 import { RegisterForm } from '../sections/auth/register';
@@ -142,7 +142,7 @@ export default function Login() {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Event sx={{ color: '#FFF', mr: 0.5 }} />
                 <Typography variant="h6" noWrap>
-                  MatchMate
+                  MatchMate - Beta Version 1.0
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
