@@ -113,7 +113,7 @@ export default function Restrictions() {
                 return(
                 <Avatar
                     sizes="20"
-                    // style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
                     src={team?.url}
                     children={<small>{team?.initials}</small>} key={team?.id}
                 />
@@ -134,7 +134,7 @@ export default function Restrictions() {
                 return(
                 <Avatar
                     sizes="20"
-                    // style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
                     src={team?.url}
                     children={<small>{team?.initials}</small>} key={team?.id}
                 />

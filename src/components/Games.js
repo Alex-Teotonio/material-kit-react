@@ -21,8 +21,7 @@ import { LeagueContext } from '../hooks/useContextLeague';
 
 export default function Games({data, slots, teams}) {
   const {t} = useTranslation();
-  console.log(data)
-  const {currentLanguage} = useContext(LeagueContext);
+  const {currentLanguage, teamColor} = useContext(LeagueContext);
 
   const [sortModel, setSortModel] = useState([
     { field: 'slot', sort: 'asc' },
@@ -39,7 +38,7 @@ export default function Games({data, slots, teams}) {
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
             <Typography>{findTeams(params.row.home).name}</Typography>
             <Avatar 
-            // style={{ backgroundColor: `${teamColor[findTeams(params.row.home).id]}` }}
+            style={{ backgroundColor: `${teamColor[findTeams(params.row.home).id]}` }}
             src={findTeams(params.row.home).url}
             children={<small>{findTeams(params.row.home).initials}</small>} 
             key={findTeams(params.row.home).id}
@@ -63,7 +62,7 @@ export default function Games({data, slots, teams}) {
         <Stack direction="row" spacing={1} alignItems="center">
           <Avatar 
             src={findTeams(params.row.away).url}
-            // style={findTeams(params.row.away).url ? {} : { backgroundColor: `${teamColor[findTeams(params.row.away).id]}` }}
+            style={findTeams(params.row.away).url ? {} : { backgroundColor: `${teamColor[findTeams(params.row.away).id]}` }}
             children={<small>{findTeams(params.row.away).initials}</small>} 
             key={findTeams(params.row.away).id}
           />

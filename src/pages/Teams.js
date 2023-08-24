@@ -14,8 +14,6 @@ import Loader from '../components/Loader';
 import { LeagueContext } from "../hooks/useContextLeague";
 import toast from "../utils/toast";
 
-// import EditTable from '../components/Table';
-
 
 export default function Teams() {
   const {t} = useTranslation();
@@ -23,7 +21,7 @@ export default function Teams() {
   const [teamSelected, setTeamSelected] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [, setTeamColors] = useState({});
-  const {currentLeague, teamColor, setTeamColor} = useContext(LeagueContext)
+  const {teamColor, currentLeague,  setTeamColor} = useContext(LeagueContext)
 
   useEffect(() => {
     async function loadData() {
@@ -47,23 +45,22 @@ export default function Teams() {
   const columns = [
     { 
       field: '',
-      renderCell: (cellValues) => (
-        <Stack>
-           <Avatar 
-            key={cellValues.row.id}
-            sx={{ width: 40, height: 40 }} // define um tamanho de 40x40 para o Avatar
-            // style={cellValues.row?.url ? {} : { backgroundColor: `${teamColor[cellValues.row?.id]}` }}
-            src={cellValues.row?.url}
-            children={!cellValues.row?.url ? <small>{cellValues.row?.initials}</small> : null}
-          />
+    renderCell: (cellValues) => (
+      <Stack>
+         <Avatar 
+          key={cellValues.row.id}
+          sx={{ width: 40, height: 40 }}
+          style={!cellValues.row?.url ? { backgroundColor: teamColor[cellValues.row.id] } : {}}
 
-          
-        </Stack>
-      ), 
-      width: 20,
-      headerAlign: 'left',
-      align: 'left'
-    },
+          src={cellValues.row?.url}
+          children={!cellValues.row?.url ? <small>{cellValues.row?.initials}</small> : null}
+        />
+      </Stack>
+    ), 
+    width: 20,
+    headerAlign: 'left',
+    align: 'left'
+  },
     { field: 'name', headerName: t('headTableNameTeams'), width: 300, headerAlign: 'left', align: 'left' , },
     { field: 'initials', headerName: t('headTableInitialsTeams'), width: 300,  headerAlign: 'left', align: 'left'  },
     { field: 'venue', headerName: t('headTableVenueTeams'), width: 250,  headerAlign: 'left', align: 'left'  },

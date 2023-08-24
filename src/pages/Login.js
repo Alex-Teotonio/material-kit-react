@@ -4,7 +4,6 @@ import {
   Box,
   MenuItem,
   IconButton,
-  Drawer as MuiDrawer,
   Toolbar,
   Card,
   Link,
@@ -16,7 +15,7 @@ import {
 
 import { useContext, useRef, useState } from 'react';
 
-import {PersonAdd, Home, Event} from '@mui/icons-material'
+import {PersonAdd, Event} from '@mui/icons-material'
 // @mui
 import { styled, alpha } from '@mui/material/styles';
 import { LeagueContext } from '../hooks/useContextLeague';
@@ -33,26 +32,7 @@ import AuthSocial from '../sections/auth/AuthSocial';
 const DRAWER_WIDTH = 280;
 
 
-const openedMixin = (theme) => ({
-  width: DRAWER_WIDTH,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
 
-const closedMixin = (theme) => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
