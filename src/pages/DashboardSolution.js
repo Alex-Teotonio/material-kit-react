@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import {Button,ButtonGroup, Paper, Box, IconButton, Typography} from '@mui/material';
-import {DeleteOutline, Event,InfoOutlined} from '@mui/icons-material'
+import {Button,ButtonGroup, Paper, Chip} from '@mui/material';
+import {DeleteOutline, Event} from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import {get} from '../services/requests';
 
 import api from '../services/api';
 
+
 export default function DashboardSolution() {
   const {t} = useTranslation();
   const [listSolutions, setListSolutions] = useState([]);
@@ -26,10 +27,11 @@ export default function DashboardSolution() {
   const [openDialog, setOpenDialog] = useState(false);
 
   const COLORS = {
+    
     'not': "#ECECEC",
-    'active' : '#E9FCD4',
-    'outdated' : '#FFF7CD',
-    '...processing' : '#D6E4FF'
+    'active' : '#54D62C',
+    'outdated' : '#FFC107',
+    '...processing' : '#3366FF'
   }
 
   const COLORS_TEXT = {
@@ -38,13 +40,6 @@ export default function DashboardSolution() {
     'outdated' : '#FFC107',
     '...processing' : '#3366FF'
   }
-
-  const STATUS_MESSAGES = {
-    "active": "Solução atualizada - A última solução que você gerou está consistente com os dados apresentados no sistema. Clique na linha correspondente a atualização que você deseja ver o resultado.",
-  "outdated": "Solução desatualizada - clique no botão abaixo para gerar uma nova solução consistente com os dados atuais da liga",
-  "...processing": "Processando"
-  }
-  
 
   useEffect(() => {
     async function loadSolutions() {
@@ -78,8 +73,25 @@ export default function DashboardSolution() {
       }
     },
 
-    {
+        {
+      field: 'status',
+      headerName: t('labelStatus'),
+      width: 680,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => {
+        const { value: status } = params;
+        const backgroundColor = status === 'outdated' ? COLORS.outdated : COLORS.active;
+        return (
+          <Chip
+            label={(status)}
+            style={{ backgroundColor, fontWeight: 'bold'  }}
+          />
+        );
+      }
+    },
 
+    {
       field: 'criado_em',
       valueFormatter: (params) => fDateTimeSuffix(params.value),
       headerName:t('headTableCreated'),
@@ -123,9 +135,7 @@ export default function DashboardSolution() {
     try{
         setIsLoading(true)
         await delay(300);
-        setValueStatusSolution('...processing');
         await get(`/archive/${currentLeague.id}`);
-        setValueStatusSolution('active');
         await delay(50);
         navigate('/dashboard/result')
     } catch(e) {
@@ -139,34 +149,14 @@ export default function DashboardSolution() {
   }
   return (
     <>
-
       <Loader isLoading={isLoading}/>
       <Dialog 
-          open={openDialog}
-          title={t('alertTitle')}
-          contentMessage={t('alertDeleteInstance')}
-          onClickAgree={handleDelete}
-          onClickDisagree={() => setOpenDialog(false)}
-        />
-    {
-      listSolutions.length > 0 && (
-        <Box sx={{ 
-          bgcolor: `${COLORS[solutionExists]}`,
-          color: 'blue',
-          padding: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: '15px'
-          }}>
-          <IconButton sx={{ color: `${COLORS_TEXT[solutionExists]}` }}>
-            <InfoOutlined />
-          </IconButton>
-          <Typography variant="body1" sx={{ marginLeft: '4px', color: `${COLORS_TEXT[solutionExists]}` }}>
-            {STATUS_MESSAGES[solutionExists]}
-          </Typography>
-        </Box>
-      
-    )}
+        open={openDialog}
+        title={t('alertTitle')}
+        contentMessage={t('alertDeleteInstance')}
+        onClickAgree={handleDelete}
+        onClickDisagree={() => setOpenDialog(false)}
+      />
 
     <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
         <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">

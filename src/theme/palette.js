@@ -29,20 +29,20 @@ const GREY = {
 };
 
 const PRIMARY = {
-  lighter: '#D1E9FC',
-  light: '#76B0F1',
-  main: '#2065D1',
-  dark: '#103996',
-  darker: '#061B64',
+  lighter: '#89CFF0',  // Baby Blue, representando o céu aberto, dia de jogo
+  light: '#2A8FBD',   // Deep Sky Blue, representando as nuances do dia
+  main: '#00509E',    // Royal Blue, representando profundidade e seriedade
+  dark: '#003366',    // Dark Midnight Blue, para contrastes
+  darker: '#001F3F',  // Navy, quase preto, novamente para contrastes profundos
   contrastText: '#fff',
 };
 
 const SECONDARY = {
-  lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A',
+  lighter: '#FFDDC1',  // Peach, dando um toque quente
+  light: '#FFA07A',    // Light Salmon, um toque de energia
+  main: '#FF6347',     // Tomato, vibrante e animado
+  dark: '#E63946',     // Ruby Red, paixão e competitividade
+  darker: '#8B0000',   // Dark Red, para contrastes
   contrastText: '#fff',
 };
 
@@ -56,11 +56,11 @@ const INFO = {
 };
 
 const SUCCESS = {
-  lighter: '#E9FCD4',
-  light: '#AAF27F',
-  main: '#54D62C',
-  dark: '#229A16',
-  darker: '#08660D',
+  lighter: '#C3E5D2',  // Light Mint Green, fresco e otimista
+  light: '#4CAF50',    // Bright Green, celebrando vitória
+  main: '#2E7D32',     // Forest Green, estável e confiante
+  dark: '#1B5E20',     // Dark Green, maturidade
+  darker: '#004D00',   // Almost Black Green, para contrastes profundos
   contrastText: GREY[800],
 };
 

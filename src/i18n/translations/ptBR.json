@@ -105,6 +105,7 @@
     "fieldMinValue": "O valor mínimo é zero.",
     "maxGreatherMin": "O campo 'Max' deve ser maior ou igual ao campo 'Min'",
     "notEqualsTeams": "Não se pode aplicar uma restrição para o mesmo time.",
-    "gameApllyRestriction": "Não foi possível excluir o jogo. Existem restrições vinculadas ao mesmo."
+    "gameApllyRestriction": "Não foi possível excluir o jogo. Existem restrições vinculadas ao mesmo.",
+    "labelStatus": "Status"
   }
 }

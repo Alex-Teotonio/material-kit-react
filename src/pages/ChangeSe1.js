@@ -118,7 +118,7 @@ export default function ChangeBr1() {
       const leagueId = currentLeague.id;
       const {min, mode,penalty, type} = values;
     
-     await put(`/se1/${id}`, {min, mode, type, leagueId,penalty, teamForm,oldTeamsIds});
+     await put(`/se1/${id}`, {min, mode, type, leagueId,penalty, teamForm,oldTeamsIds}, currentLeague.id);
 
      toast({
       type: 'success',

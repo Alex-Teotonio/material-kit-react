@@ -55,7 +55,7 @@
     "valueLabelGameModeHome": "Home",
     "valueLabelGameModeHomeAway": "Home/Away",
     "valueLabelGameModeAway": "Away",
-    "labelRounds": "Consecutives Rounds",
+    "labelRounds": "Rounds",
     "labelBreaks": "Breaks",
     "labelPriority": "Priority",
     "labelGames": "Games",
@@ -105,7 +105,8 @@
     "fieldMinValue": "The minimum value is 0",
     "maxGreatherMin": "The 'Max' field must be greater than or equal to the 'Min' field.",
     "notEqualsTeams": "It's not possible to apply a constraint for the same team",
-    "gameApllyRestriction": "t was not possible to delete the game. There are restrictions linked to it."
+    "gameApllyRestriction": "t was not possible to delete the game. There are restrictions linked to it.",
+    "labelStatus": "Status"
 
 
   }

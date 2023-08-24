@@ -19,7 +19,8 @@ const itemsRadioType = [
 
 const itemsRadioMode = [
   {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
+  {id: 'A', title: 'Away'},
+  {id: 'HA', title: 'Home/Away'}
 ];
 export default function ChangeCa2() {
 
@@ -149,7 +150,7 @@ export default function ChangeCa2() {
         oldTeamsIds,
         oldTeams2Ids,
         oldSlotsIds
-      });
+      }, currentLeague.id);
       setValueStatusSolution('outdated');
       toast({
         type: 'success',

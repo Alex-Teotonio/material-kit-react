@@ -21,7 +21,6 @@ const itemsRadioMode = [
 export default function ChangeBr2() {
   const {id} = useParams();
   const navigate = useNavigate();
-  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'Br1',
@@ -123,8 +122,7 @@ export default function ChangeBr2() {
       slotForm,
       penalty,
       oldSlotsIds,
-      oldTeamsIds});
-      setValueStatusSolution('outdated')
+      oldTeamsIds},  currentLeague.id);
 
      toast({
       type: 'success',

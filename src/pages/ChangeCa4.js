@@ -139,7 +139,7 @@ export default function ChangeCa4() {
         oldTeamsIds,
         oldTeams2Ids,
         oldSlotsIds
-      });
+      }, currentLeague.id);
       setValueStatusSolution('outdated');
       toast({
         type: 'success',

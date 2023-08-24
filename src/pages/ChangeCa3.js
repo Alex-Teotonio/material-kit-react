@@ -16,14 +16,14 @@ const itemsRadioType = [
 
 const itemsRadioMode = [
   {id: 'H', title: 'Home'},
-  {id: 'A', title: 'Away'}
+  {id: 'A', title: 'Away'},
+  {id: 'HA', title: 'Home/Away'}
 ];
 
 
 export default function ChangeCa3() {
   const {id} = useParams();
   const navigate = useNavigate();
-  const {setValueStatusSolution} = useContext(LeagueContext);
   const [values, setValues] = useState(
     {
       typeRestriction: 'CA3',
@@ -131,8 +131,7 @@ export default function ChangeCa3() {
         penalty,
         oldTeamsIds,
         oldTeams2Ids
-      });
-      setValueStatusSolution('outdated');
+      }, currentLeague.id);
       toast({
         type: 'success',
         text: 'Restrição atualizada com sucesso'

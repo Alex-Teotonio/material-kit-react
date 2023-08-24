@@ -142,7 +142,7 @@ export default function Login() {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Event sx={{ color: '#FFF', mr: 0.5 }} />
                 <Typography variant="h6" noWrap>
-                  GamePlanner
+                  MatchMate
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>

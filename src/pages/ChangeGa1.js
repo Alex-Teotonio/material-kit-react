@@ -113,7 +113,7 @@ export default function ChangeGa1() {
         gameId,
         games:gamesIds,
         oldSlotsIds
-      });
+      }, currentLeague.id);
       toast({
         type: 'success',
         text: t('toastSuccess')

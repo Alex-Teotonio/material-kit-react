@@ -1,47 +1,26 @@
 import { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/styles";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {useTranslation} from 'react-i18next'
-import {Button,ButtonGroup,Paper } from '@mui/material';
-import AppBar from '../components/AppBar';
 import {get} from '../services/requests';
 import Loader from '../components/Loader';
 import Games from '../components/Games'
 
 import {delay} from '../utils/formatTime'
 
-
-const useStyles = makeStyles(() => ({
-  tableContainer: {
-    maxWidth: "150vh",
-    margin: "auto",
-    marginTop: "15vh",
-    height: "70vh",
-    background: "#ccffff",
-    borderWidth: 2,
-    borderColor: "black",
-    borderStyle: "solid",
-  },
-  table: {
-    height: "70vh"
-  },
-
-  tableCell: {
-    borderRight: "1px solid rgba(241,243,244,1)"
-  }
-}));
-
 export default function Result() {
 
   const [file, setFile] = useState([]);
   const [teams, setTeams] = useState([])
   const [slots, setSlots] = useState([]);
+  const [objective, setObjective] = useState(null)
 
   const {id} = useParams();
   
   const [isLoading, setIsLoading] = useState(false);
+  const currentLeagueString = localStorage.getItem('myLeague');
+  const currentLeague = JSON.parse(currentLeagueString);
   const {t} = useTranslation(); 
-
   useEffect(() => {
     async function getSolution(){
       try{
@@ -49,17 +28,23 @@ export default function Result() {
         await delay(700)
 
         const path = id? `/findSolutionById/${id}`: `findSolution/${currentLeague.id}`
-        const solutions = await get(path);
+        
+        const response = await get(path);
+        const solutions = response.Games;
+        console.log(solutions)
         const dataTeams = await get(`/team/${currentLeague.id}`);
+        console.log(dataTeams)
         const dataSlots = await get(`/slot/${currentLeague.id}`);
         setTeams(dataTeams);
         setSlots(dataSlots)
 
         const newSolution = solutions.map((s) => {
           const row = s.$;
+          console.log(s )
           row.id = Math.floor(Math.random() * 500)
           return row
         })
+        console.log(newSolution)
         setFile(newSolution)
       } catch(e) {
         setIsLoading(false);
@@ -70,34 +55,17 @@ export default function Result() {
     getSolution();
   },[]);
 
-  const currentLeagueString = localStorage.getItem('myLeague');
-  const currentLeague = JSON.parse(currentLeagueString);
-
-  const handleResult = async () => {
-      setIsLoading(true)
-      const solutions = await get(`/archive/${currentLeague.id}`);
-      const dataTeams = await get(`/team/${currentLeague.id}`);
-      setTeams(dataTeams);
-      const dataSlots = await get(`/slot/${currentLeague.id}`);
-      setSlots(dataSlots)
-
-      const newSolution = solutions.map((s) => {
-        const row = s.$;
-        row.id = Math.floor(Math.random() * 50)
-        return row
-      })
-      setFile((newSolution))
-  }
-
+  console.log(file)
+  console.log(currentLeague)
   return (
     <>
-     <Paper elevation={3} square sx={{width: '100%', padding: '5px'}} >
-      <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-        <Button>Games</Button>
-      </ButtonGroup>
-        <Loader isLoading={isLoading}/>
-        <Games data={file} slots={slots} teams={teams}/>
-      </Paper>
+        { file.length > 0 && (
+        <>
+          <Loader isLoading={isLoading}/>
+          <Games data={file} slots={slots} teams={teams} />
+        </>
+        )
+        }
     </>
   )
 

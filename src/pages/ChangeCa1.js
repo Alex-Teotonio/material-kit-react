@@ -123,7 +123,7 @@ export default function ChangeCa1() {
         penalty,
         oldTeamsIds,
         oldSlotsIds
-      });
+      }, currentLeague.id);
       setValueStatusSolution('outdated');
       toast({
         type: 'success',

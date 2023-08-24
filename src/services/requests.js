@@ -19,10 +19,13 @@ export async function get(path) {
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 
-export async function put(path, payload) {
+export async function put(path, payload, leagueId = null) {
     const response = await api.put(path, payload);
 
-    if(response.status === 200) return response
+    if(response.status === 200) {
+        await api.put(`/statusUpdate/${leagueId}`, true)
+        return response
+    }
     throw new Error(`${response.status} - ${response.statusText}`)
 }
 

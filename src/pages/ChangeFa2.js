@@ -117,7 +117,7 @@ export default function ChangeFa2() {
       const leagueId = currentLeague.id;
       const {intp, mode,penalty, type} = values;
     
-     await put(`/fa2/${id}`, {intp, mode, type, leagueId, teamForm,slotForm, penalty, oldSlotsIds,oldTeamsIds});
+     await put(`/fa2/${id}`, {intp, mode, type, leagueId, teamForm,slotForm, penalty, oldSlotsIds,oldTeamsIds}, currentLeague.id);
 
      toast({
       type: 'success',
@@ -133,7 +133,6 @@ export default function ChangeFa2() {
     } finally {
       setIsLoading(false)
     }
-    
   }
 
   return (

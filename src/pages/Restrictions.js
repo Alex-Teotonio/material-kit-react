@@ -96,6 +96,7 @@ export default function Restrictions() {
         },
         { field: 'type', headerName: t('headTableType'), width: 70, align: 'center',headerAlign: 'center' },
         { field: 'penalty', headerName: t('headTablePenalty'), width: 90 , align: 'center',headerAlign: 'center'},
+        { field: 'mode', headerName: t('headTableVenueTeams'), width: 90 , align: 'center',headerAlign: 'center'},
         { field: 'min', headerName: t('labelMin'), width: 100 , align: 'center',headerAlign: 'center'},
         { field: 'max', headerName: t('labelMax'), width: 100 , align: 'center',headerAlign: 'center'},
         { field: 'breaks', headerName: t('Max Breaks'), width: 100 , align: 'center',headerAlign: 'center'},
@@ -112,7 +113,7 @@ export default function Restrictions() {
                 return(
                 <Avatar
                     sizes="20"
-                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    // style={{ backgroundColor: `${teamColor[team?.id]}` }}
                     src={team?.url}
                     children={<small>{team?.initials}</small>} key={team?.id}
                 />
@@ -123,7 +124,7 @@ export default function Restrictions() {
         { 
           field: 'teams2', 
           headerName: t('headTableNameTeams2'),
-          width: 280,
+          width: 240,
           align: 'center',
           headerAlign: 'center',
           renderCell: (params) => (
@@ -133,7 +134,7 @@ export default function Restrictions() {
                 return(
                 <Avatar
                     sizes="20"
-                    style={{ backgroundColor: `${teamColor[team?.id]}` }}
+                    // style={{ backgroundColor: `${teamColor[team?.id]}` }}
                     src={team?.url}
                     children={<small>{team?.initials}</small>} key={team?.id}
                 />
@@ -144,7 +145,7 @@ export default function Restrictions() {
         {
           field: 'meetings',
           headerName: t('headTableMeetings'),
-          width: 300,
+          width: 250,
           align: 'center',
           headerAlign: 'center',
           renderCell: (params) => (
@@ -155,7 +156,7 @@ export default function Restrictions() {
               </div>
             ),
         },
-        { field: 'slots', headerName: t('headTableNameSlots'), width: 460, align: 'center', headerAlign: 'center', renderCell: renderSlots },
+        { field: 'slots', headerName: t('headTableNameSlots'), width: 300, align: 'center', headerAlign: 'center', renderCell: renderSlots },
         // { field: 'criado_em',valueFormatter: (params) => fDateTimeSuffix(params.value), headerName: t('headTableCreated'), width: 180, headerAlign: 'center', align: 'center' }
     ];
 
